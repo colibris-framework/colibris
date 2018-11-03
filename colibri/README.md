@@ -15,7 +15,7 @@ Create a virtual environment for your new project:
 
 Install colibri:
 
-    pip install git+git@gitlab.com/ccrisan/colibri.git
+    pip install git+https://gitlab.com/ccrisan/colibri.git
 
 Prepare the project:
 
@@ -39,7 +39,7 @@ Make sure you're using your project's virtual environment:
 
     cd ${PROJECTS_DIR}/${PROJECT} && source .venv/bin/activate
 
-### Create Migrations
+#### Create Migrations
 
 To create migrations for your model changes, use:
 
@@ -49,7 +49,7 @@ You can optionally specify a name for your migrations:
 
     ./manage.py makemigrations somename
 
-### Apply Migrations
+#### Apply Migrations
 
 To apply migrations on the currently configured database, use:
 

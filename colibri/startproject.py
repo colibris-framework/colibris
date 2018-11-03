@@ -21,4 +21,4 @@ def start_project():
 
     os.rename('projectpackage', package_name)
 
-    print('----------------\nproject {} is ready'.format(project_name))
+    print('project {} is ready'.format(project_name))
