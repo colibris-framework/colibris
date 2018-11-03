@@ -1,0 +1,6 @@
+*.pyc
+.venv
+.idea
+*.egg-info
+dist
+Pipfile.lock

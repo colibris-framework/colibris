@@ -1,0 +1,21 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+aiohttp = "*"
+aiohttp-apispec = "*"
+aiohttp-swagger = "*"
+marshmallow = ">=3.0.0b19"
+peewee = "*"
+peewee-migrate = "*"
+python-dotenv = "*"
+
+[dev-packages]
+
+[requires]
+python_version = "3.7"
+
+[pipenv]
+allow_prereleases = true
