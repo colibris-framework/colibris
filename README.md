@@ -1,5 +1,5 @@
 
-## Start A New Project
+## Starting Your Project
 
 Go to your projects folder:
 
@@ -21,23 +21,44 @@ Prepare the project:
 
     colibri-start-project
 
+Your project folder will contain a package derived from your project name as well as various other stuff.
 
-## Run The Web Server
+The rest of the steps assume you're in your project folder and you have your virtual environment correctly sourced.
 
-Make sure you're using your project's virtual environment:
 
-    cd ${PROJECTS_DIR}/${PROJECT} && source .venv/bin/activate
+## Database
 
-Start your web server by running:
+Set your database URL by editing the `settings.py` file:
+
+    nano settings.py 
+
+
+## Models
+
+Add your models by editing the `models.py` file:
+
+    nano ${PACKAGE}/settings.py 
+
+
+## Views
+
+Add your views by editing the `views.py` file:
+
+    nano ${PACKAGE}/views.py 
+
+
+## Web Server
+
+Start the web server by running:
 
     ./manage.py runserver
 
+Then you can test it by pointing your browser to:
+
+    http://localhost:8888
+
 
 ## Migrations
-
-Make sure you're using your project's virtual environment:
-
-    cd ${PROJECTS_DIR}/${PROJECT} && source .venv/bin/activate
 
 #### Create Migrations
 
