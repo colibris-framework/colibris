@@ -33,16 +33,15 @@ try:
     _project_routes_module = importlib.import_module('{}.routes'.format(settings.PROJECT_PACKAGE_NAME))
 
 except ImportError:
-    _project_routes_module = lambda: None
-    _project_routes_module.ROUTES = []
+    _project_routes_module = None
 
 try:
     _project_views_module = importlib.import_module('{}.views'.format(settings.PROJECT_PACKAGE_NAME))
 
 except ImportError:
-    _project_views_module = lambda: None
+    _project_views_module = None
 
-
-for _method, _path, _handler_name in _project_routes_module.ROUTES:
-    _handler = getattr(_project_views_module, _handler_name)
-    app.router.add_route(_method, _path, _handler)
+if _project_views_module and _project_routes_module:
+    for _method, _path, _handler_name in _project_routes_module.ROUTES:
+        _handler = getattr(_project_views_module, _handler_name)
+        app.router.add_route(_method, _path, _handler)
