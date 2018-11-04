@@ -20,8 +20,17 @@ LISTEN = '0.0.0.0'
 PORT = 8888
 
 MIDDLEWARE = [
-    'colibri.middleware.handle_errors_json'
+    'colibri.middleware.handle_authentication',
+    'colibri.middleware.handle_errors_json',
 ]
+
+AUTHENTICATION = {
+    'backend': 'colibri.auth.jwt.AuthenticationBackend',
+    'model': None,
+    'secret_field': 'secret',
+    'identity_field': None,
+    'identity_claim': 'sub',
+}
 
 API_DOCS_PATH = '/api/docs'
 

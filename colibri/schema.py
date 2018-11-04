@@ -10,7 +10,7 @@ from colibri.utils import camelcase_to_underscore
 
 class ModelSchemaOpts(marshmallow_peewee.schema.SchemaOpts):
     def __init__(self, meta, **kwargs):
-        super(ModelSchemaOpts, self).__init__(meta, **kwargs)
+        super().__init__(meta, **kwargs)
 
         if self.model:
             self.name = getattr(meta, 'name', camelcase_to_underscore(self.model.__name__))

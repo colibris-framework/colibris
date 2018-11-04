@@ -11,6 +11,7 @@ marshmallow = ">=3.0.0b19"
 marshmallow-peewee = "*"
 peewee = "*"
 peewee-migrate = "*"
+pyjwt = "*"
 python-dotenv = "*"
 
 [dev-packages]
