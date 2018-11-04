@@ -2,40 +2,22 @@
 import importlib
 import inspect
 import os
+import re
 import sys
 
 from pathlib import Path
-
 from dotenv import load_dotenv
-from marshmallow import Schema, fields, INCLUDE
+from marshmallow import Schema, fields, EXCLUDE
 
 
-# load and validate environment variables
-class EnvVarsValidator(Schema):
-    SETTINGS_MODULE = fields.String(missing='settings')
-    DEBUG = fields.Boolean(missing=True)
-    LISTEN = fields.String(missing='0.0.0.0')
-    PORT = fields.Integer(missing=8888)
-    DATABASE = fields.String(missing='sqlite:///default.db')
-
-    class Meta:
-        unknown = INCLUDE
-
-
-load_dotenv(Path('.env.default'))
-load_dotenv(Path('.env'), override=True)
-
-_env_vars = EnvVarsValidator().load(os.environ)
-
-
-# configurable stuff
+# default values
 
 PROJECT_PACKAGE_NAME = 'projectname'
 
-DEBUG = _env_vars['DEBUG']
+DEBUG = True
 
-LISTEN = _env_vars['LISTEN']
-PORT = _env_vars['PORT']
+LISTEN = '0.0.0.0'
+PORT = 8888
 
 API_DOCS_PATH = '/api/docs'
 
@@ -46,25 +28,54 @@ PUBLIC_ROUTES = (
     API_DOCS_PATH + '/swagger_static'
 )
 
-# DATABASE = 'sqlite:////path/to/file.db
-# DATABASE = 'postgresql://username:password@host:5432/dbname'
-DATABASE = _env_vars['DATABASE']
+DATABASE = 'sqlite:///__projectname__.db'
 
 
 # overwrite default settings with ones provided in SETTINGS_MODULE
+
+_this_settings_module = sys.modules[__name__]
+
 try:
-    _settings_module = importlib.import_module(_env_vars['SETTINGS_MODULE'])
-    _this_settings_module = sys.modules[__name__]
+    _project_settings_module = importlib.import_module('settings')
 
-    for _name, _value in inspect.getmembers(_settings_module):
-        if _name.startswith('_'):
-            continue
+except ImportError:
+    _project_settings_module = None
 
-        if not _name[0].isupper():
+if _project_settings_module:
+    for _name, _value in inspect.getmembers(_project_settings_module):
+        # only consider public members that are all in capitals
+        if _name.startswith('_') or not re.sub('[^a-z]', '', _name, re.IGNORECASE).isupper():
             continue
 
         setattr(_this_settings_module, _name, _value)
 
+
+# overwrite settings from local file
+
+try:
+    from settingslocal import *
+
 except ImportError:
     pass
 
+
+# load and validate environment variables
+
+class EnvVarsValidator(Schema):
+    DEBUG = fields.Boolean()
+    LISTEN = fields.String()
+    PORT = fields.Integer()
+    DATABASE = fields.String()
+
+    class Meta:
+        unknown = EXCLUDE
+
+
+load_dotenv(Path('.env.default'))
+load_dotenv(Path('.env'), override=True)
+
+_env_vars = EnvVarsValidator().load(os.environ)
+
+for _name, _value in _env_vars.items():
+    if _value is not None:
+        setattr(_this_settings_module, _name, _value)

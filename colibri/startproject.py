@@ -18,6 +18,7 @@ def start_project():
             shutil.copy(full_path, '.')
 
         os.system('find {} -type f | xargs sed -i "s/__packagename__/{}/g"'.format(entry, package_name))
+        os.system('find {} -type f | xargs sed -i "s/__projectname__/{}/g"'.format(entry, project_name))
 
     os.rename('projectpackage', package_name)
 

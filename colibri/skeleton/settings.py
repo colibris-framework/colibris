@@ -1,3 +1,5 @@
 
 PROJECT_PACKAGE_NAME = '__packagename__'
-DATABASE = 'sqlite:////tmp/__packagename__.db'
+
+# DATABASE = 'postgresql://username:password@localhost:5432/__packagename__'
+DATABASE = 'sqlite:////tmp/__projectname__.db'

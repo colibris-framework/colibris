@@ -42,6 +42,6 @@ except ImportError:
     _project_views_module = None
 
 if _project_views_module and _project_routes_module:
-    for _method, _path, _handler_name in _project_routes_module.ROUTES:
+    for _method, _path, _handler_name in getattr(_project_routes_module, 'ROUTES', []):
         _handler = getattr(_project_views_module, _handler_name)
         app.router.add_route(_method, _path, _handler)
