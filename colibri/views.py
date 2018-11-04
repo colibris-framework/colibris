@@ -5,7 +5,7 @@ from aiohttp_apispec import docs
 from colibri import settings
 
 
-async def home(request):
+def home(request):
     raise web.HTTPFound(settings.API_DOCS_PATH)
 
 

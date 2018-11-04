@@ -10,7 +10,7 @@ from colibri import settings
 from colibri import views
 
 
-async def init_swagger(app):  # TODO do we need this to be async?
+async def init_swagger(app):
     setup_swagger(app=app, swagger_url=settings.API_DOCS_PATH, swagger_info=app['swagger_dict'])
 
 

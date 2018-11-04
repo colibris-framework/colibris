@@ -51,7 +51,14 @@ Add your schemas by editing the `schemas.py` file:
 
 Add your views by editing the `views.py` file:
 
-    nano ${PACKAGE}/views.py 
+    nano ${PACKAGE}/views.py
+
+
+## Routes
+
+Associate URL paths to views by editing the `routes.py` file: 
+
+    nano ${PACKAGE}/routes.py
 
 
 ## Web Server
