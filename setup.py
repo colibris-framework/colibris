@@ -21,6 +21,7 @@ setup(
         'aiohttp-apispec',
         'aiohttp-swagger',
         'marshmallow>=3.0.0b19',
+        'marshmallow_peewee',
         'peewee',
         'peewee-migrate',
         'python-dotenv'
