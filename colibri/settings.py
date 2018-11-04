@@ -19,6 +19,10 @@ DEBUG = True
 LISTEN = '0.0.0.0'
 PORT = 8888
 
+MIDDLEWARE = [
+    'colibri.middleware.error_middleware'
+]
+
 API_DOCS_PATH = '/api/docs'
 
 PUBLIC_ROUTES = (
