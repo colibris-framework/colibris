@@ -43,3 +43,15 @@ async def authorization(request, handler):
     response = await handler(request)
 
     return response
+
+
+@web.middleware
+async def error_middleware(request, handler):
+    try:
+        return await handler(request)
+
+    except web.HTTPException as e:
+        if e.status >= 400:
+            return web.json_response({'error': e.reason}, status=e.status)
+
+        return e
