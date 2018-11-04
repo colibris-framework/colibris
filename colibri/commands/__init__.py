@@ -1,6 +1,9 @@
 
-import sys
 import argparse
+import logging.config
+import sys
+
+from colibri import settings
 
 
 class BaseCommand:
@@ -9,15 +12,19 @@ class BaseCommand:
         self.parser = argparse.ArgumentParser()
         self.add_arguments(self.parser)
 
+    def initialize(self):
+        pass
+
+    def run(self):
+        self.initialize()
+        options = self.parser.parse_args(self.args)
+        self.execute(options)
+
     def add_arguments(self, parser):
         pass
 
     def execute(self, options):
         raise NotImplementedError
-
-    def run(self):
-        options = self.parser.parse_args(self.args)
-        self.execute(options)
 
     @classmethod
     def get_name(cls):
@@ -40,6 +47,9 @@ def main():
     if len(args) < 2 or args[1] not in ALL_COMMANDS:
         show_commands_usage()
         sys.exit(1)
+
+    # configure logging
+    logging.config.dictConfig(settings.LOGGING)
 
     command_class = ALL_COMMANDS[sys.argv[1]]
     command = command_class(args[2:])

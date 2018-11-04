@@ -30,6 +30,31 @@ PUBLIC_ROUTES = (
 
 DATABASE = 'sqlite:///__projectname__.db'
 
+LOGGING = _DEFAULT_LOGGING = {
+    'version': 1,
+    'formatters': {
+        'default': {
+            'format': '%(asctime)s: %(levelname)7s: [%(name)s] %(message)s',
+            'datefmt': '%Y-%m-%d %H:%M:%S'
+        }
+    },
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+            'formatter': 'default'
+        }
+    },
+    'root': {
+        'level': 'DEBUG',
+        'handlers': ['console']
+    },
+    'loggers': {
+        'peewee_migrate': {
+            'level': 'DEBUG'  # always show details when doing migrations
+        }
+    }
+}
+
 
 # overwrite default settings with ones provided in SETTINGS_MODULE
 
@@ -79,3 +104,9 @@ _env_vars = EnvVarsValidator().load(os.environ)
 for _name, _value in _env_vars.items():
     if _value is not None:
         setattr(_this_settings_module, _name, _value)
+
+
+# adjust log level unless logging configured explicitly
+
+if LOGGING is _DEFAULT_LOGGING and not DEBUG:
+    LOGGING['root']['level'] = 'INFO'
