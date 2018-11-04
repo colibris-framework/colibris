@@ -89,3 +89,45 @@ You can optionally specify a name for your migrations:
 To apply migrations on the currently configured database, use:
 
     ./manage.py migrate
+
+
+## Settings
+
+Here's a list of available settings and their default values:
+
+#### `PROJECT_PACKAGE_NAME`
+
+Sets the main project package name. Defaults to `'<projectname>'`.
+
+#### `DEBUG`
+
+Enables or disables debugging. Defaults to `True`.
+
+#### `LISTEN`
+
+Controls the interface(s) on which the server listens. Defaults to `'0.0.0.0'`.
+
+#### `PORT`
+
+Controls the server TCP listening port. Defaults to `8888`.
+
+#### `MIDDLEWARE`
+
+A list of all the middleware functions to be applied, in order, to each request/response. Defaults to:
+
+    [
+        'colibri.middleware.error_middleware'
+    ]
+
+#### `DATABASE`
+
+Sets the project database.
+See [this](http://docs.peewee-orm.com/en/latest/peewee/database.html#connecting-using-a-database-url) for examples of
+database URLs.
+
+Defaults to `'sqlite:///<projectname>.db'`
+
+#### `LOGGING`
+
+Configures the logging mechanism.
+See [logging.config](https://docs.python.org/3.7/library/logging.config.html) for details.
