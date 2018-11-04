@@ -7,6 +7,7 @@ from aiohttp_swagger import setup_swagger
 
 from colibri import routes
 from colibri import settings
+from colibri import utils
 from colibri import views
 
 
@@ -15,9 +16,7 @@ from colibri import views
 middleware = []
 
 for _path in settings.MIDDLEWARE:
-    _m = importlib.import_module('.'.join(_path.split('.')[:-1]))
-    _mw = getattr(_m, _path.split('.')[-1])
-    middleware.append(_mw)
+    middleware.append(utils.import_member(_path))
 
 app = web.Application(middlewares=middleware)
 
