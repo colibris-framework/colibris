@@ -46,7 +46,7 @@ async def authorization(request, handler):
 
 
 @web.middleware
-async def error_middleware(request, handler):
+async def handle_errors_json(request, handler):
     try:
         return await handler(request)
 
