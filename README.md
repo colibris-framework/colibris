@@ -37,7 +37,14 @@ Set your database URL by editing the `settings.py` file:
 
 Add your models by editing the `models.py` file:
 
-    nano ${PACKAGE}/settings.py 
+    nano ${PACKAGE}/models.py 
+
+
+## Schemas
+
+Add your schemas by editing the `schemas.py` file:
+
+    nano ${PACKAGE}/schemas.py 
 
 
 ## Views
