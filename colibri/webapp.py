@@ -5,15 +5,16 @@ from aiohttp import web
 from aiohttp_apispec import setup_aiohttp_apispec
 from aiohttp_swagger import setup_swagger
 
-from colibri import routes
+from colibri import routes as default_routes
 from colibri import settings
 from colibri import utils
-from colibri import views
 
-
-# load & prepare app middleware
 
 middleware = []
+routes = []
+
+
+# app middleware
 
 for _path in settings.MIDDLEWARE:
     middleware.append(utils.import_member(_path))
@@ -21,14 +22,23 @@ for _path in settings.MIDDLEWARE:
 app = web.Application(middlewares=middleware)
 
 
-# common routes
+# default routes
 
-for _method, _path, _handler_name in routes.ROUTES:
-    _handler = getattr(views, _handler_name)
-    app.router.add_route(_method, _path, _handler)
+def add_route_tuple(route):
+    if len(route) < 4:
+        route = route + (None,)
+
+    method, path, handler, authorize = route
+
+    app.router.add_route(method, path, handler)
+    routes.append(route)
 
 
-# add apispec/swagger support
+for route in default_routes.ROUTES:
+    add_route_tuple(route)
+
+
+# apispec/swagger support
 
 async def init_swagger(app):
     setup_swagger(app=app, swagger_url=settings.API_DOCS_PATH, swagger_info=app['swagger_dict'])
@@ -37,21 +47,14 @@ setup_aiohttp_apispec(app=app, title='API Documentation')
 app.on_startup.append(init_swagger)
 
 
-# add project-specific routes & views
+# project-specific routes
 
 try:
-    _project_routes_module = importlib.import_module('{}.routes'.format(settings.PROJECT_PACKAGE_NAME))
+    _project_routes = importlib.import_module('{}.routes'.format(settings.PROJECT_PACKAGE_NAME))
 
 except ImportError:
-    _project_routes_module = None
+    _project_routes = None
 
-try:
-    _project_views_module = importlib.import_module('{}.views'.format(settings.PROJECT_PACKAGE_NAME))
-
-except ImportError:
-    _project_views_module = None
-
-if _project_views_module and _project_routes_module:
-    for _method, _path, _handler_name in getattr(_project_routes_module, 'ROUTES', []):
-        _handler = getattr(_project_views_module, _handler_name)
-        app.router.add_route(_method, _path, _handler)
+if _project_routes:
+    for route in getattr(_project_routes, 'ROUTES', []):
+        add_route_tuple(route)

@@ -24,13 +24,7 @@ MIDDLEWARE = [
     'colibri.middleware.handle_authentication',
 ]
 
-AUTHENTICATION = {
-    'backend': 'colibri.auth.jwt.AuthenticationBackend',
-    'model': None,
-    'secret_field': 'secret',
-    'identity_field': None,
-    'identity_claim': 'sub',
-}
+AUTHENTICATION = None
 
 API_DOCS_PATH = '/api/docs'
 

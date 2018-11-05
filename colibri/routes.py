@@ -1,5 +1,7 @@
 
+from colibri import views
+
 ROUTES = [
-    ('GET', '/', 'home'),
-    ('GET', '/health', 'health'),
+    ('GET', '/', views.home),
+    ('GET', '/health', views.health),
 ]
