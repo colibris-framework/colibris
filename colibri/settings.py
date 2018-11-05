@@ -123,3 +123,12 @@ for _name, _value in _env_vars.items():
 
 if LOGGING is _DEFAULT_LOGGING and not DEBUG:
     LOGGING['root']['level'] = 'INFO'
+
+
+try:
+    PROJECT_PACKAGE = importlib.import_module(PROJECT_PACKAGE_NAME)
+
+except ImportError:
+    PROJECT_PACKAGE = importlib.import_module('colibri')
+
+PROJECT_PACKAGE_DIR = os.path.dirname(PROJECT_PACKAGE.__file__)
