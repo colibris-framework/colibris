@@ -24,7 +24,8 @@ setup(
         'marshmallow_peewee',
         'peewee',
         'peewee-migrate',
-        'python-dotenv'
+        'pyjwt',
+        'python-dotenv',
     ],
     url='',
     license='',

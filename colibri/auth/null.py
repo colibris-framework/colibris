@@ -11,5 +11,5 @@ class AuthenticationBackend(BaseAuthenticationBackend):
     def lookup_account(self, identity):
         return self._DUMMY_ACCOUNT
 
-    def verify_identity(self, account, identity, auth_data):
+    def verify_identity(self, secret, account, auth_data):
         return True

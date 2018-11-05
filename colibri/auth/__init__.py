@@ -1,5 +1,4 @@
 
-from colibri import settings
 from colibri import utils
 
 
@@ -16,23 +15,27 @@ class IdentityVerificationFailed(AuthException):
 
 
 class AuthenticationBackend:
-    _ACCOUNT_MODEL = None
-    if settings.AUTHENTICATION.get('model'):
-        _ACCOUNT_MODEL = utils.import_member(settings.AUTHENTICATION['model'])
+    def __init__(self, model=None, identity_field=None, secret_field=None):
+        self.model = None
+        if model:
+            self.model = utils.import_member(model)
+
+        self.identity_field = identity_field
+        self.secret_field = secret_field
 
     def extract_auth_data(self, request):
         raise NotImplementedError
 
     def lookup_account(self, identity):
-        if self._ACCOUNT_MODEL:
-            query = {settings.AUTHENTICATION['identity_field']: identity}
+        if self.model:
+            query = {self.identity_field: identity}
             try:
-                return self._ACCOUNT_MODEL.select().where(**query).get()
+                return self.model.select().where(**query).get()
 
-            except self._ACCOUNT_MODEL.DoesNotExist:
+            except self.model.DoesNotExist:
                 return None
 
-    def verify_identity(self, account, auth_data):
+    def verify_identity(self, secret, account, auth_data):
         raise NotImplementedError
 
     def authenticate(self, request):
@@ -41,7 +44,13 @@ class AuthenticationBackend:
         if account is None:
             raise NoSuchAccount()
 
-        if not self.verify_identity(account, auth_data):
+        if hasattr(account, '__getitem__'):  # dict-like account
+            secret = account[self.secret_field]
+
+        else:  # assuming regular attribute
+            secret = getattr(account, self.secret_field)
+
+        if not self.verify_identity(secret, account, auth_data):
             raise IdentityVerificationFailed()
 
         return account

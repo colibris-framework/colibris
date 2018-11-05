@@ -14,9 +14,8 @@ class JWTException(AuthException):
 
 
 class AuthenticationBackend(BaseAuthenticationBackend):
-    def __init__(self, identity_claim, secret_field, **kwargs):
+    def __init__(self, identity_claim, **kwargs):
         self.identity_claim = identity_claim
-        self.secret_field = secret_field
 
         super().__init__()
 
@@ -43,13 +42,7 @@ class AuthenticationBackend(BaseAuthenticationBackend):
 
         return identity, token
 
-    def verify_identity(self, account, auth_data):
-        if hasattr(account, '__getitem__'):  # dict-like account
-            secret = account[self.secret_field]
-
-        else:  # assuming regular attribute
-            secret = getattr(account, self.secret_field)
-
+    def verify_identity(self, secret, account, auth_data):
         try:
             jwt.decode(auth_data, key=secret, verify=True)
 

@@ -6,8 +6,9 @@ from colibri import settings
 from colibri import utils
 
 
-_auth_backend_class = utils.import_member(settings.AUTHENTICATION['backend'])
-_auth_backend = _auth_backend_class(**settings.AUTHENTICATION)
+_auth_backend_settings = dict(settings.AUTHENTICATION)
+_auth_backend_class = utils.import_member(_auth_backend_settings.pop('backend'))
+_auth_backend = _auth_backend_class(**_auth_backend_settings)
 
 
 @web.middleware
