@@ -49,7 +49,9 @@ def main():
         sys.exit(1)
 
     # configure logging
-    logging.config.dictConfig(settings.LOGGING)
+    logging_config = dict(settings.LOGGING)
+    logging_config['disable_existing_loggers'] = False
+    logging.config.dictConfig(logging_config)
 
     command_class = ALL_COMMANDS[sys.argv[1]]
     command = command_class(args[2:])

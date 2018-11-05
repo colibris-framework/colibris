@@ -1,10 +1,14 @@
 
+import logging
+
 from aiohttp import web
 
 from colibri import auth
 from colibri import settings
 from colibri import utils
 
+
+logger = logging.getLogger(__name__)
 
 _auth_backend_settings = dict(settings.AUTHENTICATION)
 _auth_backend_class = utils.import_member(_auth_backend_settings.pop('backend'))
@@ -16,7 +20,9 @@ async def handle_authentication(request, handler):
     try:
         account = _auth_backend.authenticate(request)
 
-    except auth.AuthException:
+    except auth.AuthException as e:
+        logger.error('authentication failed: %s', e)
+
         raise web.HTTPUnauthorized()
 
     request.account = account
