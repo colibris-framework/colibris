@@ -2,17 +2,20 @@
 from colibri import utils
 
 
-class AuthException(Exception):
-    @classmethod
-    def __str__(cls):
-        return cls.__name__
+class AuthenticationException(Exception):
+    def __str__(self):
+        message = str(self)
+        if not message:
+            message = self.__class__.__name__
+
+        return message
 
 
-class NoSuchAccount(AuthException):
+class NoSuchAccount(AuthenticationException):
     pass
 
 
-class IdentityVerificationFailed(AuthException):
+class IdentityVerificationFailed(AuthenticationException):
     pass
 
 
@@ -56,3 +59,19 @@ class AuthenticationBackend:
             raise IdentityVerificationFailed()
 
         return account
+
+
+class NullBackend(AuthenticationBackend):
+    _DUMMY_ACCOUNT = {}
+
+    def extract_auth_data(self, request):
+        return None, None
+
+    def lookup_account(self, identity):
+        return self._DUMMY_ACCOUNT
+
+    def verify_identity(self, secret, account, auth_data):
+        return True
+
+    def authenticate(self, request):
+        return self._DUMMY_ACCOUNT

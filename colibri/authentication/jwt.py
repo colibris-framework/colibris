@@ -2,18 +2,18 @@
 import jwt
 import re
 
-from . import AuthException, AuthenticationBackend as BaseAuthenticationBackend
+from . import AuthenticationException, AuthenticationBackend as BaseAuthenticationBackend
 
 
 _AUTH_HEADER = 'Authorization'
 _AUTH_TOKEN_REGEX = re.compile('Bearer (.+)', re.IGNORECASE)
 
 
-class JWTException(AuthException):
+class JWTException(AuthenticationException):
     pass
 
 
-class AuthenticationBackend(BaseAuthenticationBackend):
+class JWTBackend(BaseAuthenticationBackend):
     def __init__(self, identity_claim='sub', **kwargs):
         self.identity_claim = identity_claim
 

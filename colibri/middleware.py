@@ -3,7 +3,7 @@ import logging
 
 from aiohttp import web
 
-from colibri import auth
+from colibri import authentication
 from colibri import settings
 from colibri import utils
 from colibri import webapp
@@ -12,7 +12,7 @@ from colibri import webapp
 logger = logging.getLogger(__name__)
 
 _auth_backend_settings = dict(settings.AUTHENTICATION or {})
-_auth_backend_path = _auth_backend_settings.pop('backend', 'colibri.auth.null.AuthenticationBackend')
+_auth_backend_path = _auth_backend_settings.pop('backend', 'colibri.authentication.NullBackend')
 _auth_backend_class = utils.import_member(_auth_backend_path)
 _auth_backend = _auth_backend_class(**_auth_backend_settings)
 
@@ -27,18 +27,26 @@ async def handle_authentication(request, handler):
     if not route:  # shouldn't happen
         raise web.HTTPNotFound()
 
+    method, path, _handler, authorize = route
+
     # only go through authentication if route specifies authorization;
     # otherwise route is considered public
-    if route[3] is not None:
+    if authorize:
         try:
             account = _auth_backend.authenticate(request)
 
-        except auth.AuthException as e:
-            logger.error('authentication failed: %s', e)
+        except authentication.AuthenticationException as e:
+            logger.error('%s %s authentication failed: %s', method, path, e)
 
             raise web.HTTPUnauthorized()
 
+        # at this point we can safely associate request with account
         request.account = account
+
+        if not authorize(account, method, path):
+            logger.error('%s %s forbidden for %s', method, path, account)
+
+            raise web.HTTPForbidden()
 
     return await handler(request)
 
