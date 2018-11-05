@@ -11,14 +11,19 @@ from colibri import webapp
 
 logger = logging.getLogger(__name__)
 
-_auth_backend_settings = dict(settings.AUTHENTICATION or {})
-_auth_backend_path = _auth_backend_settings.pop('backend', 'colibri.authentication.NullBackend')
-_auth_backend_class = utils.import_member(_auth_backend_path)
-_auth_backend = _auth_backend_class(**_auth_backend_settings)
+_authentication_backend_settings = dict(settings.AUTHENTICATION or {})
+_authentication_backend_path = _authentication_backend_settings.pop('backend', 'colibri.authentication.NullBackend')
+_authentication_backend_class = utils.import_member(_authentication_backend_path)
+_authentication_backend = _authentication_backend_class(**_authentication_backend_settings)
+
+_authorization_backend_settings = dict(settings.AUTHORIZATION or {})
+_authorization_backend_path = _authorization_backend_settings.pop('backend', 'colibri.authorization.NullBackend')
+_authorization_backend_class = utils.import_member(_authorization_backend_path)
+_authorization_backend = _authorization_backend_class(**_authorization_backend_settings)
 
 
 @web.middleware
-async def handle_authentication(request, handler):
+async def handle_auth(request, handler):
     if request.match_info.http_exception is not None:
         raise request.match_info.http_exception
 
@@ -27,13 +32,13 @@ async def handle_authentication(request, handler):
     if not route:  # shouldn't happen
         raise web.HTTPNotFound()
 
-    method, path, _handler, authorize = route
+    method, path, _handler, permissions = route
 
-    # only go through authentication if route specifies authorization;
+    # only go through authentication if route specifies permissions;
     # otherwise route is considered public
-    if authorize:
+    if permissions:
         try:
-            account = _auth_backend.authenticate(request)
+            account = _authentication_backend.authenticate(request)
 
         except authentication.AuthenticationException as e:
             logger.error('%s %s authentication failed: %s', method, path, e)
@@ -43,7 +48,7 @@ async def handle_authentication(request, handler):
         # at this point we can safely associate request with account
         request.account = account
 
-        if not authorize(account, method, path):
+        if not _authorization_backend.authorize(account, permissions):
             logger.error('%s %s forbidden for %s', method, path, account)
 
             raise web.HTTPForbidden()

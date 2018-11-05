@@ -21,10 +21,11 @@ PORT = 8888
 
 MIDDLEWARE = [
     'colibri.middleware.handle_errors_json',
-    'colibri.middleware.handle_authentication',
+    'colibri.middleware.handle_auth',
 ]
 
 AUTHENTICATION = None
+AUTHORIZATION = None
 
 API_DOCS_PATH = '/api/docs'
 

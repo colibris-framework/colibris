@@ -116,7 +116,7 @@ Controls the server TCP listening port. Defaults to `8888`.
 A list of all the middleware functions to be applied, in order, to each request/response. Defaults to:
 
     [
-        'colibri.middleware.handle_authentication',
+        'colibri.middleware.handle_auth',
         'colibri.middleware.handle_errors_json'
     ]
 
