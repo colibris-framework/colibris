@@ -3,6 +3,8 @@ import os
 
 from setuptools import setup, find_packages
 
+from colibri import VERSION
+
 
 def package_data_rec(package, directory):
     paths = []
@@ -15,7 +17,7 @@ def package_data_rec(package, directory):
 
 setup(
     name='colibri',
-    version='0.0.1',
+    version=VERSION,
     install_requires=[
         'aiohttp',
         'aiohttp-apispec',
@@ -24,7 +26,6 @@ setup(
         'marshmallow_peewee',
         'peewee',
         'peewee-migrate',
-        'pyjwt',
         'python-dotenv',
     ],
     url='',

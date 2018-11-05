@@ -5,6 +5,9 @@ import os
 from colibri import settings
 
 
+VERSION = '0.1.0'
+
+
 try:
     PROJECT_PACKAGE = importlib.import_module(settings.PROJECT_PACKAGE_NAME)
     PROJECT_PACKAGE_DIR = os.path.dirname(PROJECT_PACKAGE.__file__)
