@@ -10,8 +10,9 @@ from colibri import utils
 
 logger = logging.getLogger(__name__)
 
-_auth_backend_settings = dict(settings.AUTHENTICATION)
-_auth_backend_class = utils.import_member(_auth_backend_settings.pop('backend'))
+_auth_backend_settings = dict(settings.AUTHENTICATION or {})
+_auth_backend_path = _auth_backend_settings.pop('backend', 'colibri.auth.null.AuthenticationBackend')
+_auth_backend_class = utils.import_member(_auth_backend_path)
 _auth_backend = _auth_backend_class(**_auth_backend_settings)
 
 

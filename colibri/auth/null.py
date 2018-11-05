@@ -13,3 +13,6 @@ class AuthenticationBackend(BaseAuthenticationBackend):
 
     def verify_identity(self, secret, account, auth_data):
         return True
+
+    def authenticate(self, request):
+        return self._DUMMY_ACCOUNT

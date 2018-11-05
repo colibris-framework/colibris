@@ -19,4 +19,6 @@ from __packagename__ import models
 #
 #     class Meta:
 #         model = models.User
+#         name = 'user'
+#         name_plural = 'users'
 #
