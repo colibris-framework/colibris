@@ -17,7 +17,7 @@ class AuthenticationBackend(BaseAuthenticationBackend):
     def __init__(self, identity_claim, **kwargs):
         self.identity_claim = identity_claim
 
-        super().__init__()
+        super().__init__(**kwargs)
 
     def extract_auth_data(self, request):
         auth_header = request.headers.get(_AUTH_HEADER)

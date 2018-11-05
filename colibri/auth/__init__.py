@@ -3,7 +3,9 @@ from colibri import utils
 
 
 class AuthException(Exception):
-    pass
+    @classmethod
+    def __str__(cls):
+        return cls.__name__
 
 
 class NoSuchAccount(AuthException):
@@ -28,9 +30,9 @@ class AuthenticationBackend:
 
     def lookup_account(self, identity):
         if self.model:
-            query = {self.identity_field: identity}
+            query = getattr(self.model, self.identity_field) == identity
             try:
-                return self.model.select().where(**query).get()
+                return self.model.select().where(query).get()
 
             except self.model.DoesNotExist:
                 return None
