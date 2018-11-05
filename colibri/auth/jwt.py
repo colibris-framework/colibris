@@ -14,7 +14,7 @@ class JWTException(AuthException):
 
 
 class AuthenticationBackend(BaseAuthenticationBackend):
-    def __init__(self, identity_claim, **kwargs):
+    def __init__(self, identity_claim='sub', **kwargs):
         self.identity_claim = identity_claim
 
         super().__init__(**kwargs)

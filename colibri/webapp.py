@@ -11,7 +11,7 @@ from colibri import utils
 
 
 middleware = []
-routes = []
+routes_by_path = {}  # indexed by path
 
 
 # app middleware
@@ -22,7 +22,7 @@ for _path in settings.MIDDLEWARE:
 app = web.Application(middlewares=middleware)
 
 
-# default routes
+# routes
 
 def add_route_tuple(route):
     if len(route) < 4:
@@ -31,7 +31,14 @@ def add_route_tuple(route):
     method, path, handler, authorize = route
 
     app.router.add_route(method, path, handler)
-    routes.append(route)
+    routes_by_path[path] = route
+
+
+async def build_routes_cache(app):
+    # add missing route paths to routes cache
+    for r in app.router.routes():
+        path = r.resource.canonical
+        routes_by_path.setdefault(path, (r.method, path, r.handler, None))
 
 
 for route in default_routes.ROUTES:
@@ -58,3 +65,5 @@ except ImportError:
 if _project_routes:
     for route in getattr(_project_routes, 'ROUTES', []):
         add_route_tuple(route)
+
+app.on_startup.append(build_routes_cache)

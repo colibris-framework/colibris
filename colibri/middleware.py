@@ -6,6 +6,7 @@ from aiohttp import web
 from colibri import auth
 from colibri import settings
 from colibri import utils
+from colibri import webapp
 
 
 logger = logging.getLogger(__name__)
@@ -18,15 +19,26 @@ _auth_backend = _auth_backend_class(**_auth_backend_settings)
 
 @web.middleware
 async def handle_authentication(request, handler):
-    try:
-        account = _auth_backend.authenticate(request)
+    if request.match_info.http_exception is not None:
+        raise request.match_info.http_exception
 
-    except auth.AuthException as e:
-        logger.error('authentication failed: %s', e)
+    path = request.match_info.route.resource.canonical
+    route = webapp.routes_by_path.get(path)
+    if not route:  # shouldn't happen
+        raise web.HTTPNotFound()
 
-        raise web.HTTPUnauthorized()
+    # only go through authentication if route specifies authorization;
+    # otherwise route is considered public
+    if route[3] is not None:
+        try:
+            account = _auth_backend.authenticate(request)
 
-    request.account = account
+        except auth.AuthException as e:
+            logger.error('authentication failed: %s', e)
+
+            raise web.HTTPUnauthorized()
+
+        request.account = account
 
     return await handler(request)
 

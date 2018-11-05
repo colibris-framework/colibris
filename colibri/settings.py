@@ -28,13 +28,6 @@ AUTHENTICATION = None
 
 API_DOCS_PATH = '/api/docs'
 
-PUBLIC_ROUTES = (
-    '/',
-    API_DOCS_PATH,
-    API_DOCS_PATH + '/swagger.json',
-    API_DOCS_PATH + '/swagger_static'
-)
-
 DATABASE = 'sqlite:///__projectname__.db'
 
 LOGGING = _DEFAULT_LOGGING = {
