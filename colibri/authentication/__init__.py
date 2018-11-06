@@ -4,7 +4,7 @@ from colibri import utils
 
 class AuthenticationException(Exception):
     def __str__(self):
-        message = str(self)
+        message = super().__str__()
         if not message:
             message = self.__class__.__name__
 
@@ -20,27 +20,13 @@ class IdentityVerificationFailed(AuthenticationException):
 
 
 class AuthenticationBackend:
-    def __init__(self, model=None, identity_field=None, secret_field=None):
-        self.model = None
-        if model:
-            self.model = utils.import_member(model)
-
-        self.identity_field = identity_field
-        self.secret_field = secret_field
-
     def extract_auth_data(self, request):
         raise NotImplementedError
 
     def lookup_account(self, identity):
-        if self.model:
-            query = getattr(self.model, self.identity_field) == identity
-            try:
-                return self.model.select().where(query).get()
+        raise NotImplementedError
 
-            except self.model.DoesNotExist:
-                return None
-
-    def verify_identity(self, secret, account, auth_data):
+    def verify_identity(self, account, auth_data):
         raise NotImplementedError
 
     def authenticate(self, request):
@@ -49,13 +35,7 @@ class AuthenticationBackend:
         if account is None:
             raise NoSuchAccount()
 
-        if hasattr(account, '__getitem__'):  # dict-like account
-            secret = account[self.secret_field]
-
-        else:  # assuming regular attribute
-            secret = getattr(account, self.secret_field)
-
-        if not self.verify_identity(secret, account, auth_data):
+        if not self.verify_identity(account, auth_data):
             raise IdentityVerificationFailed()
 
         return account

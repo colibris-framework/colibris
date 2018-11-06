@@ -11,3 +11,12 @@ DATABASE = 'sqlite:////tmp/__projectname__.db'
 #     'identity_field': 'username',
 #     'secret_field': 'password'
 # }
+
+#
+# AUTHORIZATION = {
+#     'backend': 'colibri.authorization.model.ModelBackend',
+#     'model': 'colibrisample.models.Permissions',
+#     'account_field': 'user',
+#     'permissions_field': 'permissions',
+# }
+#
