@@ -19,7 +19,8 @@ _authentication_backend_class = utils.import_member(_authentication_backend_path
 _authentication_backend = _authentication_backend_class(**_authentication_backend_settings)
 
 _authorization_backend_settings = dict(settings.AUTHORIZATION or {})
-_authorization_backend_path = _authorization_backend_settings.pop('backend', 'colibri.authorization.NullBackend')
+_authorization_backend_path = _authorization_backend_settings.pop('backend',
+                                                                  'colibri.authorization.base.NullBackend')
 _authorization_backend_class = utils.import_member(_authorization_backend_path)
 _authorization_backend = _authorization_backend_class(**_authorization_backend_settings)
 
