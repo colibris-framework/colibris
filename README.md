@@ -5,21 +5,17 @@ Go to your projects folder:
 
     cd ${PROJECTS_DIR}
 
-Create a new folder for your project:
-
-    mkdir ${PROJECT} && cd ${PROJECT}
-
 Create a virtual environment for your new project:
 
     virtualenv .venv && source .venv/bin/activate
 
 Install colibri:
 
-    pip install git+https://gitlab.com/ccrisan/colibri.git
+    pip install git+https://gitlab.com/safefleet/colibri.git
 
 Prepare the project:
 
-    colibri-start-project
+    colibri-start-project <project-name> --template git@gitlab.com:safefleet/web-service-template.git 
 
 Your project folder will contain a package derived from your project name as well as various other stuff.
 
