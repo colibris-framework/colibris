@@ -15,7 +15,7 @@ Install colibri:
 
 Prepare the project:
 
-    colibri-start-project <project-name> --template git@gitlab.com:safefleet/web-service-template.git 
+    colibri-start-project <project-name> --template git@gitlab.com:safefleet/microservice-template.git 
 
 Your project folder will contain a package derived from your project name as well as various other stuff.
 
