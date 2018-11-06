@@ -1,25 +1,40 @@
-
+import argparse
 import os
 import re
 import shutil
 
+TMP_TEMPLATE_PATH = '/tmp/colibri-template-repo'
+MAIN_PACKAGE_NAME = 'projectpackage'
+
 
 def start_project():
-    project_name = os.path.basename(os.getcwd())
+    parser = argparse.ArgumentParser()
+    parser.add_argument('name', help='The project name', type=str)
+    parser.add_argument('--template', help='The template repo', type=str, required=False)
+    args = parser.parse_args()
+
+    project_name = args.name
     package_name = re.sub('[^a-z0-9_]', '', project_name).lower()
-    skeleton_dir = os.path.join(os.path.dirname(__file__), 'skeleton')
 
-    for entry in os.listdir(skeleton_dir):
-        full_path = os.path.join(skeleton_dir, entry)
-        if os.path.isdir(full_path):
-            shutil.copytree(full_path, entry)
+    if args.template is None:
+        skeleton_dir = os.path.join(os.path.dirname(__file__), 'skeleton')
+    else:
+        if os.path.exists(TMP_TEMPLATE_PATH):
+            shutil.rmtree(TMP_TEMPLATE_PATH)
 
-        else:
-            shutil.copy(full_path, '.')
+        os.system("git clone {} {}".format(args.template, TMP_TEMPLATE_PATH))
+        skeleton_dir = TMP_TEMPLATE_PATH
 
-        os.system('find {} -type f | xargs sed -i "s/__packagename__/{}/g"'.format(entry, package_name))
-        os.system('find {} -type f | xargs sed -i "s/__projectname__/{}/g"'.format(entry, project_name))
+    shutil.copytree(skeleton_dir, project_name, ignore=shutil.ignore_patterns('.git'))
 
-    os.rename('projectpackage', package_name)
+    old_package_name = '{}/{}'.format(project_name, MAIN_PACKAGE_NAME)
+    new_package_name = '{}/{}'.format(project_name, package_name)
+
+    shutil.move(old_package_name, new_package_name)
+
+    rename_command = 'find {} -type f -iname "*.py" | xargs sed -i "" -e "s/{}/{}/g"'
+
+    os.system(rename_command.format(project_name, '__packagename__', package_name))
+    os.system(rename_command.format(project_name, '__projectname__', project_name))
 
     print('project {} is ready'.format(project_name))
