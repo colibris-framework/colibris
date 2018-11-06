@@ -51,7 +51,7 @@ async def handle_auth(request, handler):
         # at this point we can safely associate request with account
         request.account = account
 
-        if not _authorization_backend.authorize(account, permissions):
+        if not _authorization_backend.authorize(account, method, path, permissions):
             logger.error('%s %s forbidden for %s', method, path, account)
 
             raise web.HTTPForbidden()

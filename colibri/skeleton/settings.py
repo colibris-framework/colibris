@@ -17,6 +17,7 @@ DATABASE = 'sqlite:////tmp/__projectname__.db'
 #     'backend': 'colibri.authorization.model.ModelBackend',
 #     'model': '__packagename__.models.Permissions',
 #     'account_field': 'user',
-#     'permissions_field': 'permissions',
+#     'resource_field': 'resource',
+#     'operations_field': 'operations',
 # }
 

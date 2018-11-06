@@ -19,5 +19,6 @@ from colibri import persist
 # class Permissions(persist.Model):
 #     id = persist.AutoField()
 #     user = persist.ForeignKeyField(User)
-#     permissions = persist.CharField(max_length=16)
+#     resource = persist.CharField(max_length=128)
+#     operations = persist.CharField(max_length=16)
 #
