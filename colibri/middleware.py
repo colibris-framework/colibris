@@ -3,16 +3,18 @@ import logging
 
 from aiohttp import web
 
-from colibri import authentication
 from colibri import settings
 from colibri import utils
 from colibri import webapp
+
+from colibri.authentication import exceptions as authentication_exceptions
 
 
 logger = logging.getLogger(__name__)
 
 _authentication_backend_settings = dict(settings.AUTHENTICATION or {})
-_authentication_backend_path = _authentication_backend_settings.pop('backend', 'colibri.authentication.NullBackend')
+_authentication_backend_path = _authentication_backend_settings.pop('backend',
+                                                                    'colibri.authentication.base.NullBackend')
 _authentication_backend_class = utils.import_member(_authentication_backend_path)
 _authentication_backend = _authentication_backend_class(**_authentication_backend_settings)
 
@@ -40,7 +42,7 @@ async def handle_auth(request, handler):
         try:
             account = _authentication_backend.authenticate(request)
 
-        except authentication.AuthenticationException as e:
+        except authentication_exceptions.AuthenticationException as e:
             logger.error('%s %s authentication failed: %s', method, path, e)
 
             raise web.HTTPUnauthorized()

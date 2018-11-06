@@ -2,9 +2,8 @@
 import jwt
 import re
 
+from colibri.authentication.exceptions import AuthenticationException
 from colibri.authentication.model import ModelBackend
-
-from . import AuthenticationException
 
 
 _AUTH_HEADER = 'Authorization'
