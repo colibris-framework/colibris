@@ -41,8 +41,8 @@ async def build_routes_cache(app):
         routes_by_path.setdefault(path, (r.method, path, r.handler, None))
 
 
-for route in default_routes.ROUTES:
-    add_route_tuple(route)
+for _route in default_routes.ROUTES:
+    add_route_tuple(_route)
 
 
 # apispec/swagger support
