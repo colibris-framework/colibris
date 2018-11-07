@@ -122,6 +122,7 @@ A list of all the middleware functions to be applied, in order, to each request/
     [
         'colibri.middleware.handle_errors_json',
         'colibri.middleware.handle_auth',
+        'colibri.middleware.handle_schema_validation'
     ]
 
 #### `AUTHENTICATION`
