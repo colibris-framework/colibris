@@ -4,7 +4,7 @@ import re
 import shutil
 
 TMP_TEMPLATE_PATH = '/tmp/colibri-template-repo'
-MAIN_PACKAGE_NAME = 'projectpackage'
+MAIN_PACKAGE_NAME = '__packagename__'
 
 
 def start_project():
