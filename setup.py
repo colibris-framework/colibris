@@ -27,6 +27,7 @@ setup(
         'peewee',
         'peewee-migrate',
         'python-dotenv',
+        'PyJWT'
     ],
     url='',
     license='',
