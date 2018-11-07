@@ -12,12 +12,15 @@ class ModelBackend(AuthenticationBackend):
         super().__init__(**kwargs)
 
     def lookup_account(self, identity):
-        query = getattr(self.model, self.identity_field) == identity
+        query = self.get_identity_field() == identity
         try:
             return self.model.select().where(query).get()
 
         except self.model.DoesNotExist:
             return None
 
-    def extract_secret(self, account):
+    def get_identity_field(self):
+        return getattr(self.model, self.identity_field)
+
+    def get_secret(self, account):
         return getattr(account, self.secret_field)

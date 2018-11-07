@@ -44,7 +44,7 @@ class JWTBackend(ModelBackend):
         return identity, token
 
     def verify_identity(self, account, auth_data):
-        secret = self.extract_secret(account)
+        secret = self.get_secret(account)
 
         try:
             jwt.decode(auth_data, key=secret, verify=True)
