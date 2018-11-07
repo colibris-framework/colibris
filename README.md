@@ -13,6 +13,10 @@ Install colibri:
 
     pip install git+https://gitlab.com/safefleet/colibri.git
 
+(For mac users) Install gnu sed:
+
+    brew install gnu-sed --with-default-names
+
 Prepare the project:
 
     colibri-start-project <project-name> --template git@gitlab.com:safefleet/microservice-template.git 
