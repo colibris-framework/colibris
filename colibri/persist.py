@@ -4,6 +4,7 @@ import os
 import peewee
 
 from peewee import *
+from playhouse.postgres_ext import *
 from playhouse.db_url import connect as peewee_connect
 
 from colibri import settings
