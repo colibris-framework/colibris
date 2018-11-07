@@ -32,7 +32,7 @@ def start_project():
 
     shutil.move(old_package_name, new_package_name)
 
-    rename_command = 'find {} -type f -iname "*.py" | xargs sed -i "" -e "s/{}/{}/g"'
+    rename_command = 'find {} -type f | xargs sed -i "s/{}/{}/g"'
 
     os.system(rename_command.format(project_name, '__packagename__', package_name))
     os.system(rename_command.format(project_name, '__projectname__', project_name))
