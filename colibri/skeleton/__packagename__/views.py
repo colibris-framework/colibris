@@ -3,6 +3,8 @@
 from aiohttp import web
 from aiohttp_apispec import docs, use_kwargs, marshal_with
 
+from colibri import persist
+
 from __packagename__ import models
 from __packagename__ import schemas
 
@@ -23,23 +25,39 @@ from __packagename__ import schemas
 # @use_kwargs(schemas.UserSchema())
 # @marshal_with(schemas.UserSchema())
 # def get_user(request):
-# try:
-#     user = models.User.select().where(models.User.id == user_id).get()
+#     user_id = request.match_info['id']
+#     try:
+#         user = models.User.select().where(models.User.id == user_id).get()
 #
-# except models.User.DoesNotExist:
-#     raise web.HTTPNotFound()
+#     except models.User.DoesNotExist:
+#         raise web.HTTPNotFound()
 #
-# result = schemas.UserSchema().dump(user)
+#     result = schemas.UserSchema().dump(user)
 #
-# return web.json_response(result)
+#     return web.json_response(result)
 #
 #
 # @docs(summary='List all users')
 # @use_kwargs(schemas.UserSchema())
-# @marshal_with(schemas.UserSchema())
+# @marshal_with(schemas.UserSchema(many=True))
 # def list_users(request):
 #     users = models.User.select().order_by(models.User.username.asc())
 #     result = schemas.UserSchema(many=True).dump(list(users))
 #
 #     return web.json_response(result)
+#
+#
+# @docs(summary='Add a new user')
+# @use_kwargs(schemas.UserSchema())
+# @marshal_with(schemas.UserSchema())
+# def add_user(request):
+#     try:
+#         user = models.User.create(**request.data)
+#
+#     except persist.IntegrityError as e:
+#         return web.json_response({'error': str(e)}, status=422)
+#
+#     result = schemas.UserSchema().dump(user)
+#
+#     return web.json_response(result, status=201)
 #

@@ -82,4 +82,4 @@ async def handle_errors_json(request, handler):
 def _handle_schema_validation_error(error, req, schema):
     body = json.dumps(error.messages).encode('utf8')
 
-    raise web.HTTPBadRequest(body=body, content_type='application/json')
+    raise web.HTTPUnprocessableEntity(body=body, content_type='application/json')

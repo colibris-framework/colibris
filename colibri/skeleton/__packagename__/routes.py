@@ -10,5 +10,6 @@ from __packagename__ import views
 #     ('GET',   '/users/me',   views.get_me,     ANY_PERMISSION),
 #     ('GET',   '/users/{id}', views.get_user,   'users:r'),
 #     ('GET',   '/users',      views.list_users, 'users:r'),
+#     ('POST',  '/users',      views.add_user,   'users:c'),
 # ]
 #

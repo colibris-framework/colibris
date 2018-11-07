@@ -28,5 +28,9 @@ def get_database():
 
 
 class Model(peewee.Model):
+    # this is currently necessary for aiohttp-apispec request data validation
+    def __iter__(self):
+        return ((k, v) for (k, v) in self.__data__.items())
+
     class Meta:
         database = get_database()
