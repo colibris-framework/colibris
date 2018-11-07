@@ -1,0 +1,2 @@
+
+ANY_PERMISSION = '*'

@@ -1,4 +1,5 @@
 
+from colibri.authorization import ANY_PERMISSION
 from colibri.authorization.model import ModelBackend
 
 
@@ -16,8 +17,8 @@ class PermissionsBackend(ModelBackend):
         return getattr(permission, self.operations_field)
 
     def authorize(self, account, method, path, required_permissions):
-        if required_permissions == '*':
-            return True  # anyone authenticated is authorized
+        if required_permissions == ANY_PERMISSION:
+            return True
 
         resource, required_operations = required_permissions.split(':', 1)
 
