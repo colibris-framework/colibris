@@ -2,19 +2,20 @@
 import jwt
 import re
 
-from . import AuthException, AuthenticationBackend as BaseAuthenticationBackend
+from colibri.authentication.exceptions import AuthenticationException
+from colibri.authentication.model import ModelBackend
 
 
 _AUTH_HEADER = 'Authorization'
 _AUTH_TOKEN_REGEX = re.compile('Bearer (.+)', re.IGNORECASE)
 
 
-class JWTException(AuthException):
+class JWTException(AuthenticationException):
     pass
 
 
-class AuthenticationBackend(BaseAuthenticationBackend):
-    def __init__(self, identity_claim, **kwargs):
+class JWTBackend(ModelBackend):
+    def __init__(self, identity_claim='sub', **kwargs):
         self.identity_claim = identity_claim
 
         super().__init__(**kwargs)
@@ -42,7 +43,9 @@ class AuthenticationBackend(BaseAuthenticationBackend):
 
         return identity, token
 
-    def verify_identity(self, secret, account, auth_data):
+    def verify_identity(self, account, auth_data):
+        secret = self.extract_secret(account)
+
         try:
             jwt.decode(auth_data, key=secret, verify=True)
 

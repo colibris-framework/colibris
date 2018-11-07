@@ -57,6 +57,14 @@ Associate URL paths to views by editing the `routes.py` file:
     nano ${PACKAGE}/routes.py
 
 
+## Authentication & Authorization
+
+Choose a backend for both the authentication and authorization mechanisms by setting the corresponding variables
+in the `settings.py` file:
+
+    nano ${PACKAGE}/settings.py
+
+
 ## Web Server
 
 Start the web server by running:
@@ -112,9 +120,24 @@ Controls the server TCP listening port. Defaults to `8888`.
 A list of all the middleware functions to be applied, in order, to each request/response. Defaults to:
 
     [
-        'colibri.middleware.handle_authentication',
-        'colibri.middleware.handle_errors_json'
+        'colibri.middleware.handle_errors_json',
+        'colibri.middleware.handle_auth',
     ]
+
+#### `AUTHENTICATION`
+
+Configures the authentication backend. Should be defined as a dictionary with at least one entry, `backend`,
+representing the python path to the backend class. The rest of the entries are passed as arguments to the constructor.
+
+Defaults to `None`, which effectively disables authentication.
+
+#### `AUTHORIZATION`
+
+Configures the authorization backend. Should be defined as a dictionary with at least one entry, `backend`,
+representing the python path to the backend class. The rest of the entries are passed as arguments to the constructor.
+
+Defaults to `None`, which effectively disables authorization, allowing access to all resources for any authenticated
+request.
 
 #### `DATABASE`
 

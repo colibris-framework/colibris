@@ -3,30 +3,58 @@ import logging
 
 from aiohttp import web
 
-from colibri import auth
 from colibri import settings
 from colibri import utils
+from colibri import webapp
+
+from colibri.authentication import exceptions as authentication_exceptions
 
 
 logger = logging.getLogger(__name__)
 
-_auth_backend_settings = dict(settings.AUTHENTICATION or {})
-_auth_backend_path = _auth_backend_settings.pop('backend', 'colibri.auth.null.AuthenticationBackend')
-_auth_backend_class = utils.import_member(_auth_backend_path)
-_auth_backend = _auth_backend_class(**_auth_backend_settings)
+_authentication_backend_settings = dict(settings.AUTHENTICATION or {})
+_authentication_backend_path = _authentication_backend_settings.pop('backend',
+                                                                    'colibri.authentication.base.NullBackend')
+_authentication_backend_class = utils.import_member(_authentication_backend_path)
+_authentication_backend = _authentication_backend_class(**_authentication_backend_settings)
+
+_authorization_backend_settings = dict(settings.AUTHORIZATION or {})
+_authorization_backend_path = _authorization_backend_settings.pop('backend',
+                                                                  'colibri.authorization.base.NullBackend')
+_authorization_backend_class = utils.import_member(_authorization_backend_path)
+_authorization_backend = _authorization_backend_class(**_authorization_backend_settings)
 
 
 @web.middleware
-async def handle_authentication(request, handler):
-    try:
-        account = _auth_backend.authenticate(request)
+async def handle_auth(request, handler):
+    if request.match_info.http_exception is not None:
+        raise request.match_info.http_exception
 
-    except auth.AuthException as e:
-        logger.error('authentication failed: %s', e)
+    path = request.match_info.route.resource.canonical
+    route = webapp.routes_by_path.get(path)
+    if not route:  # shouldn't happen
+        raise web.HTTPNotFound()
 
-        raise web.HTTPUnauthorized()
+    method, path, _handler, permissions = route
 
-    request.account = account
+    # only go through authentication if route specifies permissions;
+    # otherwise route is considered public
+    if permissions:
+        try:
+            account = _authentication_backend.authenticate(request)
+
+        except authentication_exceptions.AuthenticationException as e:
+            logger.error('%s %s authentication failed: %s', method, path, e)
+
+            raise web.HTTPUnauthorized()
+
+        # at this point we can safely associate request with account
+        request.account = account
+
+        if not _authorization_backend.authorize(account, method, path, permissions):
+            logger.error('%s %s forbidden for %s', method, path, account)
+
+            raise web.HTTPForbidden()
 
     return await handler(request)
 

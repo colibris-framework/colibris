@@ -9,6 +9,18 @@ from __packagename__ import schemas
 #
 # View example:
 #
+# @docs(summary='Show details about the current user')
+# @use_kwargs(schemas.UserSchema())
+# @marshal_with(schemas.UserSchema())
+# def get_me(request):
+#     result = schemas.UserSchema().dump(request.account)
+#
+#     return web.json_response(result)
+#
+
+#
+# Another view example:
+#
 # @docs(summary='List all users')
 # @use_kwargs(schemas.UserSchema())
 # @marshal_with(schemas.UserSchema())

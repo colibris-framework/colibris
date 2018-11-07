@@ -21,25 +21,13 @@ PORT = 8888
 
 MIDDLEWARE = [
     'colibri.middleware.handle_errors_json',
-    'colibri.middleware.handle_authentication',
+    'colibri.middleware.handle_auth',
 ]
 
-AUTHENTICATION = {
-    'backend': 'colibri.auth.jwt.AuthenticationBackend',
-    'model': None,
-    'secret_field': 'secret',
-    'identity_field': None,
-    'identity_claim': 'sub',
-}
+AUTHENTICATION = None
+AUTHORIZATION = None
 
 API_DOCS_PATH = '/api/docs'
-
-PUBLIC_ROUTES = (
-    '/',
-    API_DOCS_PATH,
-    API_DOCS_PATH + '/swagger.json',
-    API_DOCS_PATH + '/swagger_static'
-)
 
 DATABASE = 'sqlite:///__projectname__.db'
 
@@ -123,3 +111,12 @@ for _name, _value in _env_vars.items():
 
 if LOGGING is _DEFAULT_LOGGING and not DEBUG:
     LOGGING['root']['level'] = 'INFO'
+
+
+try:
+    PROJECT_PACKAGE = importlib.import_module(PROJECT_PACKAGE_NAME)
+
+except ImportError:
+    PROJECT_PACKAGE = importlib.import_module('colibri')
+
+PROJECT_PACKAGE_DIR = os.path.dirname(PROJECT_PACKAGE.__file__)

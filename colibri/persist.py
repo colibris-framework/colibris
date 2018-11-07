@@ -7,11 +7,10 @@ from peewee import *
 from playhouse.db_url import connect as peewee_connect
 
 from colibri import settings
-from colibri import PROJECT_PACKAGE_DIR
 
 
 # migrations live in the project root package
-MIGRATIONS_DIR = os.path.join(PROJECT_PACKAGE_DIR, 'migrations')
+MIGRATIONS_DIR = os.path.join(settings.PROJECT_PACKAGE_DIR, 'migrations')
 
 logger = logging.getLogger(__name__)
 _database = None
