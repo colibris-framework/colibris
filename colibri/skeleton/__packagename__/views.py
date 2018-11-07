@@ -61,3 +61,25 @@ from __packagename__ import schemas
 #
 #     return web.json_response(result, status=201)
 #
+#
+# @docs(summary='Update an existing user')
+# @use_kwargs(schemas.UserSchema(partial=True))
+# @marshal_with(schemas.UserSchema(partial=True))
+# def update_user(request):
+#     user_id = request.match_info['id']
+#     try:
+#         user = models.User.select().where(models.User.id == user_id).get()
+#
+#     except models.User.DoesNotExist:
+#         raise web.HTTPNotFound()
+#
+#     user.update_fields(request.data)
+#
+#     try:
+#         user.save()
+#     except persist.IntegrityError as e:
+#         return web.json_response({'error': str(e)}, status=422)
+#
+#     result = schemas.UserSchema().dump(user)
+#
+#     return web.json_response(result)
