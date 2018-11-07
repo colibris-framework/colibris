@@ -62,7 +62,7 @@ Associate URL paths to views by editing the `routes.py` file:
 Choose a backend for both the authentication and authorization mechanisms by setting the corresponding variables
 in the `settings.py` file:
 
-    nano ${PACKAGE}/settings.py
+    nano settings.py
 
 
 ## Web Server
