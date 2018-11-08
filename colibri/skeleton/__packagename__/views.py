@@ -13,7 +13,6 @@ from __packagename__ import schemas
 #
 #
 # @docs(summary='Reveal details about the current user')
-# @use_kwargs(schemas.UserSchema())
 # @marshal_with(schemas.UserSchema())
 # def get_me(request):
 #     result = schemas.UserSchema().dump(request.account)
@@ -22,7 +21,6 @@ from __packagename__ import schemas
 #
 #
 # @docs(summary='Reveal details about a specific user')
-# @use_kwargs(schemas.UserSchema())
 # @marshal_with(schemas.UserSchema())
 # def get_user(request):
 #     user_id = request.match_info['id']
@@ -38,7 +36,6 @@ from __packagename__ import schemas
 #
 #
 # @docs(summary='List all users')
-# @use_kwargs(schemas.UserSchema())
 # @marshal_with(schemas.UserSchema(many=True))
 # def list_users(request):
 #     users = models.User.select().order_by(models.User.username.asc())
@@ -77,6 +74,7 @@ from __packagename__ import schemas
 #
 #     try:
 #         user.save()
+#
 #     except persist.IntegrityError as e:
 #         return web.json_response({'error': str(e)}, status=422)
 #
