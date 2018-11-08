@@ -4,6 +4,7 @@ from aiohttp import web
 from aiohttp_apispec import docs, use_kwargs, marshal_with
 
 from colibri import api
+from colibri.shortcuts import get_object_or_404
 
 from __packagename__ import models
 from __packagename__ import schemas
@@ -30,12 +31,7 @@ from __packagename__ import schemas
 # @marshal_with(schemas.UserSchema())
 # def get_user(request):
 #     user_id = request.match_info['id']
-#     try:
-#         user = models.User.select().where(models.User.id == user_id).get()
-#
-#     except models.User.DoesNotExist:
-#         raise api.NotFoundException(models.User)
-#
+#     user = get_object_or_404(models.User, user_id)
 #     result = schemas.UserSchema().dump(user)
 #
 #     return web.json_response(result)
@@ -71,12 +67,7 @@ from __packagename__ import schemas
 # @marshal_with(schemas.UserSchema(partial=True))
 # def update_user(request):
 #     user_id = request.match_info['id']
-#
-#     try:
-#         user = models.User.select().where(models.User.id == user_id).get()
-#
-#     except models.User.DoesNotExist:
-#         raise api.NotFoundException(models.User)
+#     user = get_object_or_404(models.User, user_id)
 #
 #     query = (models.User.username == request.data['username'] and
 #              models.User.id != user_id)

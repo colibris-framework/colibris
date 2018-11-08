@@ -7,6 +7,7 @@ from __packagename__ import models
 #
 # Schema example:
 #
+#
 # class UserSchema(ModelSchema):
 #     email = fields.String(validate=[validate.Email(error='Invalid email address.'),
 #                                     validate.Length(max=128)])
