@@ -12,7 +12,8 @@ from __packagename__ import schemas
 # View examples:
 #
 #
-# @docs(summary='Reveal details about the current user')
+# @docs(tags=['Users'],
+#       summary='Reveal details about the current user')
 # @marshal_with(schemas.UserSchema())
 # def get_me(request):
 #     if request.account:
@@ -24,7 +25,8 @@ from __packagename__ import schemas
 #     return web.json_response(result)
 #
 #
-# @docs(summary='Reveal details about a specific user')
+# @docs(tags=['Users'],
+#       summary='Reveal details about a specific user')
 # @marshal_with(schemas.UserSchema())
 # def get_user(request):
 #     user_id = request.match_info['id']
@@ -39,7 +41,8 @@ from __packagename__ import schemas
 #     return web.json_response(result)
 #
 #
-# @docs(summary='List all users')
+# @docs(tags=['Users'],
+#       summary='List all users')
 # @marshal_with(schemas.UserSchema(many=True))
 # def list_users(request):
 #     users = models.User.select().order_by(models.User.username.asc())
@@ -48,7 +51,8 @@ from __packagename__ import schemas
 #     return web.json_response(result)
 #
 #
-# @docs(summary='Add a new user')
+# @docs(tags=['Users'],
+#       summary='Add a new user')
 # @use_kwargs(schemas.UserSchema())
 # @marshal_with(schemas.UserSchema())
 # def add_user(request):
@@ -63,7 +67,8 @@ from __packagename__ import schemas
 #     return web.json_response(result, status=201)
 #
 #
-# @docs(summary='Update an existing user')
+# @docs(tags=['Users'],
+#       summary='Update an existing user')
 # @use_kwargs(schemas.UserSchema(partial=True))
 # @marshal_with(schemas.UserSchema(partial=True))
 # def update_user(request):
@@ -87,7 +92,8 @@ from __packagename__ import schemas
 #     return web.json_response(result)
 #
 #
-# @docs(summary='Deletes a user')
+# @docs(tags=['Users'],
+#       summary='Delete a user')
 # def delete_user(request):
 #     user_id = request.match_info['id']
 #     if models.User.delete().where(models.User.id == user_id).execute() == 0:

@@ -1,6 +1,6 @@
 
 from colibri.schema import ModelSchema
-from marshmallow import fields, validate, pre_load
+from colibri.schema import fields, validate, pre_load
 
 from __packagename__ import models
 
