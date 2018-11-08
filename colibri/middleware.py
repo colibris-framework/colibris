@@ -50,6 +50,9 @@ async def handle_errors_json(request, handler):
 
         return web.json_response(envelope.wrap_error(code, message, e.details), status=e.status)
 
+    except web.HTTPRedirection as e:
+        return e
+
     except (web.HTTPClientError, web.HTTPServerError) as e:
         code = utils.camelcase_to_underscore(re.sub('[^a-zA-Z0-9_]', '', e.reason))
         message = e.reason
