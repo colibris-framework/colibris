@@ -39,7 +39,7 @@ from __packagename__ import schemas
 #
 # @docs(tags=['Users'],
 #       summary='List all users')
-# @marshal_with(schemas.UserSchema(many=True))
+# @marshal_with(many_envelope(schemas.UserSchema))
 # def list_users(request):
 #     users = models.User.select().order_by(models.User.username.asc())
 #     result = schemas.UserSchema(many=True).dump(list(users))
