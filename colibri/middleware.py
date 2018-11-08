@@ -7,10 +7,11 @@ from aiohttp import web
 from aiohttp_apispec import validation_middleware
 from webargs import aiohttpparser
 
-from colibri import envelope
 from colibri import settings
 from colibri import utils
 from colibri import webapp
+from colibri.api import envelope
+from colibri.api.exceptions import APIException
 
 from colibri.authentication import exceptions as authentication_exceptions
 
@@ -41,6 +42,9 @@ async def handle_errors_json(request, handler):
     try:
         return await handler(request)
 
+    except APIException as e:
+        return web.json_response(envelope.wrap_error(e.code, e.message, e.details), status=e.status)
+
     except HTTPSchemaValidationError as e:
         code = 'invalid_fields'
         message = 'Some of the supplied fields are invalid.'
@@ -68,6 +72,7 @@ async def handle_errors_json(request, handler):
         if settings.DEBUG:
             import traceback
 
+            logger.error('internal server error: %s', e, exc_info=True)
             details = traceback.format_exc()
 
         return web.json_response(envelope.wrap_error(code, message, details), status=500)

@@ -1,11 +1,9 @@
 
 import marshmallow_peewee.schema
 
-from marshmallow import Schema
-from marshmallow import fields, validate
-from marshmallow import pre_load, post_load, pre_dump, post_dump
+from marshmallow import post_dump
 
-from colibri import envelope
+from colibri.api import envelope
 from colibri.utils import camelcase_to_underscore
 
 
