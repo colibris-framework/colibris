@@ -3,7 +3,7 @@
 from aiohttp import web
 from aiohttp_apispec import docs, use_kwargs, marshal_with
 
-from colibri.api import APIException, NotFoundException
+from colibri import api
 
 from __packagename__ import models
 from __packagename__ import schemas
@@ -57,7 +57,7 @@ from __packagename__ import schemas
 # @marshal_with(schemas.UserSchema())
 # def add_user(request):
 #     if models.User.select().where(models.User.username == request.data['username']).exists():
-#         raise api.APIException('duplicate_username', 'A user with this username already exists.')
+#         raise api.DuplicateException(models.User, 'username')
 #
 #     user = models.User.create(**request.data)
 #     result = schemas.UserSchema().dump(user)
@@ -81,7 +81,7 @@ from __packagename__ import schemas
 #     query = (models.User.username == request.data['username'] and
 #              models.User.id != user_id)
 #     if models.User.select().where(query).exists():
-#         raise api.APIException('duplicate_username', 'A user with this username already exists.')
+#         raise api.DuplicateException(models.User, 'username')
 #
 #     user.update_fields(request.data)
 #

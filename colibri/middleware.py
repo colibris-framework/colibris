@@ -10,8 +10,7 @@ from webargs import aiohttpparser
 from colibri import settings
 from colibri import utils
 from colibri import webapp
-from colibri.api import envelope
-from colibri.api.exceptions import APIException
+from colibri.api import APIException, envelope
 
 from colibri.authentication import exceptions as authentication_exceptions
 

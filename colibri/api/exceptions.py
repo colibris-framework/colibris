@@ -1,6 +1,6 @@
 
 class APIException(Exception):
-    def __init__(self, code, message, details=None,  status=400):
+    def __init__(self, code, message, status, details=None):
         self.code = code
         self.message = message
         self.details = details
@@ -8,6 +8,13 @@ class APIException(Exception):
 
     def __str__(self):
         return self.code
+
+
+class DuplicateException(APIException):
+    def __init__(self, model, field):
+        super().__init__('duplicate_{}'.format(field),
+                         'A {} with this {} already exists.'.format(model._meta.name, field),
+                         status=400)
 
 
 class NotFoundException(APIException):
