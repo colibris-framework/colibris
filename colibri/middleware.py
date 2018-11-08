@@ -64,7 +64,7 @@ async def handle_errors_json(request, handler):
 
         return web.json_response(envelope.wrap_error(code, message, details), status=400)
 
-    except Exception:
+    except Exception as e:
         code = 'server_error'
         message = 'Internal Server Error'
         details = None

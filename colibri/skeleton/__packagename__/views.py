@@ -3,7 +3,7 @@
 from aiohttp import web
 from aiohttp_apispec import docs, use_kwargs, marshal_with
 
-from colibri import persist
+from colibri.api import APIException, NotFoundException
 
 from __packagename__ import models
 from __packagename__ import schemas
@@ -56,12 +56,10 @@ from __packagename__ import schemas
 # @use_kwargs(schemas.UserSchema())
 # @marshal_with(schemas.UserSchema())
 # def add_user(request):
-#     try:
-#         user = models.User.create(**request.data)
+#     if models.User.select().where(models.User.username == request.data['username']).exists():
+#         raise APIException('duplicate_username', 'Username already exists.')
 #
-#     except persist.IntegrityError as e:
-#         return web.json_response({'error': str(e)}, status=422)
-#
+#     user = models.User.create(**request.data)
 #     result = schemas.UserSchema().dump(user)
 #
 #     return web.json_response(result, status=201)
@@ -73,20 +71,21 @@ from __packagename__ import schemas
 # @marshal_with(schemas.UserSchema(partial=True))
 # def update_user(request):
 #     user_id = request.match_info['id']
+#
 #     try:
 #         user = models.User.select().where(models.User.id == user_id).get()
 #
 #     except models.User.DoesNotExist:
-#         raise web.HTTPNotFound()
+#         raise NotFoundException(models.User)
+#
+#     query = (models.User.username == request.data['username'] and
+#              models.User.id != user_id)
+#     if models.User.select().where(query).exists():
+#         raise APIException('duplicate_username', 'Username already exists.')
 #
 #     user.update_fields(request.data)
 #
-#     try:
-#         user.save()
-#
-#     except persist.IntegrityError as e:
-#         return web.json_response({'error': str(e)}, status=422)
-#
+#     user.save()
 #     result = schemas.UserSchema().dump(user)
 #
 #     return web.json_response(result)
@@ -97,7 +96,7 @@ from __packagename__ import schemas
 # def delete_user(request):
 #     user_id = request.match_info['id']
 #     if models.User.delete().where(models.User.id == user_id).execute() == 0:
-#         raise web.HTTPNotFound()
+#         raise NotFoundException(models.User)
 #
 #     return web.json_response(status=204)
 #
