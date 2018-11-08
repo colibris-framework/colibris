@@ -34,7 +34,7 @@ from __packagename__ import schemas
 #         user = models.User.select().where(models.User.id == user_id).get()
 #
 #     except models.User.DoesNotExist:
-#         raise web.HTTPNotFound()
+#         raise api.NotFoundException(models.User)
 #
 #     result = schemas.UserSchema().dump(user)
 #
@@ -57,7 +57,7 @@ from __packagename__ import schemas
 # @marshal_with(schemas.UserSchema())
 # def add_user(request):
 #     if models.User.select().where(models.User.username == request.data['username']).exists():
-#         raise APIException('duplicate_username', 'Username already exists.')
+#         raise api.APIException('duplicate_username', 'A user with this username already exists.')
 #
 #     user = models.User.create(**request.data)
 #     result = schemas.UserSchema().dump(user)
@@ -76,12 +76,12 @@ from __packagename__ import schemas
 #         user = models.User.select().where(models.User.id == user_id).get()
 #
 #     except models.User.DoesNotExist:
-#         raise NotFoundException(models.User)
+#         raise api.NotFoundException(models.User)
 #
 #     query = (models.User.username == request.data['username'] and
 #              models.User.id != user_id)
 #     if models.User.select().where(query).exists():
-#         raise APIException('duplicate_username', 'Username already exists.')
+#         raise api.APIException('duplicate_username', 'A user with this username already exists.')
 #
 #     user.update_fields(request.data)
 #
@@ -96,7 +96,7 @@ from __packagename__ import schemas
 # def delete_user(request):
 #     user_id = request.match_info['id']
 #     if models.User.delete().where(models.User.id == user_id).execute() == 0:
-#         raise NotFoundException(models.User)
+#         raise api.NotFoundException(models.User)
 #
 #     return web.json_response(status=204)
 #
