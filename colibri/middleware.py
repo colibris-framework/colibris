@@ -1,14 +1,15 @@
-
+import json
 import logging
 
 from aiohttp import web
+from aiohttp_apispec import validation_middleware
+from webargs import aiohttpparser
 
 from colibri import settings
 from colibri import utils
 from colibri import webapp
 
 from colibri.authentication import exceptions as authentication_exceptions
-
 
 logger = logging.getLogger(__name__)
 
@@ -60,12 +61,25 @@ async def handle_auth(request, handler):
 
 
 @web.middleware
+async def handle_schema_validation(request, handler):
+    try:
+        return await validation_middleware(request, handler)
+
+    except web.HTTPClientError as e:
+        return e
+
+
+@web.middleware
 async def handle_errors_json(request, handler):
     try:
         return await handler(request)
 
-    except web.HTTPException as e:
-        if e.status >= 400:
-            return web.json_response({'error': e.reason}, status=e.status)
+    except (web.HTTPClientError, web.HTTPServerError) as e:
+        return web.json_response({'error': e.reason}, status=e.status)
 
-        return e
+
+@aiohttpparser.parser.error_handler
+def _handle_schema_validation_error(error, req, schema):
+    body = json.dumps(error.messages).encode('utf8')
+
+    raise web.HTTPUnprocessableEntity(body=body, content_type='application/json')

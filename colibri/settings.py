@@ -22,6 +22,7 @@ PORT = 8888
 MIDDLEWARE = [
     'colibri.middleware.handle_errors_json',
     'colibri.middleware.handle_auth',
+    'colibri.middleware.handle_schema_validation',
 ]
 
 AUTHENTICATION = None

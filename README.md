@@ -66,7 +66,7 @@ Associate URL paths to views by editing the `routes.py` file:
 Choose a backend for both the authentication and authorization mechanisms by setting the corresponding variables
 in the `settings.py` file:
 
-    nano ${PACKAGE}/settings.py
+    nano settings.py
 
 
 ## Web Server
@@ -126,6 +126,7 @@ A list of all the middleware functions to be applied, in order, to each request/
     [
         'colibri.middleware.handle_errors_json',
         'colibri.middleware.handle_auth',
+        'colibri.middleware.handle_schema_validation'
     ]
 
 #### `AUTHENTICATION`
