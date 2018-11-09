@@ -1,5 +1,7 @@
+
 import json
 import logging
+import re
 
 from aiohttp import web
 from aiohttp_apispec import validation_middleware
@@ -8,6 +10,7 @@ from webargs import aiohttpparser
 from colibri import settings
 from colibri import utils
 from colibri import webapp
+from colibri.api import BaseJSONException, envelope
 
 from colibri.authentication import exceptions as authentication_exceptions
 
@@ -24,6 +27,57 @@ _authorization_backend_path = _authorization_backend_settings.pop('backend',
                                                                   'colibri.authorization.base.NullBackend')
 _authorization_backend_class = utils.import_member(_authorization_backend_path)
 _authorization_backend = _authorization_backend_class(**_authorization_backend_settings)
+
+
+class HTTPSchemaValidationError(web.HTTPUnprocessableEntity):
+    def __init__(self, schema_error, **kwargs):
+        super().__init__(**kwargs)
+
+        self.details = schema_error.messages
+
+
+@web.middleware
+async def handle_errors_json(request, handler):
+    try:
+        return await handler(request)
+
+    except BaseJSONException as e:
+        return web.json_response(envelope.wrap_error(e.code, e.message, e.details), status=e.status)
+
+    except HTTPSchemaValidationError as e:
+        code = 'invalid_fields'
+        message = 'Some of the supplied fields are invalid.'
+
+        return web.json_response(envelope.wrap_error(code, message, e.details), status=e.status)
+
+    except web.HTTPRedirection as e:
+        return e
+
+    except (web.HTTPClientError, web.HTTPServerError) as e:
+        code = utils.camelcase_to_underscore(re.sub('[^a-zA-Z0-9_]', '', e.reason))
+        message = e.reason
+
+        return web.json_response(envelope.wrap_error(code, message), status=e.status)
+
+    except json.JSONDecodeError as e:
+        code = 'invalid_json'
+        message = 'Invalid JSON.'
+        details = str(e)
+
+        return web.json_response(envelope.wrap_error(code, message, details), status=400)
+
+    except Exception as e:
+        code = 'server_error'
+        message = 'Internal Server Error'
+        details = None
+
+        if settings.DEBUG:
+            import traceback
+
+            logger.error('internal server error: %s', e, exc_info=True)
+            details = traceback.format_exc()
+
+        return web.json_response(envelope.wrap_error(code, message, details), status=500)
 
 
 @web.middleware
@@ -62,24 +116,9 @@ async def handle_auth(request, handler):
 
 @web.middleware
 async def handle_schema_validation(request, handler):
-    try:
-        return await validation_middleware(request, handler)
-
-    except web.HTTPClientError as e:
-        return e
-
-
-@web.middleware
-async def handle_errors_json(request, handler):
-    try:
-        return await handler(request)
-
-    except (web.HTTPClientError, web.HTTPServerError) as e:
-        return web.json_response({'error': e.reason}, status=e.status)
+    return await validation_middleware(request, handler)
 
 
 @aiohttpparser.parser.error_handler
 def _handle_schema_validation_error(error, req, schema):
-    body = json.dumps(error.messages).encode('utf8')
-
-    raise web.HTTPUnprocessableEntity(body=body, content_type='application/json')
+    raise HTTPSchemaValidationError(error)

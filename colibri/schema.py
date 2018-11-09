@@ -1,10 +1,11 @@
 
 import marshmallow_peewee.schema
 
-from marshmallow import Schema
+from marshmallow import Schema as MMSchema
+from marshmallow import pre_dump, post_dump, pre_load, post_load
 from marshmallow import fields, validate
-from marshmallow import pre_load, post_load, pre_dump, post_dump
 
+from colibri.api import envelope
 from colibri.utils import camelcase_to_underscore
 
 
@@ -22,8 +23,19 @@ class ModelSchema(marshmallow_peewee.ModelSchema):
 
     @post_dump(pass_many=True)
     def wrap(self, data, many):
-        name = self.opts.name_plural if many else self.opts.name
+        if many:
+            return envelope.wrap_many(data)
 
-        return {
-            name: data
-        }
+        else:
+            return envelope.wrap_one(data)
+
+
+def many_envelope(schema_class):
+    class SchemaWrapper(MMSchema):
+        results = fields.Nested(schema_class, many=True)
+        count = fields.Integer()
+        pages = fields.Integer()
+        page = fields.Integer()
+        page_size = fields.Integer()
+
+    return SchemaWrapper()

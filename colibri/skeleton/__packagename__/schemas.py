@@ -1,11 +1,12 @@
 
 from colibri.schema import ModelSchema
-from marshmallow import fields, validate, pre_load
+from colibri.schema import fields, validate, pre_load
 
 from __packagename__ import models
 
 #
 # Schema example:
+#
 #
 # class UserSchema(ModelSchema):
 #     email = fields.String(validate=[validate.Email(error='Invalid email address.'),

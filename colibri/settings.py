@@ -71,7 +71,7 @@ except ImportError:
 if _project_settings_module:
     for _name, _value in inspect.getmembers(_project_settings_module):
         # only consider public members that are all in capitals
-        if _name.startswith('_') or not re.sub('[^a-z]', '', _name, re.IGNORECASE).isupper():
+        if _name.startswith('_') or not re.sub('[^a-zA-Z]', '', _name).isupper():
             continue
 
         setattr(_this_settings_module, _name, _value)
