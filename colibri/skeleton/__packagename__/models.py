@@ -16,7 +16,7 @@ from colibri import persist
 #
 # Another model example:
 #
-# class Permissions(persist.Model):
+# class Right(persist.Model):
 #     id = persist.AutoField()
 #     user = persist.ForeignKeyField(User)
 #     resource = persist.CharField(max_length=128)

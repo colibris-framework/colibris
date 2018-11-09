@@ -3,8 +3,8 @@ import importlib
 import re
 
 
-def camelcase_to_underscore(input):
-    return re.sub('(((?<=[a-z])[A-Z])|([A-Z](?![A-Z]|$)))', '_\\1', input).lower().strip('_')
+def camelcase_to_underscore(s):
+    return re.sub('(((?<=[a-z])[A-Z])|([A-Z](?![A-Z]|$)))', '_\\1', s).lower().strip('_')
 
 
 def import_member(path):

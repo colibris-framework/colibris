@@ -63,7 +63,7 @@ except ImportError:
     _project_routes = None
 
 if _project_routes:
-    for route in getattr(_project_routes, 'ROUTES', []):
-        add_route_tuple(route)
+    for _route in getattr(_project_routes, 'ROUTES', []):
+        add_route_tuple(_route)
 
 app.on_startup.append(build_routes_cache)
