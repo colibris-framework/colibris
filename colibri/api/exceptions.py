@@ -1,5 +1,9 @@
 
 class APIException(Exception):
+    pass
+
+
+class BaseJSONException(APIException):
     def __init__(self, code, message, status, details=None):
         self.code = code
         self.message = message

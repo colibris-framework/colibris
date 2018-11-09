@@ -10,7 +10,7 @@ from webargs import aiohttpparser
 from colibri import settings
 from colibri import utils
 from colibri import webapp
-from colibri.api import APIException, envelope
+from colibri.api import BaseJSONException, envelope
 
 from colibri.authentication import exceptions as authentication_exceptions
 
@@ -41,7 +41,7 @@ async def handle_errors_json(request, handler):
     try:
         return await handler(request)
 
-    except APIException as e:
+    except BaseJSONException as e:
         return web.json_response(envelope.wrap_error(e.code, e.message, e.details), status=e.status)
 
     except HTTPSchemaValidationError as e:
