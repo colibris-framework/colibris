@@ -3,7 +3,7 @@ import os
 
 from setuptools import setup, find_packages
 
-from colibri import VERSION
+from colibris import VERSION
 
 
 def package_data_rec(package, directory):
@@ -16,7 +16,7 @@ def package_data_rec(package, directory):
 
 
 setup(
-    name='colibri',
+    name='colibris',
     version=VERSION,
     install_requires=[
         'aiohttp',
@@ -31,13 +31,13 @@ setup(
     url='',
     license='',
     description='A collection of libraries glued together to make writing RESTful microservices easier.',
-    packages=find_packages(include='colibri/*'),
+    packages=find_packages(include='colibris/*'),
     package_data={
-        'colibri': package_data_rec('colibri', 'skeleton')
+        'colibris': package_data_rec('colibris', 'skeleton')
     },
     entry_points={
         'console_scripts': [
-            'colibri-start-project=colibri.startproject:start_project',
+            'colibris-start-project=colibris.startproject:start_project',
         ]
     }
 )
