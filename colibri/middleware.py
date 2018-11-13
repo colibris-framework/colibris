@@ -18,13 +18,13 @@ logger = logging.getLogger(__name__)
 
 _authentication_backend_settings = dict(settings.AUTHENTICATION or {})
 _authentication_backend_path = _authentication_backend_settings.pop('backend',
-                                                                    'colibri.authentication.base.NullBackend')
+                                                                    'colibris.authentication.base.NullBackend')
 _authentication_backend_class = utils.import_member(_authentication_backend_path)
 _authentication_backend = _authentication_backend_class(**_authentication_backend_settings)
 
 _authorization_backend_settings = dict(settings.AUTHORIZATION or {})
 _authorization_backend_path = _authorization_backend_settings.pop('backend',
-                                                                  'colibri.authorization.base.NullBackend')
+                                                                  'colibris.authorization.base.NullBackend')
 _authorization_backend_class = utils.import_member(_authorization_backend_path)
 _authorization_backend = _authorization_backend_class(**_authorization_backend_settings)
 

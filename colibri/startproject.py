@@ -3,7 +3,7 @@ import os
 import re
 import shutil
 
-TMP_TEMPLATE_PATH = '/tmp/colibri-template-repo'
+TMP_TEMPLATE_PATH = '/tmp/colibris-template-repo'
 MAIN_PACKAGE_NAME = '__packagename__'
 
 

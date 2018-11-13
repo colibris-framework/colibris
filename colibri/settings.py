@@ -20,9 +20,9 @@ LISTEN = '0.0.0.0'
 PORT = 8888
 
 MIDDLEWARE = [
-    'colibri.middleware.handle_errors_json',
-    'colibri.middleware.handle_auth',
-    'colibri.middleware.handle_schema_validation',
+    'colibris.middleware.handle_errors_json',
+    'colibris.middleware.handle_auth',
+    'colibris.middleware.handle_schema_validation',
 ]
 
 AUTHENTICATION = None
@@ -118,6 +118,6 @@ try:
     PROJECT_PACKAGE = importlib.import_module(PROJECT_PACKAGE_NAME)
 
 except ImportError:
-    PROJECT_PACKAGE = importlib.import_module('colibri')
+    PROJECT_PACKAGE = importlib.import_module('colibris')
 
 PROJECT_PACKAGE_DIR = os.path.dirname(PROJECT_PACKAGE.__file__)

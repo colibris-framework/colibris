@@ -5,7 +5,7 @@ PROJECT_PACKAGE_NAME = '__packagename__'
 DATABASE = 'sqlite:////tmp/__projectname__.db'
 
 # AUTHENTICATION = {
-#     'backend': 'colibri.authentication.jwt.JWTBackend',
+#     'backend': 'colibris.authentication.jwt.JWTBackend',
 #     'model': '__packagename__.models.User',
 #     'identity_claim': 'sub',
 #     'identity_field': 'username',
@@ -14,7 +14,7 @@ DATABASE = 'sqlite:////tmp/__projectname__.db'
 
 
 # AUTHORIZATION = {
-#     'backend': 'colibri.authorization.model.ModelBackend',
+#     'backend': 'colibris.authorization.model.ModelBackend',
 #     'model': '__packagename__.models.Right',
 #     'account_field': 'user',
 #     'resource_field': 'resource',
