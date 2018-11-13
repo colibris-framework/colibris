@@ -1,5 +1,5 @@
 
-from colibri.authentication.exceptions import NoSuchAccount, IdentityVerificationFailed
+from colibris.authentication.exceptions import NoSuchAccount, IdentityVerificationFailed
 
 
 class AuthenticationBackend:

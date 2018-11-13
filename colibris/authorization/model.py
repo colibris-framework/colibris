@@ -1,6 +1,6 @@
 
-from colibri import utils
-from colibri.authorization.base import AuthorizationBackend
+from colibris import utils
+from colibris.authorization.base import AuthorizationBackend
 
 
 class ModelBackend(AuthorizationBackend):

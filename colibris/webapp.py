@@ -5,9 +5,9 @@ from aiohttp import web
 from aiohttp_apispec import setup_aiohttp_apispec
 from aiohttp_swagger import setup_swagger
 
-from colibri import routes as default_routes
-from colibri import settings
-from colibri import utils
+from colibris import routes as default_routes
+from colibris import settings
+from colibris import utils
 
 
 middleware = []

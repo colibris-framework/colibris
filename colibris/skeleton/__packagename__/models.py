@@ -1,5 +1,5 @@
 
-from colibri import persist
+from colibris import persist
 
 #
 # Model example:

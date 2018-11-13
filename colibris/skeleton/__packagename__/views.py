@@ -3,8 +3,8 @@
 from aiohttp import web
 from aiohttp_apispec import docs, use_kwargs, marshal_with
 
-from colibri import api
-from colibri.shortcuts import get_object_or_404
+from colibris import api
+from colibris.shortcuts import get_object_or_404
 
 from __packagename__ import models
 from __packagename__ import schemas

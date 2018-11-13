@@ -2,7 +2,7 @@
 from aiohttp import web
 from aiohttp_apispec import docs
 
-from colibri import settings
+from colibris import settings
 
 
 def home(request):

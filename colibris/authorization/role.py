@@ -1,6 +1,6 @@
 
-from colibri.authorization import ANY_PERMISSION
-from colibri.authorization.base import AuthorizationBackend
+from colibris.authorization import ANY_PERMISSION
+from colibris.authorization.base import AuthorizationBackend
 
 
 class RoleBackend(AuthorizationBackend):

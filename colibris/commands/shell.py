@@ -2,7 +2,7 @@
 import code
 import importlib
 
-from colibri import settings
+from colibris import settings
 
 from . import BaseCommand
 

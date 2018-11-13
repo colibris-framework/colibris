@@ -1,7 +1,7 @@
 
 from peewee_migrate import Router
 
-from colibri import persist
+from colibris import persist
 
 from . import BaseCommand
 

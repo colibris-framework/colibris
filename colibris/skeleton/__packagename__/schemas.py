@@ -1,6 +1,6 @@
 
-from colibri.schema import ModelSchema
-from colibri.schema import fields, validate, pre_load
+from colibris.schema import ModelSchema
+from colibris.schema import fields, validate, pre_load
 
 from __packagename__ import models
 

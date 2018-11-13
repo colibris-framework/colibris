@@ -1,5 +1,5 @@
 
-from colibri import api
+from colibris import api
 
 
 def get_object_or_404(model, pk):

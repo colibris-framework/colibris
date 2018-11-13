@@ -7,7 +7,7 @@ from peewee import *
 from playhouse.postgres_ext import *
 from playhouse.db_url import connect as peewee_connect
 
-from colibri import settings
+from colibris import settings
 
 
 # migrations live in the project root package

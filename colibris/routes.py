@@ -1,5 +1,5 @@
 
-from colibri import views
+from colibris import views
 
 ROUTES = [
     ('GET', '/', views.home),

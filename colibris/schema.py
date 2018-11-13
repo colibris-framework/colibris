@@ -5,8 +5,8 @@ from marshmallow import Schema as MMSchema
 from marshmallow import pre_dump, post_dump, pre_load, post_load
 from marshmallow import fields, validate
 
-from colibri.api import envelope
-from colibri.utils import camelcase_to_underscore
+from colibris.api import envelope
+from colibris.utils import camelcase_to_underscore
 
 
 class ModelSchemaOpts(marshmallow_peewee.schema.SchemaOpts):

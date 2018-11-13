@@ -7,12 +7,12 @@ from aiohttp import web
 from aiohttp_apispec import validation_middleware
 from webargs import aiohttpparser
 
-from colibri import settings
-from colibri import utils
-from colibri import webapp
-from colibri.api import BaseJSONException, envelope
+from colibris import settings
+from colibris import utils
+from colibris import webapp
+from colibris.api import BaseJSONException, envelope
 
-from colibri.authentication import exceptions as authentication_exceptions
+from colibris.authentication import exceptions as authentication_exceptions
 
 logger = logging.getLogger(__name__)
 

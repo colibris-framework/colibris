@@ -3,8 +3,8 @@ import importlib
 
 from peewee_migrate import Router
 
-from colibri import persist
-from colibri import settings
+from colibris import persist
+from colibris import settings
 
 from . import BaseCommand
 

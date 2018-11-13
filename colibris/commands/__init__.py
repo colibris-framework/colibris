@@ -3,7 +3,7 @@ import argparse
 import logging.config
 import sys
 
-from colibri import settings
+from colibris import settings
 
 
 class BaseCommand:

@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from colibri import commands
+from colibris import commands
 
 
 if __name__ == '__main__':

@@ -3,7 +3,7 @@ import os
 
 from setuptools import setup, find_packages
 
-from colibri import VERSION
+from colibris import VERSION
 
 
 def package_data_rec(package, directory):
