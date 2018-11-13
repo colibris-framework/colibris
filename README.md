@@ -9,9 +9,9 @@ Create a virtual environment for your new project:
 
     virtualenv .venv && source .venv/bin/activate
 
-Install colibri:
+Install colibris:
 
-    pip install git+https://gitlab.com/safefleet/colibri.git
+    pip install git+https://gitlab.com/safefleet/colibris.git
 
 (For mac users) Install gnu sed:
 
@@ -19,7 +19,7 @@ Install colibri:
 
 Prepare the project:
 
-    colibri-start-project <project-name> --template git@gitlab.com:safefleet/microservice-template.git 
+    colibris-start-project <project-name> --template git@gitlab.com:safefleet/microservice-template.git 
 
 Your project folder will contain a package derived from your project name as well as various other stuff.
 
@@ -124,9 +124,9 @@ Controls the server TCP listening port. Defaults to `8888`.
 A list of all the middleware functions to be applied, in order, to each request/response. Defaults to:
 
     [
-        'colibri.middleware.handle_errors_json',
-        'colibri.middleware.handle_auth',
-        'colibri.middleware.handle_schema_validation'
+        'colibris.middleware.handle_errors_json',
+        'colibris.middleware.handle_auth',
+        'colibris.middleware.handle_schema_validation'
     ]
 
 #### `AUTHENTICATION`
