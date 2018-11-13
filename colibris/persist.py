@@ -22,7 +22,7 @@ def get_database():
 
     if _database is None:
         logger.debug('initializing db connection')
-        _database = peewee_connect(settings.DATABASE)
+        _database = peewee_connect(settings.DATABASE, autorollback=True)
         _database.connect()
 
     return _database
