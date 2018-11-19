@@ -68,3 +68,21 @@ if _project_routes:
         add_route_tuple(_route)
 
 app.on_startup.append(build_routes_cache)
+
+
+# app initialization
+
+def _init_app(app):
+    try:
+        _project_app = importlib.import_module('{}.app'.format(settings.PROJECT_PACKAGE_NAME))
+
+    except ImportError:
+        _project_app = None
+
+    if _project_app:
+        init = getattr(_project_app, 'init', None)
+        if init:
+            init(app, asyncio.get_running_loop())
+
+
+app.on_startup.append(_init_app)
