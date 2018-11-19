@@ -9,7 +9,7 @@ from webargs import aiohttpparser
 
 from colibris import settings
 from colibris import utils
-from colibris import webapp
+from colibris import app
 from colibris.api import BaseJSONException, envelope
 
 from colibris.authentication import exceptions as authentication_exceptions
@@ -86,7 +86,7 @@ async def handle_auth(request, handler):
         raise request.match_info.http_exception
 
     path = request.match_info.route.resource.canonical
-    route = webapp.routes_by_path.get(path)
+    route = app.routes_by_path.get(path)
     if not route:  # shouldn't happen
         raise web.HTTPNotFound()
 

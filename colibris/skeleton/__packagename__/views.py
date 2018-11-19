@@ -4,6 +4,7 @@ from aiohttp import web
 from aiohttp_apispec import docs, use_kwargs, marshal_with
 
 from colibris import api
+from colibris.schemas import many_envelope
 from colibris.shortcuts import get_object_or_404
 
 from __packagename__ import models
