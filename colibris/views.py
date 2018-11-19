@@ -3,6 +3,7 @@ from aiohttp import web
 from aiohttp_apispec import docs
 
 from colibris import settings
+from colibris import app
 
 
 def home(request):
@@ -11,5 +12,6 @@ def home(request):
 
 @docs(tags=['Service'],
       summary='The health-check endpoint')
-def health(request):
-    return web.json_response({'detail': 'ok'})
+async def health(request):
+    h = await app.get_health()
+    return web.json_response(h)
