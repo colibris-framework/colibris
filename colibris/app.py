@@ -31,6 +31,10 @@ def _init_webapp():
 
 # app
 
+class HealthException(Exception):
+    pass
+
+
 async def _init_app(app):
     global _project_app
 
