@@ -4,6 +4,7 @@ from aiohttp import web
 from aiohttp_apispec import docs, use_kwargs, marshal_with
 
 from colibris import api
+from colibris import schemas
 from colibris.shortcuts import get_object_or_404
 
 from __packagename__ import models
@@ -39,7 +40,7 @@ from __packagename__ import schemas
 #
 # @docs(tags=['Users'],
 #       summary='List all users')
-# @marshal_with(many_envelope(schemas.UserSchema))
+# @marshal_with(schemas.many_envelope(schemas.UserSchema))
 # def list_users(request):
 #     users = models.User.select().order_by(models.User.username.asc())
 #     result = schemas.UserSchema(many=True).dump(list(users))
