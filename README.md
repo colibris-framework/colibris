@@ -99,6 +99,13 @@ To apply migrations on the currently configured database, use:
     ./manage.py migrate
 
 
+## App Initialization
+
+You can add project-specific initialization code in the `init` function exposed by `app.py`:
+
+    nano ${PACKAGE}/app.py
+
+
 ## Settings
 
 Here's a list of available settings and their default values:
