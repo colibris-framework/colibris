@@ -20,7 +20,7 @@ routes_by_path = {}  # indexed by path
 for _path in settings.MIDDLEWARE:
     middleware.append(utils.import_member(_path))
 
-app = web.Application(middlewares=middleware)
+webapp = web.Application(middlewares=middleware)
 
 
 # routes
@@ -31,7 +31,7 @@ def add_route_tuple(route):
 
     method, path, handler, authorize = route
 
-    app.router.add_route(method, path, handler)
+    webapp.router.add_route(method, path, handler)
     routes_by_path[path] = route
 
 
@@ -51,8 +51,8 @@ for _route in default_routes.ROUTES:
 async def init_swagger(app):
     setup_swagger(app=app, swagger_url=settings.API_DOCS_PATH, swagger_info=app['swagger_dict'])
 
-setup_aiohttp_apispec(app=app, title='API Documentation')
-app.on_startup.append(init_swagger)
+setup_aiohttp_apispec(app=webapp, title='API Documentation')
+webapp.on_startup.append(init_swagger)
 
 
 # project-specific routes
@@ -67,7 +67,7 @@ if _project_routes:
     for _route in getattr(_project_routes, 'ROUTES', []):
         add_route_tuple(_route)
 
-app.on_startup.append(build_routes_cache)
+webapp.on_startup.append(build_routes_cache)
 
 
 # app initialization
@@ -85,4 +85,4 @@ def _init_app(app):
             init(app, asyncio.get_running_loop())
 
 
-app.on_startup.append(_init_app)
+webapp.on_startup.append(_init_app)
