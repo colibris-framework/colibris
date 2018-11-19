@@ -1,6 +1,11 @@
 
 PROJECT_PACKAGE_NAME = '__packagename__'
 
+DEBUG = True
+
+LISTEN = '0.0.0.0'
+PORT = 8888
+
 # DATABASE = 'postgresql://username:password@localhost:5432/__packagename__'
 DATABASE = 'sqlite:////tmp/__projectname__.db'
 
