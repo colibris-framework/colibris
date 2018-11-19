@@ -106,6 +106,14 @@ You can add project-specific initialization code in the `init` function exposed 
     nano ${PACKAGE}/app.py
 
 
+## Health Status
+
+You can (and should) implement your project-specific health check function by exposing the `get_health` function in
+`app.py`:
+
+    nano ${PACKAGE}/app.py
+
+
 ## Settings
 
 Here's a list of available settings and their default values:

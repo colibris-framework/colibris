@@ -7,9 +7,9 @@ from aiohttp import web
 from aiohttp_apispec import validation_middleware
 from webargs import aiohttpparser
 
+from colibris import app
 from colibris import settings
 from colibris import utils
-from colibris import app
 from colibris.api import BaseJSONException, envelope
 
 from colibris.authentication import exceptions as authentication_exceptions
@@ -65,6 +65,13 @@ async def handle_errors_json(request, handler):
         details = str(e)
 
         return web.json_response(envelope.wrap_error(code, message, details), status=400)
+
+    except app.HealthException as e:
+        code = 'unhealthy'
+        message = 'Service is not healthy.'
+        details = str(e)
+
+        return web.json_response(envelope.wrap_error(code, message, details), status=500)
 
     except Exception as e:
         code = 'server_error'

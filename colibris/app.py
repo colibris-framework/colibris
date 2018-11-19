@@ -1,6 +1,8 @@
 
 import asyncio
 import importlib
+import inspect
+import time
 
 from aiohttp import web
 from aiohttp_apispec import setup_aiohttp_apispec
@@ -14,8 +16,11 @@ from colibris import utils
 middleware = []
 routes_by_path = {}  # indexed by path
 
+_project_app = None
+_start_time = time.time()
 
-# app & middleware
+
+# webapp & middleware
 
 def _init_webapp():
     for path in settings.MIDDLEWARE:
@@ -24,7 +29,15 @@ def _init_webapp():
     return web.Application(middlewares=middleware)
 
 
+# app
+
+class HealthException(Exception):
+    pass
+
+
 async def _init_app(app):
+    global _project_app
+
     try:
         _project_app = importlib.import_module('{}.app'.format(settings.PROJECT_PACKAGE_NAME))
 
@@ -35,6 +48,22 @@ async def _init_app(app):
         init = getattr(_project_app, 'init', None)
         if init:
             init(app, asyncio.get_running_loop())
+
+
+async def get_health():
+    if hasattr(_project_app, 'get_health'):
+        gh = _project_app.get_health
+        if inspect.iscoroutinefunction(gh):
+            h = await gh()
+
+        else:
+            h = gh()
+
+        return h
+
+    return {
+        'uptime': int(time.time() - _start_time)
+    }
 
 
 # routes
