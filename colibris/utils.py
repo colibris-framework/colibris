@@ -3,6 +3,15 @@ import importlib
 import re
 
 
+class ClassNameException(Exception):
+    def __str__(self):
+        message = super().__str__()
+        if not message:
+            message = self.__class__.__name__
+
+        return message
+
+
 def camelcase_to_underscore(s):
     return re.sub('(((?<=[a-z])[A-Z])|([A-Z](?![A-Z]|$)))', '_\\1', s).lower().strip('_')
 

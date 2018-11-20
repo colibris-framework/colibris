@@ -1,11 +1,9 @@
 
-class AuthenticationException(Exception):
-    def __str__(self):
-        message = super().__str__()
-        if not message:
-            message = self.__class__.__name__
+from colibris.utils import ClassNameException
 
-        return message
+
+class AuthenticationException(ClassNameException):
+    pass
 
 
 class NoSuchAccount(AuthenticationException):
