@@ -21,7 +21,7 @@ class RedisBackend(CacheBackend):
         return self._load_value(svalue)
 
     def set(self, key, value, lifetime):
-        self._client.setex(key, self._dump_value(value), lifetime)
+        self._client.setex(key, lifetime, self._dump_value(value))
 
     def delete(self, key):
         self._client.delete(key)

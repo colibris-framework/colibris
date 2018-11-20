@@ -106,6 +106,24 @@ You can add project-specific initialization code in the `init` function exposed 
     nano ${PACKAGE}/app.py
 
 
+## Cache
+
+The caching mechanism is configured via the `CACHE` variable in `settings.py`. It defaults to `None`, in which case the
+local in-memory backend is used.
+
+#### Redis Backend
+
+In `settings.py`, set:
+
+    CACHE = {
+        'backend': 'colibris.cache.redis.RedisBackend',
+        'host': '127.0.0.1',
+        'port': 6379,
+        'db': 0,
+        'password': 'yourpassword'
+    }
+
+
 ## Health Status
 
 You can (and should) implement your project-specific health check function by exposing the `get_health` function in
