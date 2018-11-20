@@ -28,6 +28,8 @@ MIDDLEWARE = [
 AUTHENTICATION = None
 AUTHORIZATION = None
 
+CACHE = None
+
 API_DOCS_PATH = '/api/docs'
 
 DATABASE = 'sqlite:///__projectname__.db'

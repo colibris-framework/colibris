@@ -61,12 +61,49 @@ Associate URL paths to views by editing the `routes.py` file:
     nano ${PACKAGE}/routes.py
 
 
-## Authentication & Authorization
+## Authentication
 
-Choose a backend for both the authentication and authorization mechanisms by setting the corresponding variables
-in the `settings.py` file:
+Choose a backend for the authentication by setting the `AUTHENTICATION` variable in `settings.py`. By default, it is set
+to `None`, associating each request with a dummy identity.
 
-    nano settings.py
+#### JWT Backend
+
+In `settings.py`, set:
+
+    AUTHENTICATION = {
+        'backend': 'colibris.authentication.jwt.JWTBackend',
+        'model': 'yourproject.models.User',
+        'identity_claim': 'sub',
+        'identity_field': 'username',
+        'secret_field': 'password'
+    }
+
+
+## Authorization
+
+Choose a backend for the authorization by setting the `AUTHORIZATION` variable in `settings.py`. By default, it is set
+to `None`, allowing everybody to perform any request.
+
+#### Role Backend
+
+In `settings.py`, set:
+
+    AUTHORIZATION = {
+        'backend': 'colibris.authorization.role.RoleBackend',
+        'role_field': 'role'
+    }
+
+#### Rights Backend
+
+In `settings.py`, set:
+
+    AUTHORIZATION = {
+        'backend': 'colibris.authorization.rights.RightsBackend',
+        'model': 'yourproject.models.Right',
+        'account_field': 'user',
+        'resource_field': 'resource',
+        'operations_field': 'operations'
+    }
 
 
 ## Web Server
@@ -104,6 +141,42 @@ To apply migrations on the currently configured database, use:
 You can add project-specific initialization code in the `init` function exposed by `app.py`:
 
     nano ${PACKAGE}/app.py
+
+
+## Cache
+
+The caching mechanism is configured via the `CACHE` variable in `settings.py`. It defaults to `None`, in which case the
+local in-memory backend is used.
+
+#### Usage
+
+To use the caching mechanism, just import it wherever you need it:
+
+    from colibris import cache
+    
+To set a value, use `set`:
+
+    cache.set('my_key', my_value, lifetime=300)
+
+Later, you can get your value back:
+
+    my_value = cache.get('my_key', default='some_default')
+
+You can invalidate a key using `delete`:
+
+    cache.delete('my_key')
+
+#### Redis Backend
+
+In `settings.py`, set:
+
+    CACHE = {
+        'backend': 'colibris.cache.redis.RedisBackend',
+        'host': '127.0.0.1',
+        'port': 6379,
+        'db': 0,
+        'password': 'yourpassword'
+    }
 
 
 ## Health Status
@@ -158,6 +231,13 @@ representing the python path to the backend class. The rest of the entries are p
 
 Defaults to `None`, which effectively disables authorization, allowing access to all resources for any authenticated
 request.
+
+#### `CACHE`
+
+Configures the cache backend. Should be defined as a dictionary with at least one entry, `backend`,
+representing the python path to the backend class. The rest of the entries are passed as arguments to the constructor.
+
+Defaults to `None`, which configures the in-memory cache backend.
 
 #### `DATABASE`
 
