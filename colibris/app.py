@@ -47,7 +47,7 @@ async def _init_app(app):
     if _project_app:
         init = getattr(_project_app, 'init', None)
         if init:
-            init(app, asyncio.get_running_loop())
+            init(app, asyncio.get_event_loop())
 
 
 async def get_health():
