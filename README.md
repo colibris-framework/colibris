@@ -61,12 +61,49 @@ Associate URL paths to views by editing the `routes.py` file:
     nano ${PACKAGE}/routes.py
 
 
-## Authentication & Authorization
+## Authentication
 
-Choose a backend for both the authentication and authorization mechanisms by setting the corresponding variables
-in the `settings.py` file:
+Choose a backend for the authentication by setting the `AUTHENTICATION` variable in `settings.py`. By default, it is set
+to `None`, associating each request with a dummy identity.
 
-    nano settings.py
+#### JWT Backend
+
+In `settings.py`, set:
+
+    AUTHENTICATION = {
+        'backend': 'colibris.authentication.jwt.JWTBackend',
+        'model': 'yourproject.models.User',
+        'identity_claim': 'sub',
+        'identity_field': 'username',
+        'secret_field': 'password'
+    }
+
+
+## Authorization
+
+Choose a backend for the authorization by setting the `AUTHORIZATION` variable in `settings.py`. By default, it is set
+to `None`, allowing everybody to perform any request.
+
+#### Role Backend
+
+In `settings.py`, set:
+
+    AUTHORIZATION = {
+        'backend': 'colibris.authorization.role.RoleBackend',
+        'role_field': 'role'
+    }
+
+#### Rights Backend
+
+In `settings.py`, set:
+
+    AUTHORIZATION = {
+        'backend': 'colibris.authorization.rights.RightsBackend',
+        'model': 'yourproject.models.Right',
+        'account_field': 'user',
+        'resource_field': 'resource',
+        'operations_field': 'operations'
+    }
 
 
 ## Web Server
@@ -176,6 +213,13 @@ representing the python path to the backend class. The rest of the entries are p
 
 Defaults to `None`, which effectively disables authorization, allowing access to all resources for any authenticated
 request.
+
+#### `CACHE`
+
+Configures the cache backend. Should be defined as a dictionary with at least one entry, `backend`,
+representing the python path to the backend class. The rest of the entries are passed as arguments to the constructor.
+
+Defaults to `None`, which configures the in-memory cache backend.
 
 #### `DATABASE`
 
