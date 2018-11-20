@@ -3,6 +3,7 @@ import logging
 
 from colibris import settings
 from colibris import utils
+from colibris.cache.base import ABSENT
 
 
 DEFAULT_LIFETIME = 300  # seconds
@@ -18,7 +19,7 @@ def get_backend():
 
     if _backend is None:
         backend_settings = dict(settings.CACHE or {})
-        backend_path = backend_settings.pop('backend', 'colibris.cache.LocMemBackend')
+        backend_path = backend_settings.pop('backend', 'colibris.cache.locmem.LocMemBackend')
         backend_class = utils.import_member(backend_path)
         _default_lifetime = backend_settings.pop('default_lifetime', DEFAULT_LIFETIME)
         _backend = backend_class(**backend_settings)
@@ -29,7 +30,11 @@ def get_backend():
 
 
 def get(key, default=None):
-    return get_backend().get(key, default)
+    value = get_backend().get(key)
+    if value is ABSENT:
+        return default
+
+    return value
 
 
 def set(key, value, lifetime=None):
