@@ -19,7 +19,7 @@ Install colibris:
 
 Prepare the project:
 
-    colibris-start-project <project-name> --template git@gitlab.com:safefleet/microservice-template.git 
+    colibris-start-project ${PROJECT_NAME} --template git@gitlab.com:safefleet/microservice-template.git 
 
 Your project folder will contain a package derived from your project name as well as various other stuff.
 
@@ -187,13 +187,60 @@ You can (and should) implement your project-specific health check function by ex
     nano ${PACKAGE}/app.py
 
 
+## Deployment
+
+#### Dependencies and Pipfile
+
+Add your dependencies to `Pipfile`:
+
+    nano Pipfile
+    
+If you're using PostgreSQL, you may want to add:
+
+    [packages]
+    ....
+    psycopg2-binary = "*"
+    ...
+
+If you're using JWT for authentication, you may want to add:
+
+    [packages]
+    ....
+    pyjwt = "*"
+    ...
+
+#### Lock Down Versions
+
+Lock your dependencies with their versions in `Pipfile.lock`:
+
+    pipenv lock
+
+#### Install Dependencies
+
+Install all of your project's dependencies:
+
+    pipenv sync
+
+#### Build Docker Image
+
+Build your local docker image, optionally tagging it with your version:
+
+    docker build -t ${PROJECT_NAME}:${VERSION}
+
+#### Run Container
+
+You can run your container locally as follows:
+
+    docker run -it ${PPROJECT_NAME}:${VERSION} -p 8888:8888
+
+
 ## Settings
 
 Here's a list of available settings and their default values:
 
 #### `PROJECT_PACKAGE_NAME`
 
-Sets the main project package name. Defaults to `'<projectname>'`.
+Sets the main project package name. Defaults to `'${PROJECT_NAME}'`.
 
 #### `DEBUG`
 
@@ -245,7 +292,7 @@ Sets the project database.
 See [this](http://docs.peewee-orm.com/en/latest/peewee/database.html#connecting-using-a-database-url) for examples of
 database URLs.
 
-Defaults to `'sqlite:///<projectname>.db'`
+Defaults to `'sqlite:///${PROJECT_NAME}.db'`
 
 #### `LOGGING`
 
