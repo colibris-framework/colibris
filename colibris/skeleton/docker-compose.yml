@@ -1,0 +1,38 @@
+version: "3"
+services:
+#  db:
+#    image: postgres:10.6
+#    restart: always
+#    volumes:
+#      - /var/lib/docker/volumes/__projectname__/pgdata:/var/lib/postgresql/data
+#    environment:
+#      - POSTGRES_DB=__packagename__
+#      - POSTGRES_PASSWORD=postgres
+#    ports:
+#      - "5432:5432"
+#  cache:
+#    image: redis:5.0.1
+#    restart: always
+#    ports:
+#      - "6379:6379"
+#  migration:
+#    image: __projectname__:latest
+#    environment:
+#      - DATABASE=postgresql://postgres:postgres@db:5432/__packagename__
+#    command: wait-for-it db:5432 -t 10 -s -- python manage.py migrate
+#    depends_on:
+#      - db
+  app:
+    image: __projectname__:latest
+#    environment:
+#      - DATABASE=postgresql://postgres:postgres@db:5432/__packagename__
+#    command: >
+#      wait-for-it db:5432    -t 10 -s --
+#      wait-for-it cache:6379 -t 10 -s --
+#      python manage.py runserver
+    ports:
+      - "8888:8888"
+#    depends_on:
+#      - db
+#      - cache
+#      - migration
