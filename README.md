@@ -19,6 +19,10 @@ Install colibris:
 
 Prepare the project:
 
+    colibris-start-project ${PROJECT_NAME}
+     
+You can use a different template repository for your project's skeleton:
+
     colibris-start-project ${PROJECT_NAME} --template git@gitlab.com:safefleet/microservice-template.git 
 
 Your project folder will contain a package derived from your project name as well as various other stuff.
