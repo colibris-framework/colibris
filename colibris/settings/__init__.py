@@ -35,7 +35,7 @@ def _override_setting(settings, name, value):
             continue
 
         dkey = '_'.join(parts[i + 1:])
-        d[dkey] = value
+        d[dkey.lower()] = value  # dictionary keys are lower-case, by convention
 
         break
 

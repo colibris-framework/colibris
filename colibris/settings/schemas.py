@@ -48,11 +48,31 @@ class AllAuthorizationSchema(RoleAuthorizationSchema,
     AUTHORIZATION_BACKEND = fields.String()
 
 
+# cache
+
+class LocMemCacheSchema(Schema):
+    CACHE_MAX_ENTRIES = fields.Integer()
+
+
+class RedisCacheSchema(Schema):
+    CACHE_HOST = fields.String()
+    CACHE_PORT = fields.Integer()
+    CACHE_DB = fields.Integer()
+    CACHE_PASSWORD = fields.String()
+
+
+class AllCacheSchema(LocMemCacheSchema,
+                     RedisCacheSchema):
+
+    CACHE_BACKEND = fields.String()
+
+
 # put together all schemas
 
 class EnvVarsSchema(CommonSchema,
                     AllAuthenticationSchema,
-                    AllAuthorizationSchema):
+                    AllAuthorizationSchema,
+                    AllCacheSchema):
 
     class Meta:
         unknown = EXCLUDE
