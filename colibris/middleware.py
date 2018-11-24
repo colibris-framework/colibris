@@ -14,6 +14,7 @@ from colibris.api import BaseJSONException, envelope
 
 from colibris.authentication import exceptions as authentication_exceptions
 
+
 logger = logging.getLogger(__name__)
 
 _authentication_backend_settings = dict(settings.AUTHENTICATION)
