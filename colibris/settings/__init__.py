@@ -7,22 +7,12 @@ import sys
 
 from pathlib import Path
 from dotenv import load_dotenv
-from marshmallow import Schema, fields, EXCLUDE
 
 from colibris.settings import defaultsettings
+from colibris.settings import schemas as settings_schemas
 
 # default values
 from colibris.settings.defaultsettings import *
-
-
-class EnvVarsValidator(Schema):
-    DEBUG = fields.Boolean()
-    LISTEN = fields.String()
-    PORT = fields.Integer()
-    DATABASE = fields.String()
-
-    class Meta:
-        unknown = EXCLUDE
 
 
 def _is_setting_name(name):
@@ -82,7 +72,7 @@ def _override_env_settings(settings):
     load_dotenv(Path('.env.default'))
     load_dotenv(Path('.env'), override=True)
 
-    env_vars = EnvVarsValidator().load(os.environ)
+    env_vars = settings_schemas.EnvVarsSchema().load(os.environ)
 
     for name, value in env_vars.items():
         if value is None:
