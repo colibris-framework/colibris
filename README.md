@@ -1,15 +1,17 @@
 
 ## Starting Your Project
 
-Go to your projects folder:
+The following variables are assumed:
 
-    cd ${PROJECTS_DIR}
+ * `VENVS` - the folder where you keep your python virtual environments (e.g. `~/.local/share/virtualenvs`)
+ * `PROJECT_NAME` - the name of your project (e.g. `my-project`) 
+ * `PROJECTS_DIR` - the folder where you keep your projects (e.g. `~/Projects`) 
 
 Create a virtual environment for your new project:
 
-    virtualenv .venv && source .venv/bin/activate
+    virtualenv ${VENVS}/${PROJECT_NAME} && source ${VENVS}/${PROJECT_NAME}/bin/activate
 
-Install colibris:
+Install `colibris`:
 
     pip install git+https://gitlab.com/safefleet/colibris.git
 
@@ -17,17 +19,27 @@ Install colibris:
 
     brew install gnu-sed --with-default-names
 
+Go to your projects folder:
+
+    cd ${PROJECTS_DIR}
+
 Prepare the project:
 
     colibris-start-project ${PROJECT_NAME}
-     
+
 You can use a different template repository for your project's skeleton:
 
     colibris-start-project ${PROJECT_NAME} --template git@gitlab.com:safefleet/microservice-template.git 
 
+Optionally, you can move the virtualenv to your project's root folder:
+
+    virtualenv --relocatable ${VENVS}/${PROJECT_NAME}
+    mv ${VENVS}/${PROJECT_NAME} ${PROJECT_NAME}/.venv
+
 Your project folder will contain a package derived from your project name as well as various other stuff.
 
-The rest of the steps assume you're in your project folder and you have your virtual environment correctly sourced.
+The commands in this document assume you're in your project folder and you have your virtual environment correctly
+sourced, unless otherwise specified.
 
 
 ## Database
@@ -270,8 +282,8 @@ Build your local docker image, optionally tagging it with your version:
 You can run your container locally as follows:
 
     docker run -it ${PPROJECT_NAME}:${VERSION} -p 8888:8888
-    
-#### Use docker-compose
+
+#### Use `docker-compose`
 
 Uncomment/add needed services to `docker-compose.yml`:
 
@@ -287,16 +299,41 @@ When you're done, shut it down by hitting `Ctrl-C`; then you can remove the cont
 
 ## Settings
 
-Here's a list of available settings and their default values:
+#### The `settings` Module
 
-#### `AUTHENTICATION`
+Each project should have a `settings.py` file, specifying settings that are particular for the project.
+
+#### The `settingslocal` Module
+
+For local deployments or development environments, you can specify your particular settings in a `settingslocal.py`
+file. It has a higher precedence than the project's `settings` module.
+
+#### Environment Variables
+
+Settings can be overridden using environment variables. Environment variables have the highest precedence when it comes
+to specifying settings.
+
+For simple settings, such as `DEBUG`, the corresponding environment variable coincides with the setting.
+
+For complex settings, such as `DATABASE`, each setting parameter will have a separate corresponding environment
+variable. For example, `DATABASE_HOST` will set the `host` parameter of the `DATABASE` setting.
+
+Environment variables can be put together in a `.env` file that is located in the root folder of the project. This file
+should never be added to git.
+
+If you want your variables to be part of your project's repository, you can add them to `.env.default`, which should be
+added to git.
+
+#### Available Settings
+
+###### `AUTHENTICATION`
 
 Configures the authentication backend. Should be defined as a dictionary with at least one entry, `backend`,
 representing the python path to the backend class. The rest of the entries are passed as arguments to the constructor.
 
 Defaults to `{}`, which effectively disables authentication.
 
-#### `AUTHORIZATION`
+###### `AUTHORIZATION`
 
 Configures the authorization backend. Should be defined as a dictionary with at least one entry, `backend`,
 representing the python path to the backend class. The rest of the entries are passed as arguments to the constructor.
@@ -304,14 +341,14 @@ representing the python path to the backend class. The rest of the entries are p
 Defaults to `{}`, which effectively disables authorization, allowing access to all resources for any authenticated
 request.
 
-#### `CACHE`
+###### `CACHE`
 
 Configures the cache backend. Should be defined as a dictionary with at least one entry, `backend`,
 representing the python path to the backend class. The rest of the entries are passed as arguments to the constructor.
 
 Defaults to `{}`, which configures the in-memory cache backend.
 
-#### `DATABASE`
+###### `DATABASE`
 
 Sets the project database.
 See [this](http://docs.peewee-orm.com/en/latest/peewee/database.html#connecting-using-a-database-url) for examples of
@@ -324,20 +361,20 @@ Defaults to SQLite:
         'name': 'colibris.db'
     }
 
-#### `DEBUG`
+###### `DEBUG`
 
 Enables or disables debugging. Defaults to `True`.
 
-#### `LISTEN`
+###### `LISTEN`
 
 Controls the interface(s) on which the server listens. Defaults to `'0.0.0.0'`.
 
-#### `LOGGING`
+###### `LOGGING`
 
 Configures the logging mechanism.
 See [logging.config](https://docs.python.org/3.7/library/logging.config.html) for details.
 
-#### `MIDDLEWARE`
+###### `MIDDLEWARE`
 
 A list of all the middleware functions to be applied, in order, to each request/response. Defaults to:
 
@@ -347,10 +384,10 @@ A list of all the middleware functions to be applied, in order, to each request/
         'colibris.middleware.handle_schema_validation'
     ]
 
-#### `PORT`
+###### `PORT`
 
 Controls the server TCP listening port. Defaults to `8888`.
 
-#### `PROJECT_PACKAGE_NAME`
+###### `PROJECT_PACKAGE_NAME`
 
 Sets the main project package name. Defaults to `'${PROJECT_NAME}'`.
