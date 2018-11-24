@@ -227,12 +227,25 @@ Build your local docker image, optionally tagging it with your version:
 
     docker build -t ${PROJECT_NAME}:${VERSION}
 
-#### Run Container
+#### Manually Run Container
 
 You can run your container locally as follows:
 
     docker run -it ${PPROJECT_NAME}:${VERSION} -p 8888:8888
+    
+#### Use docker-compose
 
+Uncomment/add needed services to `docker-compose.yml`:
+
+    nano docker-compose.yml
+
+Start your suite of services using docker-compose:
+
+    docker-compose up
+    
+When you're done, shut it down by hitting `Ctrl-C`; then you can remove the containers:
+
+    docker-compose down
 
 ## Settings
 
