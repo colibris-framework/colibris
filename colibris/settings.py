@@ -60,36 +60,6 @@ LOGGING = _DEFAULT_LOGGING = {
 }
 
 
-# overwrite default settings with ones provided in SETTINGS_MODULE
-
-_this_settings_module = sys.modules[__name__]
-
-try:
-    _project_settings_module = importlib.import_module('settings')
-
-except ImportError:
-    _project_settings_module = None
-
-if _project_settings_module:
-    for _name, _value in inspect.getmembers(_project_settings_module):
-        # only consider public members that are all in capitals
-        if _name.startswith('_') or not re.sub('[^a-zA-Z]', '', _name).isupper():
-            continue
-
-        setattr(_this_settings_module, _name, _value)
-
-
-# overwrite settings from local file
-
-try:
-    from settingslocal import *
-
-except ImportError:
-    pass
-
-
-# load and validate environment variables
-
 class EnvVarsValidator(Schema):
     DEBUG = fields.Boolean()
     LISTEN = fields.String()
@@ -100,21 +70,71 @@ class EnvVarsValidator(Schema):
         unknown = EXCLUDE
 
 
-load_dotenv(Path('.env.default'))
-load_dotenv(Path('.env'), override=True)
-
-_env_vars = EnvVarsValidator().load(os.environ)
-
-for _name, _value in _env_vars.items():
-    if _value is not None:
-        setattr(_this_settings_module, _name, _value)
+def _is_setting_name(name):
+    # only consider public members that are all in capitals
+    return re.match('^[A-Z][A-Z0-9_]*$', name)
 
 
-# adjust log level unless logging configured explicitly
+def _override_project_settings(this_module):
+    try:
+        project_settings_module = importlib.import_module('settings')
 
-if LOGGING is _DEFAULT_LOGGING and not DEBUG:
-    LOGGING['root']['level'] = 'INFO'
+    except ImportError:
+        return
 
+    for name, value in inspect.getmembers(project_settings_module):
+        if not _is_setting_name(name):
+            continue
+
+        setattr(this_module, name, value)
+
+
+def _override_settings_local(this_module):
+    try:
+        settings_local_module = importlib.import_module('settingslocal')
+
+    except ImportError:
+        return
+
+    for name, value in inspect.getmembers(settings_local_module):
+        if not _is_setting_name(name):
+            continue
+
+        setattr(this_module, name, value)
+
+
+def _override_env_settings(this_module):
+    load_dotenv(Path('.env.default'))
+    load_dotenv(Path('.env'), override=True)
+
+    env_vars = EnvVarsValidator().load(os.environ)
+
+    for name, value in env_vars.items():
+        if value is not None:
+            setattr(this_module, name, value)
+
+
+def _apply_tweaks():
+    # update default log level according to DEBUG flag
+
+    if LOGGING is _DEFAULT_LOGGING and not DEBUG:
+        LOGGING['root']['level'] = 'INFO'
+
+
+# override settings
+
+_this_module = sys.modules[__name__]
+_override_project_settings(_this_module)
+_override_settings_local(_this_module)
+_override_env_settings(_this_module)
+
+
+# some final adjustments
+
+_apply_tweaks()
+
+
+# set project-related variables
 
 try:
     PROJECT_PACKAGE = importlib.import_module(PROJECT_PACKAGE_NAME)
