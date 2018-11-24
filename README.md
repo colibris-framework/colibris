@@ -249,34 +249,6 @@ When you're done, shut it down by hitting `Ctrl-C`; then you can remove the cont
 
 ## Settings
 
-Here's a list of available settings and their default values:
-
-#### `PROJECT_PACKAGE_NAME`
-
-Sets the main project package name. Defaults to `'${PROJECT_NAME}'`.
-
-#### `DEBUG`
-
-Enables or disables debugging. Defaults to `True`.
-
-#### `LISTEN`
-
-Controls the interface(s) on which the server listens. Defaults to `'0.0.0.0'`.
-
-#### `PORT`
-
-Controls the server TCP listening port. Defaults to `8888`.
-
-#### `MIDDLEWARE`
-
-A list of all the middleware functions to be applied, in order, to each request/response. Defaults to:
-
-    [
-        'colibris.middleware.handle_errors_json',
-        'colibris.middleware.handle_auth',
-        'colibris.middleware.handle_schema_validation'
-    ]
-
 #### `AUTHENTICATION`
 
 Configures the authentication backend. Should be defined as a dictionary with at least one entry, `backend`,
@@ -291,6 +263,8 @@ representing the python path to the backend class. The rest of the entries are p
 
 Defaults to `None`, which effectively disables authorization, allowing access to all resources for any authenticated
 request.
+
+Here's a list of available settings and their default values:
 
 #### `CACHE`
 
@@ -307,7 +281,33 @@ database URLs.
 
 Defaults to `'sqlite:///${PROJECT_NAME}.db'`
 
+#### `DEBUG`
+
+Enables or disables debugging. Defaults to `True`.
+
+#### `LISTEN`
+
+Controls the interface(s) on which the server listens. Defaults to `'0.0.0.0'`.
+
 #### `LOGGING`
 
 Configures the logging mechanism.
 See [logging.config](https://docs.python.org/3.7/library/logging.config.html) for details.
+
+#### `MIDDLEWARE`
+
+A list of all the middleware functions to be applied, in order, to each request/response. Defaults to:
+
+    [
+        'colibris.middleware.handle_errors_json',
+        'colibris.middleware.handle_auth',
+        'colibris.middleware.handle_schema_validation'
+    ]
+
+#### `PORT`
+
+Controls the server TCP listening port. Defaults to `8888`.
+
+#### `PROJECT_PACKAGE_NAME`
+
+Sets the main project package name. Defaults to `'${PROJECT_NAME}'`.
