@@ -67,6 +67,35 @@ class AllCacheSchema(LocMemCacheSchema,
     CACHE_BACKEND = fields.String()
 
 
+# database
+
+class SQLiteDatabaseSchema(Schema):
+    DATABASE_NAME = fields.String()
+
+
+class ServerDatabaseSchema(Schema):
+    DATABASE_NAME = fields.String()
+    DATABASE_HOST = fields.String()
+    DATABASE_PORT = fields.Integer()
+    DATABASE_USERNAME = fields.String()
+    DATABASE_PASSWORD = fields.String()
+
+
+class MySQLDatabaseSchema(ServerDatabaseSchema):
+    pass
+
+
+class PostgreSQLDatabaseSchema(ServerDatabaseSchema):
+    pass
+
+
+class AllDatabaseSchema(SQLiteDatabaseSchema,
+                        MySQLDatabaseSchema,
+                        PostgreSQLDatabaseSchema):
+
+    DATABASE_BACKEND = fields.String()
+
+
 # put together all schemas
 
 class EnvVarsSchema(CommonSchema,

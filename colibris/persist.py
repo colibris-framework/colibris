@@ -5,13 +5,17 @@ import peewee
 
 from peewee import *
 from playhouse.postgres_ext import *
-from playhouse.db_url import connect as peewee_connect
 
 from colibris import settings
+from colibris import utils
 
 
 # migrations live in the project root package
 MIGRATIONS_DIR = os.path.join(settings.PROJECT_PACKAGE_DIR, 'migrations')
+_PEEWEE_DB_PARAMS_MAPPING = {
+    'name': 'database',
+    'user': 'username'
+}
 
 logger = logging.getLogger(__name__)
 _database = None
@@ -21,9 +25,21 @@ def get_database():
     global _database
 
     if _database is None:
-        logger.debug('initializing db connection')
-        _database = peewee_connect(settings.DATABASE, autorollback=True)
+        backend_settings = dict(settings.DATABASE)
+        backend_path = backend_settings.pop('backend', 'colibris.persist.SqliteDatabase')
+        backend_class = utils.import_member(backend_path)
+
+        # translate settings into whatever peewee prefers
+        for param, pparam in _PEEWEE_DB_PARAMS_MAPPING.items():
+            if param in backend_settings:
+                backend_settings[pparam] = backend_settings.pop(param)
+
+        backend_settings.setdefault('autorollback', True)
+
+        _database = backend_class(**backend_settings)
         _database.connect()
+
+        logger.debug('db connection initialized')
 
     return _database
 

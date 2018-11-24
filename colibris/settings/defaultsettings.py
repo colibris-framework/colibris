@@ -16,10 +16,12 @@ AUTHENTICATION = {}
 AUTHORIZATION = {}
 
 CACHE = {}
+DATABASE = {
+    'backend': 'colibris.persist.SqliteDatabase',
+    'name': 'colibris.db'
+}
 
 API_DOCS_PATH = '/api/docs'
-
-DATABASE = 'sqlite:///__projectname__.db'
 
 LOGGING = {
     'version': 1,
