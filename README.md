@@ -28,9 +28,43 @@ The rest of the steps assume you're in your project folder and you have your vir
 
 ## Database
 
-Set your database URL by editing the `settings.py` file:
+Choose a backend for the database, by setting the `DATABASE` variable in `settings.py`. By default, it is set
+to the SQLite backend.
 
-    nano settings.py 
+#### SQLite Backend
+
+In `settings.py`, set:
+
+    DATABASE = {
+        'backend': 'colibris.persist.SqliteDatabase',
+        'name': '/path/to/yourproject.db'
+    }
+
+#### MySQL Backend
+
+In `settings.py`, set:
+
+    DATABASE = {
+        'backend': 'colibris.persist.MysqlDatabase',
+        'name': 'yourproject',
+        'host': '127.0.0.1',
+        'port': 3316,
+        'username': 'username',
+        'password': 'password'
+    }
+
+#### PostgreSQL Backend
+
+In `settings.py`, set:
+
+    DATABASE = {
+        'backend': 'colibris.persist.PostgresqlDatabase',
+        'name': 'yourproject',
+        'host': '127.0.0.1',
+        'port': 3316,
+        'username': 'username',
+        'password': 'password'
+    }
 
 
 ## Models
@@ -64,7 +98,7 @@ Associate URL paths to views by editing the `routes.py` file:
 ## Authentication
 
 Choose a backend for the authentication by setting the `AUTHENTICATION` variable in `settings.py`. By default, it is set
-to `None`, associating each request with a dummy identity.
+to `{}`, associating each request with a dummy identity.
 
 #### JWT Backend
 
@@ -82,7 +116,7 @@ In `settings.py`, set:
 ## Authorization
 
 Choose a backend for the authorization by setting the `AUTHORIZATION` variable in `settings.py`. By default, it is set
-to `None`, allowing everybody to perform any request.
+to `{}`, allowing everybody to perform any request.
 
 #### Role Backend
 
@@ -145,7 +179,7 @@ You can add project-specific initialization code in the `init` function exposed 
 
 ## Cache
 
-The caching mechanism is configured via the `CACHE` variable in `settings.py`. It defaults to `None`, in which case the
+The caching mechanism is configured via the `CACHE` variable in `settings.py`. It defaults to `{}`, in which case the
 local in-memory backend is used.
 
 #### Usage
@@ -249,29 +283,29 @@ When you're done, shut it down by hitting `Ctrl-C`; then you can remove the cont
 
 ## Settings
 
+Here's a list of available settings and their default values:
+
 #### `AUTHENTICATION`
 
 Configures the authentication backend. Should be defined as a dictionary with at least one entry, `backend`,
 representing the python path to the backend class. The rest of the entries are passed as arguments to the constructor.
 
-Defaults to `None`, which effectively disables authentication.
+Defaults to `{}`, which effectively disables authentication.
 
 #### `AUTHORIZATION`
 
 Configures the authorization backend. Should be defined as a dictionary with at least one entry, `backend`,
 representing the python path to the backend class. The rest of the entries are passed as arguments to the constructor.
 
-Defaults to `None`, which effectively disables authorization, allowing access to all resources for any authenticated
+Defaults to `{}`, which effectively disables authorization, allowing access to all resources for any authenticated
 request.
-
-Here's a list of available settings and their default values:
 
 #### `CACHE`
 
 Configures the cache backend. Should be defined as a dictionary with at least one entry, `backend`,
 representing the python path to the backend class. The rest of the entries are passed as arguments to the constructor.
 
-Defaults to `None`, which configures the in-memory cache backend.
+Defaults to `{}`, which configures the in-memory cache backend.
 
 #### `DATABASE`
 
@@ -279,7 +313,12 @@ Sets the project database.
 See [this](http://docs.peewee-orm.com/en/latest/peewee/database.html#connecting-using-a-database-url) for examples of
 database URLs.
 
-Defaults to `'sqlite:///${PROJECT_NAME}.db'`
+Defaults to SQLite:
+
+    {
+        'backend': 'colibris.persist.SqliteDatabase',
+        'name': 'colibris.db'
+    }
 
 #### `DEBUG`
 
