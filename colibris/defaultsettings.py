@@ -12,10 +12,10 @@ MIDDLEWARE = [
     'colibris.middleware.handle_schema_validation',
 ]
 
-AUTHENTICATION = None
-AUTHORIZATION = None
+AUTHENTICATION = {}
+AUTHORIZATION = {}
 
-CACHE = None
+CACHE = {}
 
 API_DOCS_PATH = '/api/docs'
 
