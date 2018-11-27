@@ -1,8 +1,13 @@
 
-from marshmallow import Schema, fields, EXCLUDE
+from marshmallow import fields
+
+from colibris.schemas import SettingsSchema
 
 
-class CommonSchema(Schema):
+_settings_schemas = []
+
+
+class CommonSchema(SettingsSchema):
     DEBUG = fields.Boolean()
     LISTEN = fields.String()
     PORT = fields.Integer()
@@ -12,7 +17,7 @@ class CommonSchema(Schema):
 
 # authentication
 
-class ModelAuthenticationSchema(Schema):
+class ModelAuthenticationSchema(SettingsSchema):
     AUTHENTICATION_MODEL = fields.String()
     AUTHENTICATION_IDENTITY_FIELD = fields.String()
     AUTHENTICATION_SECRET_FIELD = fields.String()
@@ -28,11 +33,11 @@ class AllAuthenticationSchema(JWTAuthenticationSchema):
 
 # authorization
 
-class RoleAuthorizationSchema(Schema):
+class RoleAuthorizationSchema(SettingsSchema):
     AUTHORIZATION_ROLE_FIELD = fields.String()
 
 
-class ModelAuthorizationSchema(Schema):
+class ModelAuthorizationSchema(SettingsSchema):
     AUTHORIZATION_MODEL = fields.String()
     AUTHORIZATION_ACCOUNT_FIELD = fields.String()
 
@@ -50,11 +55,11 @@ class AllAuthorizationSchema(RoleAuthorizationSchema,
 
 # cache
 
-class LocMemCacheSchema(Schema):
+class LocMemCacheSchema(SettingsSchema):
     CACHE_MAX_ENTRIES = fields.Integer()
 
 
-class RedisCacheSchema(Schema):
+class RedisCacheSchema(SettingsSchema):
     CACHE_HOST = fields.String()
     CACHE_PORT = fields.Integer()
     CACHE_DB = fields.Integer()
@@ -69,11 +74,11 @@ class AllCacheSchema(LocMemCacheSchema,
 
 # database
 
-class SQLiteDatabaseSchema(Schema):
+class SQLiteDatabaseSchema(SettingsSchema):
     DATABASE_NAME = fields.String()
 
 
-class ServerDatabaseSchema(Schema):
+class ServerDatabaseSchema(SettingsSchema):
     DATABASE_NAME = fields.String()
     DATABASE_HOST = fields.String()
     DATABASE_PORT = fields.Integer()
@@ -96,12 +101,18 @@ class AllDatabaseSchema(SQLiteDatabaseSchema,
     DATABASE_BACKEND = fields.String()
 
 
-# put together all schemas
+def register_settings_schema(schema):
+    _settings_schemas.append(schema)
 
-class EnvVarsSchema(CommonSchema,
-                    AllAuthenticationSchema,
-                    AllAuthorizationSchema,
-                    AllCacheSchema):
 
-    class Meta:
-        unknown = EXCLUDE
+def get_all_settings_schema():
+    return type('AllSettingsSchema', tuple(_settings_schemas), {})
+
+
+# put together known schemas
+
+register_settings_schema(CommonSchema)
+register_settings_schema(AllAuthenticationSchema)
+register_settings_schema(AllAuthorizationSchema)
+register_settings_schema(AllCacheSchema)
+register_settings_schema(AllDatabaseSchema)

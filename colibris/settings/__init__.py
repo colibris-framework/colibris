@@ -11,8 +11,8 @@ from dotenv import load_dotenv
 from colibris.settings import defaultsettings
 from colibris.settings import schemas as settings_schemas
 
-# default values
-from colibris.settings.defaultsettings import *
+from colibris.settings.defaultsettings import *  # import default settings directly into module
+from colibris.settings.schemas import register_settings_schema
 
 
 def _is_setting_name(name):
@@ -39,6 +39,10 @@ def _override_setting(settings, name, value):
 
         break
 
+    else:
+        # lastly, we simply add the new setting to the module
+        setattr(settings, name, value)
+
 
 def _override_project_settings(settings):
     try:
@@ -54,7 +58,7 @@ def _override_project_settings(settings):
         _override_setting(settings, name, value)
 
 
-def _override_settings_local(settings):
+def _override_local_settings(settings):
     try:
         settings_local_module = importlib.import_module('settingslocal')
 
@@ -72,7 +76,17 @@ def _override_env_settings(settings):
     load_dotenv(Path('.env.default'))
     load_dotenv(Path('.env'), override=True)
 
-    env_vars = settings_schemas.EnvVarsSchema().load(os.environ)
+    # Importing schemas here ensures that settings schemas decorated with
+    # @register_setting_schema are known to the settings module as early as possible.
+
+    try:
+        importlib.import_module('{}.schemas'.format(PROJECT_PACKAGE_NAME))
+
+    except ImportError:
+        pass
+
+    schema_class = settings_schemas.get_all_settings_schema()
+    env_vars = schema_class().load(os.environ)
 
     for name, value in env_vars.items():
         if value is None:
@@ -92,7 +106,7 @@ def _apply_tweaks(settings):
 
 _this_module = sys.modules[__name__]
 _override_project_settings(_this_module)
-_override_settings_local(_this_module)
+_override_local_settings(_this_module)
 _override_env_settings(_this_module)
 
 
