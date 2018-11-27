@@ -324,6 +324,17 @@ should never be added to git.
 If you want your variables to be part of your project's repository, you can add them to `.env.default`, which should be
 added to git.
 
+#### Settings Schemas
+
+Environment variables are validated and transformed before assigned to settings. These validations are handled by 
+settings schemas. Settings schemas are predefined for all Colibris settings. For project-specific settings, you must
+define your own settings schemas in `schemas.py` and decorate them accordingly:
+
+    @register_settings_schema
+    class MySettingsSchema(SettingsSchema):
+        MY_INT_SETTING = fields.Integer()
+        MY_STR_SETTING = fields.String()
+
 #### Available Settings
 
 ###### `AUTHENTICATION`
