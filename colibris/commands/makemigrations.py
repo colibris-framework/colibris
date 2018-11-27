@@ -14,5 +14,5 @@ class MakeMigrationsCommand(BaseCommand):
         parser.add_argument('name', help='An optional migration name', type=str, default='auto', nargs='?')
 
     def execute(self, options):
-        router = Router(persist.get_database(), migrate_dir=persist.MIGRATIONS_DIR)
+        router = Router(persist.get_database(), migrate_dir=persist.get_migrations_dir())
         router.create(options.name, auto=importlib.import_module(settings.PROJECT_PACKAGE_NAME))

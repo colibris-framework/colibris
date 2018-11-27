@@ -6,8 +6,14 @@ DEBUG = True
 LISTEN = '0.0.0.0'
 PORT = 8888
 
-# DATABASE = 'postgresql://username:password@localhost:5432/__packagename__'
-DATABASE = 'sqlite:////tmp/__projectname__.db'
+# DATABASE = {
+#     'backend': 'colibris.persist.PostgresqlDatabase',
+#     'name': '__packagename__',
+#     'host': '127.0.0.1',
+#     'post': 5432,
+#     'username': 'username',
+#     'password': 'password'
+# }
 
 # AUTHENTICATION = {
 #     'backend': 'colibris.authentication.jwt.JWTBackend',
@@ -16,7 +22,6 @@ DATABASE = 'sqlite:////tmp/__projectname__.db'
 #     'identity_field': 'username',
 #     'secret_field': 'password'
 # }
-
 
 # AUTHORIZATION = {
 #     'backend': 'colibris.authorization.role.RoleBackend',

@@ -18,7 +18,7 @@ def get_backend():
     global _backend, _default_lifetime
 
     if _backend is None:
-        backend_settings = dict(settings.CACHE or {})
+        backend_settings = dict(settings.CACHE)
         backend_path = backend_settings.pop('backend', 'colibris.cache.locmem.LocMemBackend')
         backend_class = utils.import_member(backend_path)
         _default_lifetime = backend_settings.pop('default_lifetime', DEFAULT_LIFETIME)
