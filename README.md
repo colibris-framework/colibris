@@ -44,8 +44,8 @@ sourced, unless otherwise specified.
 
 ## Database
 
-Choose a backend for the database, by setting the `DATABASE` variable in `settings.py`. By default, it is set
-to the SQLite backend.
+Choose a backend for the database, by setting the `DATABASE` variable in `settings.py`. By default, no database is
+enabled and the persistence layer is disabled.
 
 #### SQLite Backend
 
@@ -365,12 +365,7 @@ Sets the project database.
 See [this](http://docs.peewee-orm.com/en/latest/peewee/database.html#connecting-using-a-database-url) for examples of
 database URLs.
 
-Defaults to SQLite:
-
-    {
-        'backend': 'colibris.persist.SqliteDatabase',
-        'name': 'colibris.db'
-    }
+Defaults to `{}`, which disables the persistence mechanism.
 
 ###### `DEBUG`
 

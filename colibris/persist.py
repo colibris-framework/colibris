@@ -32,7 +32,10 @@ def get_database():
 
     if _database is None:
         backend_settings = dict(settings.DATABASE)
-        backend_path = backend_settings.pop('backend', 'colibris.persist.SqliteDatabase')
+        backend_path = backend_settings.pop('backend')
+        if not backend_path:
+            return None
+
         backend_class = utils.import_member(backend_path)
 
         # translate settings into whatever peewee prefers
