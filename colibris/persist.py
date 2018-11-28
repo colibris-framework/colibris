@@ -32,7 +32,7 @@ def get_database():
 
     if _database is None:
         backend_settings = dict(settings.DATABASE)
-        backend_path = backend_settings.pop('backend')
+        backend_path = backend_settings.pop('backend', None)
         if not backend_path:
             return None
 
