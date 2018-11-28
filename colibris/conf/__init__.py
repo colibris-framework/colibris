@@ -7,6 +7,8 @@ import re
 from pathlib import Path
 from dotenv import load_dotenv
 
+from colibris import utils
+
 from colibris.conf import defaultsettings
 from colibris.conf import lazysettings
 from colibris.conf import schemas as settings_schemas
@@ -23,10 +25,8 @@ def _is_setting_name(name):
 
 
 def _set_project_package_settings():
-    try:
-        project_package = importlib.import_module(_settings_store['PROJECT_PACKAGE_NAME'])
-
-    except ImportError:
+    project_package = utils.import_module_or_none(_settings_store['PROJECT_PACKAGE_NAME'])
+    if project_package is None:
         project_package = importlib.import_module('colibris')
 
     _settings_store.setdefault('PROJECT_PACKAGE_DIR', os.path.dirname(project_package.__file__))
@@ -65,11 +65,9 @@ def _setup_default_settings():
 
 
 def _override_project_settings():
-    try:
-        project_settings_module = importlib.import_module('settings')
-
-    except ImportError:
-        return
+    project_settings_module = utils.import_module_or_none('settings')
+    if project_settings_module is None:
+        pass
 
     for name, value in inspect.getmembers(project_settings_module):
         if not _is_setting_name(name):
@@ -79,10 +77,8 @@ def _override_project_settings():
 
 
 def _override_local_settings():
-    try:
-        settings_local_module = importlib.import_module('settingslocal')
-
-    except ImportError:
+    settings_local_module = utils.import_module_or_none('settingslocal')
+    if settings_local_module is None:
         return
 
     for name, value in inspect.getmembers(settings_local_module):

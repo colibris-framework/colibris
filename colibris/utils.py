@@ -24,3 +24,14 @@ def import_member(path):
     module = importlib.import_module(module_path)
 
     return getattr(module, member_name)
+
+
+def import_module_or_none(path):
+    try:
+        return importlib.import_module(path)
+
+    except ModuleNotFoundError as e:
+        if e.name == path:
+            return None
+
+        raise

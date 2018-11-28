@@ -1,6 +1,5 @@
 
 import asyncio
-import importlib
 import inspect
 import time
 
@@ -38,13 +37,8 @@ class HealthException(Exception):
 async def _init_app(app):
     global _project_app
 
-    try:
-        _project_app = importlib.import_module('{}.app'.format(settings.PROJECT_PACKAGE_NAME))
-
-    except ImportError:
-        _project_app = None
-
-    if _project_app:
+    _project_app = utils.import_module_or_none('{}.app'.format(settings.PROJECT_PACKAGE_NAME))
+    if _project_app is not None:
         init = getattr(_project_app, 'init', None)
         if init:
             init(app, asyncio.get_event_loop())
@@ -91,15 +85,12 @@ def _init_default_routes():
 
 
 def _init_project_routes():
-    try:
-        _project_routes = importlib.import_module('{}.routes'.format(settings.PROJECT_PACKAGE_NAME))
+    project_routes = utils.import_module_or_none('{}.routes'.format(settings.PROJECT_PACKAGE_NAME))
+    if project_routes is None:
+        return
 
-    except ImportError:
-        _project_routes = None
-
-    if _project_routes:
-        for _route in getattr(_project_routes, 'ROUTES', []):
-            _add_route_tuple(_route)
+    for _route in getattr(project_routes, 'ROUTES', []):
+        _add_route_tuple(_route)
 
 
 # apispec/swagger support
