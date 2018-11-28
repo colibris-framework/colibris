@@ -3,16 +3,18 @@ import importlib
 import inspect
 import os
 import re
-import sys
 
 from pathlib import Path
 from dotenv import load_dotenv
 
-from colibris.settings import defaultsettings
-from colibris.settings import schemas as settings_schemas
+from colibris.conf import defaultsettings
+from colibris.conf import lazysettings
+from colibris.conf import schemas as settings_schemas
 
-from colibris.settings.defaultsettings import *  # import default settings directly into module
-from colibris.settings.schemas import register_settings_schema
+from colibris.conf.schemas import register_settings_schema
+
+
+_settings_store = {}
 
 
 def _is_setting_name(name):
@@ -20,17 +22,27 @@ def _is_setting_name(name):
     return re.match('^[A-Z][A-Z0-9_]*$', name)
 
 
-def _override_setting(settings, name, value):
+def _set_project_package_settings():
+    try:
+        project_package = importlib.import_module(_settings_store['PROJECT_PACKAGE_NAME'])
+
+    except ImportError:
+        project_package = importlib.import_module('colibris')
+
+    _settings_store.setdefault('PROJECT_PACKAGE_DIR', os.path.dirname(project_package.__file__))
+
+
+def _override_setting(name, value):
     # do we have the setting corresponding to the given name?
-    if hasattr(settings, name):
-        setattr(settings, name, value)
+    if name in _settings_store:
+        _settings_store[name] = value
         return
 
     # try dictionary with items
     parts = name.split('_')
     for i in range(len(parts) - 1):
         dname = '_'.join(parts[:i + 1])
-        d = getattr(settings, dname, None)
+        d = _settings_store.get(dname)
         if not isinstance(d, dict):
             continue
 
@@ -41,10 +53,18 @@ def _override_setting(settings, name, value):
 
     else:
         # lastly, we simply add the new setting to the module
-        setattr(settings, name, value)
+        _settings_store[name] = value
 
 
-def _override_project_settings(settings):
+def _setup_default_settings():
+    for name, value in inspect.getmembers(defaultsettings):
+        if not _is_setting_name(name):
+            continue
+
+        _settings_store[name] = value
+
+
+def _override_project_settings():
     try:
         project_settings_module = importlib.import_module('settings')
 
@@ -55,10 +75,10 @@ def _override_project_settings(settings):
         if not _is_setting_name(name):
             continue
 
-        _override_setting(settings, name, value)
+        _override_setting(name, value)
 
 
-def _override_local_settings(settings):
+def _override_local_settings():
     try:
         settings_local_module = importlib.import_module('settingslocal')
 
@@ -69,10 +89,10 @@ def _override_local_settings(settings):
         if not _is_setting_name(name):
             continue
 
-        _override_setting(settings, name, value)
+        _override_setting(name, value)
 
 
-def _override_env_settings(settings):
+def _override_env_settings():
     load_dotenv(Path('.env.default'))
     load_dotenv(Path('.env'), override=True)
 
@@ -80,7 +100,7 @@ def _override_env_settings(settings):
     # @register_setting_schema are known to the settings module as early as possible.
 
     try:
-        importlib.import_module('{}.schemas'.format(PROJECT_PACKAGE_NAME))
+        importlib.import_module('{}.schemas'.format(_settings_store['PROJECT_PACKAGE_NAME']))
 
     except ImportError:
         pass
@@ -92,35 +112,22 @@ def _override_env_settings(settings):
         if value is None:
             continue
 
-        _override_setting(settings, name, value)
+        _override_setting(name, value)
 
 
-def _apply_tweaks(settings):
+def _apply_tweaks():
     # update default log level according to DEBUG flag
-
-    if settings.LOGGING is defaultsettings.LOGGING and not DEBUG:
-        LOGGING['root']['level'] = 'INFO'
-
-
-# override settings
-
-_this_module = sys.modules[__name__]
-_override_project_settings(_this_module)
-_override_local_settings(_this_module)
-_override_env_settings(_this_module)
+    if _settings_store['LOGGING'] is defaultsettings.LOGGING and not _settings_store['DEBUG']:
+        _settings_store['LOGGING']['root']['level'] = 'INFO'
 
 
-# some final adjustments
+def _initialize():
+    _setup_default_settings()
+    _override_project_settings()
+    _override_local_settings()
+    _override_env_settings()
+    _set_project_package_settings()
+    _apply_tweaks()
 
-_apply_tweaks(_this_module)
 
-
-# set project-related variables
-
-try:
-    PROJECT_PACKAGE = importlib.import_module(PROJECT_PACKAGE_NAME)
-
-except ImportError:
-    PROJECT_PACKAGE = importlib.import_module('colibris')
-
-PROJECT_PACKAGE_DIR = os.path.dirname(PROJECT_PACKAGE.__file__)
+settings = lazysettings.LazySettings(_settings_store, _initialize)

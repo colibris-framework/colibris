@@ -6,6 +6,7 @@ import peewee
 from peewee import *
 from playhouse.postgres_ext import *
 
+from colibris import settings
 from colibris import utils
 
 
@@ -19,20 +20,17 @@ _database = None
 
 
 def get_migrations_dir():
-    from colibris import settings  # TODO import these at the top after implementing LazySettings
 
     # migrations live in the project root package
     return os.path.join(settings.PROJECT_PACKAGE_DIR, 'migrations')
 
 
 def get_database():
-    from colibris import settings  # TODO import these at the top after implementing LazySettings
-
     global _database
 
     if _database is None:
         backend_settings = dict(settings.DATABASE)
-        backend_path = backend_settings.pop('backend')
+        backend_path = backend_settings.pop('backend', None)
         if not backend_path:
             return None
 

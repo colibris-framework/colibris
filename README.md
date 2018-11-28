@@ -394,6 +394,10 @@ A list of all the middleware functions to be applied, in order, to each request/
 
 Controls the server TCP listening port. Defaults to `8888`.
 
+###### `PROJECT_PACKAGE_DIR`
+
+Sets the path to the project directory. By default, it is automatically deduced. 
+
 ###### `PROJECT_PACKAGE_NAME`
 
 Sets the main project package name. Defaults to `'${PROJECT_NAME}'`.
