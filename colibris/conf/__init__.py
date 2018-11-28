@@ -29,7 +29,7 @@ def _set_project_package_settings():
     except ImportError:
         project_package = importlib.import_module('colibris')
 
-    _settings_store['PROJECT_PACKAGE_DIR'] = os.path.dirname(project_package.__file__)
+    _settings_store.setdefault('PROJECT_PACKAGE_DIR', os.path.dirname(project_package.__file__))
 
 
 def _override_setting(name, value):
