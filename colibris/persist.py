@@ -12,7 +12,7 @@ from colibris import utils
 
 _PEEWEE_DB_PARAMS_MAPPING = {
     'name': 'database',
-    'user': 'username'
+    'username': 'user'
 }
 
 logger = logging.getLogger(__name__)
