@@ -15,26 +15,21 @@ services:
 #    restart: always
 #    ports:
 #      - "6379:6379"
-#  migration:
-#    image: __projectname__:latest
-#    build: .
-#    environment:
-#      - DATABASE=postgresql://postgres:postgres@db:5432/__packagename__
-#    command: wait-for-it db:5432 -t 10 -s -- python manage.py migrate
-#    depends_on:
-#      - db
   app:
     image: __projectname__:latest
     build: .
 #    environment:
-#      - DATABASE=postgresql://postgres:postgres@db:5432/__packagename__
+#      - DATABASE_BACKEND=colibris.persist.PostgresqlDatabase
+#      - DATABASE_NAME=__packagename__
+#      - DATABASE_HOST=db
+#      - CACHE_HOST=cache
 #    command: >
-#      wait-for-it db:5432    -t 10 -s --
-#      wait-for-it cache:6379 -t 10 -s --
-#      python manage.py runserver
+#      bash -c "wait-for-it db:5432 -t 10 -s &&
+#               wait-for-it cache:6379 -t 10 -s &&
+#               python manage.py migrate &&
+#               python manage.py runserver"
     ports:
       - "8888:8888"
 #    depends_on:
 #      - db
 #      - cache
-#      - migration
