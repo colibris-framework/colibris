@@ -1,10 +1,14 @@
 
 from marshmallow import fields
-
-from colibris.schemas import SettingsSchema
+from marshmallow import Schema as MMSchema, EXCLUDE as MM_EXCLUDE
 
 
 _settings_schemas = []
+
+
+class SettingsSchema(MMSchema):
+    class Meta:
+        unknown = MM_EXCLUDE
 
 
 class CommonSchema(SettingsSchema):

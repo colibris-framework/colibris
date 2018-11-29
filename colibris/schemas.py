@@ -1,17 +1,12 @@
 
 import marshmallow_peewee.schema
 
-from marshmallow import Schema as MMSchema, EXCLUDE as MM_EXCLUDE
+from marshmallow import Schema as MMSchema
 from marshmallow import pre_dump, post_dump, pre_load, post_load
 from marshmallow import fields, validate
 
 from colibris.api import envelope
 from colibris.utils import camelcase_to_underscore
-
-
-class SettingsSchema(MMSchema):
-    class Meta:
-        unknown = MM_EXCLUDE
 
 
 class ModelSchemaOpts(marshmallow_peewee.schema.SchemaOpts):

@@ -92,15 +92,6 @@ def _override_env_settings():
     load_dotenv(Path('.env.default'))
     load_dotenv(Path('.env'), override=True)
 
-    # Importing schemas here ensures that settings schemas decorated with
-    # @register_setting_schema are known to the settings module as early as possible.
-
-    try:
-        importlib.import_module('{}.schemas'.format(_settings_store['PROJECT_PACKAGE_NAME']))
-
-    except ImportError:
-        pass
-
     schema_class = settings_schemas.get_all_settings_schema()
     env_vars = schema_class().load(os.environ)
 
