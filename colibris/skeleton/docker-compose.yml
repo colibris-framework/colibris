@@ -17,6 +17,7 @@ services:
 #      - "6379:6379"
 #  migration:
 #    image: __projectname__:latest
+#    build: .
 #    environment:
 #      - DATABASE=postgresql://postgres:postgres@db:5432/__packagename__
 #    command: wait-for-it db:5432 -t 10 -s -- python manage.py migrate
@@ -24,6 +25,7 @@ services:
 #      - db
   app:
     image: __projectname__:latest
+    build: .
 #    environment:
 #      - DATABASE=postgresql://postgres:postgres@db:5432/__packagename__
 #    command: >
