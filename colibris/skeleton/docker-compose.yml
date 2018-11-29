@@ -22,6 +22,8 @@ services:
 #      - DATABASE_BACKEND=colibris.persist.PostgresqlDatabase
 #      - DATABASE_NAME=__packagename__
 #      - DATABASE_HOST=db
+#      - DATABASE_USERNAME=postgres
+#      - DATABASE_PASSWORD=postgres
 #      - CACHE_HOST=cache
 #    command: >
 #      bash -c "wait-for-it db:5432 -t 10 -s &&
