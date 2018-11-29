@@ -1,9 +1,8 @@
 
 import os
+import re
 
 from setuptools import setup, find_packages
-
-from colibris import VERSION
 
 
 def package_data_rec(package, directory):
@@ -15,9 +14,18 @@ def package_data_rec(package, directory):
     return paths
 
 
+def find_version():
+    with open(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'colibris', '__init__.py')) as f:
+        m = re.search("VERSION\s*=\s*'(.*?)'", f.read())
+        if m:
+            return m.group(1)
+
+    return 'unknown'
+
+
 setup(
     name='colibris',
-    version=VERSION,
+    version=find_version(),
     install_requires=[
         'aiohttp',
         'aiohttp-apispec',
