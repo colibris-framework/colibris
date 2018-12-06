@@ -10,7 +10,7 @@ PORT = 8888
 #     'backend': 'colibris.persist.PostgresqlDatabase',
 #     'name': '__packagename__',
 #     'host': '127.0.0.1',
-#     'post': 5432,
+#     'port': 5432,
 #     'username': 'username',
 #     'password': 'password'
 # }
