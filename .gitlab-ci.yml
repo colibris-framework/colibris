@@ -9,8 +9,8 @@ release-pypi:
     - twine upload dist/*
 
 update-wiki:
-#  only:
-#    - master
+  only:
+    - does-not-work-yet-with-gitlab
   before_script:
     - eval $(ssh-agent -s)
     - ssh-add <(echo "${SSH_PRIVATE_KEY}")
