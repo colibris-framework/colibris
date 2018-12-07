@@ -23,5 +23,5 @@ update-wiki:
     - cd ../${CI_PROJECT_NAME}.wiki
     - sed -i '1s/^/[[_TOC_]]\n\n----\n/' home.md
     - git add .
-    - git commit -m 'Update home.md'
+    - git commit -m 'Update home.md' || true
     - git push
