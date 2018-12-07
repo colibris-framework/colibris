@@ -21,7 +21,7 @@ update-wiki:
     - git clone git@gitlab.com:safefleet/${CI_PROJECT_NAME}.wiki.git ../${CI_PROJECT_NAME}.wiki
     - cp README.md ../${CI_PROJECT_NAME}.wiki/home.md
     - cd ../${CI_PROJECT_NAME}.wiki
-    - sed -i '1s/^/[[TOC]]\n\n----\n/' home.md
+    - sed -i '1s/^/[[_TOC_]]\n\n----\n/' home.md
     - git add .
     - git commit -m 'Update home.md'
     - git push
