@@ -4,7 +4,10 @@ import os
 import peewee
 
 from peewee import *
-from playhouse.postgres_ext import *
+try:
+    from playhouse.postgres_ext import *
+except ImportError:
+    pass
 
 from colibris import settings
 from colibris import utils
