@@ -31,11 +31,6 @@ You can use a different template repository for your project's skeleton:
 
     colibris-start-project ${PROJECT_NAME} --template git@gitlab.com:safefleet/microservice-template.git 
 
-Optionally, you can move the virtualenv to your project's root folder:
-
-    virtualenv --relocatable ${VENVS}/${PROJECT_NAME}
-    mv ${VENVS}/${PROJECT_NAME} ${PROJECT_NAME}/.venv
-
 Your project folder will contain a package derived from your project name as well as various other stuff.
 
 The commands in this document assume you're in your project folder and you have your virtual environment correctly
