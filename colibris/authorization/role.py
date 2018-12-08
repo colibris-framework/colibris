@@ -16,4 +16,4 @@ class RoleBackend(AuthorizationBackend):
         if required_permissions == ANY_PERMISSION:
             return True  # anyone authenticated is authorized
 
-        return self.get_role(account) == required_permissions
+        return self.get_role(account) in required_permissions
