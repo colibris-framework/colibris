@@ -14,14 +14,14 @@ class BaseJSONException(APIException):
         return self.code
 
 
-class DuplicateException(APIException):
+class DuplicateException(BaseJSONException):
     def __init__(self, model, field):
         super().__init__('duplicate_{}'.format(field),
                          'A {} with this {} already exists.'.format(model._meta.name, field),
                          status=400)
 
 
-class NotFoundException(APIException):
+class NotFoundException(BaseJSONException):
     def __init__(self, model):
         super().__init__('not_found',
                          'The requested {} cannot be found.'.format(model._meta.name),
