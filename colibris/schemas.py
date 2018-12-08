@@ -9,6 +9,9 @@ from colibris.api import envelope
 from colibris.utils import camelcase_to_underscore
 
 
+DEFAULT_DATETIME_FORMAT = '%Y-%m-%dT%H:%M:%S'
+
+
 class ModelSchemaOpts(marshmallow_peewee.schema.SchemaOpts):
     def __init__(self, meta, **kwargs):
         super().__init__(meta, **kwargs)
@@ -16,6 +19,8 @@ class ModelSchemaOpts(marshmallow_peewee.schema.SchemaOpts):
         if self.model:
             self.name = getattr(meta, 'name', camelcase_to_underscore(self.model.__name__))
             self.name_plural = getattr(meta, 'name_plural', self.name + 's')
+
+        self.datetimeformat = DEFAULT_DATETIME_FORMAT
 
 
 class ModelSchema(marshmallow_peewee.ModelSchema):
