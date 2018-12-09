@@ -1,0 +1,27 @@
+image: python:3.7
+
+release-pypi:
+  only:
+    - /^version-.*$/
+  script:
+    - pip install -U twine
+    - python setup.py sdist
+    - twine upload dist/*
+
+update-wiki:
+#  only:
+#    - master
+  before_script:
+    - eval $(ssh-agent -s)
+    - ssh-add <(echo "${SSH_PRIVATE_KEY}")
+    - git config --global user.email "robot@safefleet.eu"
+    - git config --global user.name "Mr. Robot"
+    - export GIT_SSH_COMMAND="ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no"
+  script:
+    - git clone git@gitlab.com:safefleet/${CI_PROJECT_NAME}.wiki.git ../${CI_PROJECT_NAME}.wiki
+    - cp README.md ../${CI_PROJECT_NAME}.wiki/home.md
+    - cd ../${CI_PROJECT_NAME}.wiki
+    - sed -i '1s/^/[[_TOC_]]\n\n----\n/' home.md
+    - git add .
+    - git commit -m 'Update home.md' || true
+    - git push
