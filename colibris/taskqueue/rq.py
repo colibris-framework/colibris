@@ -5,6 +5,7 @@ import logging
 import pickle
 import redis
 import rq
+import traceback
 
 from rq import Connection
 from rq.worker import Worker
@@ -12,6 +13,7 @@ from rq.connections import get_current_connection
 from rq.queue import get_failed_queue
 
 from colibris.taskqueue.base import TaskQueueBackend
+from colibris.taskqueue.exceptions import UnpicklableException
 
 
 _POLL_RESULTS_INTERVAL = 1  # seconds
@@ -66,7 +68,7 @@ class RQBackend(TaskQueueBackend):
                         exc_value = base64.b64decode(result.exc_info)
                         exc_value = pickle.loads(exc_value)
                         if isinstance(exc_value, str):
-                            exc_value = Exception('unpicklable exception thrown')  # TODO add dedicated exception
+                            exc_value = UnpicklableException(exc_value)
 
                         future.set_exception(exc_value)
 
@@ -99,9 +101,10 @@ class RQBackend(TaskQueueBackend):
         try:
             pickled_exc_value = pickle.dumps(exc_value)
 
-        except pickle.PickleError as e:
+        except pickle.PickleError:
             logger.error('exception could not be pickled')
-            pickled_exc_value = pickle.dumps(str(exc_value))
+            exc_string = Worker._get_safe_exception_string(traceback.format_exception(exc_type, exc_value, tb))
+            pickled_exc_value = pickle.dumps(exc_string)
 
         # we need to encode pickled_exc_value using base64, since pickle is not guaranteed to be ASCII
         pickled_exc_value = base64.b64encode(pickled_exc_value).decode()
