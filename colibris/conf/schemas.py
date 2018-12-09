@@ -105,6 +105,19 @@ class AllDatabaseSchema(SQLiteDatabaseSchema,
     DATABASE_BACKEND = fields.String()
 
 
+# cache
+
+class RQTaskQueueSchema(SettingsSchema):
+    CACHE_HOST = fields.String()
+    CACHE_PORT = fields.Integer()
+    CACHE_DB = fields.Integer()
+    CACHE_PASSWORD = fields.String()
+
+
+class AllTaskQueueSchema(RQTaskQueueSchema):
+    TASK_QUEUE_BACKEND = fields.String()
+
+
 def register_settings_schema(schema):
     _settings_schemas.append(schema)
 
@@ -120,3 +133,4 @@ register_settings_schema(AllAuthenticationSchema)
 register_settings_schema(AllAuthorizationSchema)
 register_settings_schema(AllCacheSchema)
 register_settings_schema(AllDatabaseSchema)
+register_settings_schema(AllTaskQueueSchema)
