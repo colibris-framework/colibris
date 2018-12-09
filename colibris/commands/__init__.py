@@ -73,4 +73,5 @@ def main():
 from . import makemigrations
 from . import migrate
 from . import runserver
+from . import runworker
 from . import shell
