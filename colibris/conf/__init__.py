@@ -13,8 +13,6 @@ from colibris.conf import defaultsettings
 from colibris.conf import lazysettings
 from colibris.conf import schemas as settings_schemas
 
-from colibris.conf.schemas import register_settings_schema
-
 
 _settings_store = {}
 

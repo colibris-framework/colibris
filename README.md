@@ -323,9 +323,9 @@ added to git.
 
 Environment variables are validated and transformed before assigned to settings. These validations are handled by 
 settings schemas. Settings schemas are predefined for all Colibris settings. For project-specific settings, you must
-define your own settings schemas in `schemas.py` and decorate them accordingly:
+define your own settings schemas in your `settings.py` and decorate them accordingly:
 
-    from colibris.conf import register_settings_schema
+    from colibris.conf.schemas import SettingsSchema, fields, register_settings_schema
 
     @register_settings_schema
     class MySettingsSchema(SettingsSchema):
