@@ -16,17 +16,20 @@ from colibris.taskqueue.base import TaskQueueBackend
 from colibris.taskqueue.exceptions import UnpicklableException
 
 
-_POLL_RESULTS_INTERVAL = 1  # seconds
+DEFAULT_POLL_RESULTS_INTERVAL = 1  # seconds
 
 logger = logging.getLogger(__name__)
 
 
 class RQBackend(TaskQueueBackend):
-    def __init__(self, host='localhost', port=6379, db=0, password=None):
+    def __init__(self, host='localhost', port=6379, db=0, password=None,
+                 poll_results_interval=DEFAULT_POLL_RESULTS_INTERVAL):
+
         self._host = host
         self._port = port
         self._db = db
         self._password = password
+        self._poll_results_interval = poll_results_interval
 
         self._pending_results = []
         self._poll_loop_started = False
@@ -53,8 +56,9 @@ class RQBackend(TaskQueueBackend):
         self._poll_loop_started = True
         logger.debug('starting results polling loop ')
 
-        # TODO implement clean loop exit mechanism
-        while True:
+        loop = asyncio.get_event_loop()
+
+        while loop.is_running():
             remaining_results = []
             for tup in self._pending_results:
                 try:
@@ -80,7 +84,7 @@ class RQBackend(TaskQueueBackend):
 
             self._pending_results = remaining_results
 
-            await asyncio.sleep(_POLL_RESULTS_INTERVAL)
+            await asyncio.sleep(self._poll_results_interval)
 
     async def execute(self, func, *args, timeout, **kwargs):
         if not self._poll_loop_started:

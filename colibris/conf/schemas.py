@@ -108,10 +108,11 @@ class AllDatabaseSchema(SQLiteDatabaseSchema,
 # cache
 
 class RQTaskQueueSchema(SettingsSchema):
-    CACHE_HOST = fields.String()
-    CACHE_PORT = fields.Integer()
-    CACHE_DB = fields.Integer()
-    CACHE_PASSWORD = fields.String()
+    TASK_QUEUE_HOST = fields.String()
+    TASK_QUEUE_PORT = fields.Integer()
+    TASK_QUEUE_DB = fields.Integer()
+    TASK_QUEUE_PASSWORD = fields.String()
+    TASK_QUEUE_POLL_RESULTS_INTERVAL = fields.Integer()
 
 
 class AllTaskQueueSchema(RQTaskQueueSchema):
