@@ -4,6 +4,7 @@ import logging.config
 import sys
 
 from colibris import settings
+from colibris import utils
 
 
 class BaseCommand:
@@ -31,6 +32,15 @@ class BaseCommand:
         return cls.__name__[0:-7].lower()
 
 
+def gather_all_commands():
+    global ALL_COMMANDS
+
+    # import any project-specific commands
+    utils.import_module_or_none('{}.commands'.format(settings.PROJECT_PACKAGE_NAME))
+
+    ALL_COMMANDS = {c.get_name(): c for c in BaseCommand.__subclasses__()}
+
+
 def show_commands_usage():
     cmds = '\n  '.join([c.get_name() for c in ALL_COMMANDS.values()])
     usage = '{prog} <command> [args]\n\n' \
@@ -43,6 +53,8 @@ def show_commands_usage():
 
 
 def main():
+    gather_all_commands()
+
     args = sys.argv
     if len(args) < 2 or args[1] not in ALL_COMMANDS:
         show_commands_usage()
@@ -62,5 +74,3 @@ from . import makemigrations
 from . import migrate
 from . import runserver
 from . import shell
-
-ALL_COMMANDS = {c.get_name(): c for c in BaseCommand.__subclasses__()}
