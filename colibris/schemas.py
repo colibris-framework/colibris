@@ -1,7 +1,7 @@
 
 import marshmallow_peewee.schema
 
-from marshmallow import Schema
+from marshmallow import Schema, ValidationError
 from marshmallow import pre_dump, post_dump, pre_load, post_load
 from marshmallow import fields, validate
 
