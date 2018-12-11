@@ -88,7 +88,7 @@ from __packagename__ import schemas
 # def delete_user(request):
 #     user_id = request.match_info['id']
 #     if models.User.delete().where(models.User.id == user_id).execute() == 0:
-#         raise api.NotFoundException(models.User)
+#         raise api.ModelNotFoundException(models.User)
 #
 #     return web.json_response(status=204)
 #

@@ -13,4 +13,4 @@ def get_object_or_404(model, pk, select_related=None):
         return q.get()
 
     except model.DoesNotExist:
-        raise api.NotFoundException(model)
+        raise api.ModelNotFoundException(model)
