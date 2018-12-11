@@ -14,11 +14,15 @@ class BaseJSONException(APIException):
         return self.code
 
 
-class DuplicateException(BaseJSONException):
+class InvalidRequest(BaseJSONException):
+    def __init__(self, code, message):
+        super().__init__(code, message, status=400)
+
+
+class DuplicateException(InvalidRequest):
     def __init__(self, model, field):
         super().__init__('duplicate_{}'.format(field),
-                         'A {} with this {} already exists.'.format(model._meta.name, field),
-                         status=400)
+                         'A {} with this {} already exists.'.format(model._meta.name, field))
 
 
 class NotFoundException(BaseJSONException):
