@@ -19,6 +19,16 @@ class InvalidRequest(BaseJSONException):
         super().__init__(code, message, status=400)
 
 
+class UnauthenticatedException(BaseJSONException):
+    def __init__(self, code, message):
+        super().__init__(code='unauthenticated', message='The request cannot be associated to an account.', status=401)
+
+
+class ForbiddenException(BaseJSONException):
+    def __init__(self, code, message):
+        super().__init__(code='forbidden', message='Access to requested resource is forbidden.', status=403)
+
+
 class DuplicateException(InvalidRequest):
     def __init__(self, model, field):
         super().__init__('duplicate_{}'.format(field),
