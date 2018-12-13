@@ -272,6 +272,12 @@ In `settings.py`, set:
         'poll_results_interval': 1
     }
 
+#### Background Worker
+
+To actually execute the queued background tasks, you'll need to spawn at least one worker:
+
+    ./manage.py runworker
+
 
 ## Health Status
 
