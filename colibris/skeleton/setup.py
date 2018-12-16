@@ -30,7 +30,7 @@ def package_data_rec(package, directory):
 
 
 def find_version():
-    with open(os.path.join(os.path.dirname(os.path.abspath(__file__)), '__packagename__', '__init__.py')) as f:
+    with open(os.path.join(os.path.dirname(os.path.abspath(__file__)), PROJECT_PACKAGE_NAME, '__init__.py')) as f:
         m = re.search(r"VERSION\s*=\s*'(.*?)'", f.read())
         if m:
             return m.group(1)
@@ -50,7 +50,7 @@ setup(
     packages=find_packages(include=PROJECT_PACKAGE_NAME + '/*'),
     entry_points={
         'console_scripts': [
-            '__packagename__=__packagename__.manage:main',
+            '{name}={name}.manage:main'.format(name=PROJECT_PACKAGE_NAME),
         ]
     },
     cmdclass={

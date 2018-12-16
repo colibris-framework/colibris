@@ -1,5 +1,5 @@
 
-PROJECT_PACKAGE_NAME = 'projectname'
+PROJECT_PACKAGE_NAME = 'colibris'
 
 DEBUG = True
 

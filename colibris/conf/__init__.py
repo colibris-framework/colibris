@@ -3,6 +3,7 @@ import importlib
 import inspect
 import os
 import re
+import sys
 
 from pathlib import Path
 from dotenv import load_dotenv
@@ -20,14 +21,6 @@ _settings_store = {}
 def _is_setting_name(name):
     # only consider public members that are all in capitals
     return re.match('^[A-Z][A-Z0-9_]*$', name)
-
-
-def _set_project_package_settings():
-    project_package = utils.import_module_or_none(_settings_store['PROJECT_PACKAGE_NAME'])
-    if project_package is None:
-        project_package = importlib.import_module('colibris')
-
-    _settings_store.setdefault('PROJECT_PACKAGE_DIR', os.path.dirname(project_package.__file__))
 
 
 def _override_setting(name, value):
@@ -52,6 +45,27 @@ def _override_setting(name, value):
     else:
         # lastly, we simply add the new setting to the module
         _settings_store[name] = value
+
+
+def _setup_project_package():
+    # autodetect project package from main script path
+    main_script = sys.argv[0]
+    project_package_name = None
+    if main_script.endswith('manage.py'):  # using manage.py
+        project_package_name = os.path.basename(os.path.dirname(main_script))
+        project_package_name = re.sub('[^a-z0-9_]', '', project_package_name).lower()
+
+    else:  # using a setuptools console script wrapper
+        with open(main_script, 'rt') as main_module_file:
+            main_content = main_module_file.read()
+            m = re.search(r'from (\w+).manage import main', main_content)
+            if m:
+                project_package_name = m.group(1)
+
+    _settings_store['PROJECT_PACKAGE_NAME'] = project_package_name
+
+    project_package = importlib.import_module(project_package_name)
+    _settings_store.setdefault('PROJECT_PACKAGE_DIR', os.path.dirname(project_package.__file__))
 
 
 def _setup_default_settings():
@@ -107,11 +121,11 @@ def _apply_tweaks():
 
 
 def _initialize():
+    _setup_project_package()
     _setup_default_settings()
     _override_project_settings()
     _override_local_settings()
     _override_env_settings()
-    _set_project_package_settings()
     _apply_tweaks()
 
 
