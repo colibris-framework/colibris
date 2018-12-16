@@ -51,6 +51,7 @@ def _setup_project_package():
     main_script = sys.argv[0]
     project_package_name = None
     if main_script.endswith('manage.py'):  # using manage.py
+        main_script = os.path.realpath(main_script)
         project_package_name = os.path.basename(os.path.dirname(main_script))
         project_package_name = re.sub('[^a-z0-9_]', '', project_package_name).lower()
 
@@ -78,7 +79,11 @@ def _setup_default_settings():
 def _override_project_settings():
     project_settings_module = utils.import_module_or_none('settings')
     if project_settings_module is None:
-        pass
+        # try settings module from project package
+        project_settings_path = '{}.settings'.format(_settings_store['PROJECT_PACKAGE_NAME'])
+        project_settings_module = utils.import_module_or_none(project_settings_path)
+        if project_settings_module is None:
+            return
 
     for name, value in inspect.getmembers(project_settings_module):
         if not _is_setting_name(name):
@@ -120,8 +125,8 @@ def _apply_tweaks():
 
 
 def _initialize():
-    _setup_project_package()
     _setup_default_settings()
+    _setup_project_package()
     _override_project_settings()
     _override_local_settings()
     _override_env_settings()
