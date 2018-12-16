@@ -47,7 +47,7 @@ setup(
     url='',
     license='',
     description='Project description.',
-    packages=find_packages(include=PROJECT_PACKAGE_NAME + '/*'),
+    packages=find_packages(include=PROJECT_PACKAGE_NAME + '/*') + [PROJECT_PACKAGE_NAME + '.migrations'],
     entry_points={
         'console_scripts': [
             '{name}={name}.manage:main'.format(name=PROJECT_PACKAGE_NAME),
