@@ -3,5 +3,9 @@
 from colibris import commands
 
 
-if __name__ == '__main__':
+def main():
     commands.main()
+
+
+if __name__ == '__main__':
+    main()

@@ -16,7 +16,7 @@ def package_data_rec(package, directory):
 
 def find_version():
     with open(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'colibris', '__init__.py')) as f:
-        m = re.search("VERSION\s*=\s*'(.*?)'", f.read())
+        m = re.search(r"VERSION\s*=\s*'(.*?)'", f.read())
         if m:
             return m.group(1)
 
