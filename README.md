@@ -53,6 +53,8 @@ In `settings.py`, set:
 
 #### MySQL Backend
 
+Make sure to have the `mysqldb` or `pymysql` python package installed.
+
 In `settings.py`, set:
 
     DATABASE = {
@@ -65,6 +67,8 @@ In `settings.py`, set:
     }
 
 #### PostgreSQL Backend
+
+Make sure to have the `psycopg2-binary` python package installed.
 
 In `settings.py`, set:
 
@@ -112,6 +116,8 @@ Choose a backend for the authentication by setting the `AUTHENTICATION` variable
 to `{}`, associating each request with a dummy identity.
 
 #### JWT Backend
+
+Make sure to have the `pyjwt` python package installed. 
 
 In `settings.py`, set:
 
@@ -213,6 +219,8 @@ You can invalidate a key using `delete`:
 
 #### Redis Backend
 
+Make sure to have the `redis` python package installed.
+
 In `settings.py`, set:
 
     CACHE = {
@@ -222,6 +230,53 @@ In `settings.py`, set:
         'db': 0,
         'password': 'yourpassword'
     }
+
+
+## Background Tasks
+
+Running time-consuming tasks can be done by using the `taskqueue` functionality. The `TASK_QUEUE` variable in
+`settings.py` configures the background running task mechanism. It defaults to `{}`, in which case the background tasks
+are disabled.
+
+#### Usage
+
+To run a background task, import the `taskqueue` wherever you need it:
+
+    from colibris import taskqueue
+    
+Then run your time consuming task:
+
+    def time_consuming_task(arg1, arg2):
+        time.sleep(10)
+    
+    ...
+    
+    try:
+        result = await taskqueue.execute(time_consuming_task, 'value1', arg2='value2', timeout=20)
+    
+    except Exception as e:
+        handle_exception(e)
+
+#### RQ Backend
+
+Make sure to have the `rq` and `redis` python packages installed.
+
+In `settings.py`, set:
+
+    TASK_QUEUE = {
+        'backend': 'colibris.taskqueue.rq.RQBackend',
+        'host': '127.0.0.1',
+        'port': 6379,
+        'db': 0,
+        'password': 'yourpassword',
+        'poll_results_interval': 1
+    }
+
+#### Background Worker
+
+To actually execute the queued background tasks, you'll need to spawn at least one worker:
+
+    ./manage.py runworker
 
 
 ## Health Status

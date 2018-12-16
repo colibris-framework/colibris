@@ -7,6 +7,7 @@ from aiohttp import web
 from aiohttp_apispec import validation_middleware
 from webargs import aiohttpparser
 
+from colibris import api
 from colibris import app
 from colibris import settings
 from colibris import utils
@@ -109,7 +110,7 @@ async def handle_auth(request, handler):
         except authentication_exceptions.AuthenticationException as e:
             logger.error('%s %s authentication failed: %s', method, path, e)
 
-            raise web.HTTPUnauthorized()
+            raise api.UnauthenticatedException()
 
         # at this point we can safely associate request with account
         request.account = account
@@ -117,7 +118,7 @@ async def handle_auth(request, handler):
         if not _authorization_backend.authorize(account, method, path, permissions):
             logger.error('%s %s forbidden for %s', method, path, account)
 
-            raise web.HTTPForbidden()
+            raise api.ForbiddenException()
 
     return await handler(request)
 

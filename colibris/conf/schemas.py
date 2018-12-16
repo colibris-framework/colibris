@@ -1,6 +1,8 @@
 
-from marshmallow import fields
-from marshmallow import Schema as MMSchema, EXCLUDE as MM_EXCLUDE
+from marshmallow import Schema as MMSchema, ValidationError
+from marshmallow import pre_dump, post_dump, pre_load, post_load, validates_schema
+from marshmallow import fields, validate
+from marshmallow import EXCLUDE as MM_EXCLUDE
 
 
 _settings_schemas = []
@@ -105,6 +107,20 @@ class AllDatabaseSchema(SQLiteDatabaseSchema,
     DATABASE_BACKEND = fields.String()
 
 
+# cache
+
+class RQTaskQueueSchema(SettingsSchema):
+    TASK_QUEUE_HOST = fields.String()
+    TASK_QUEUE_PORT = fields.Integer()
+    TASK_QUEUE_DB = fields.Integer()
+    TASK_QUEUE_PASSWORD = fields.String()
+    TASK_QUEUE_POLL_RESULTS_INTERVAL = fields.Integer()
+
+
+class AllTaskQueueSchema(RQTaskQueueSchema):
+    TASK_QUEUE_BACKEND = fields.String()
+
+
 def register_settings_schema(schema):
     _settings_schemas.append(schema)
 
@@ -120,3 +136,4 @@ register_settings_schema(AllAuthenticationSchema)
 register_settings_schema(AllAuthorizationSchema)
 register_settings_schema(AllCacheSchema)
 register_settings_schema(AllDatabaseSchema)
+register_settings_schema(AllTaskQueueSchema)
