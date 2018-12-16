@@ -1,4 +1,5 @@
 
+import builtins
 import importlib
 import re
 
@@ -27,6 +28,8 @@ def import_member(path):
 
 
 def import_module_or_none(path):
+    ModuleNotFoundError = getattr(builtins, 'ModuleNotFoundError', ImportError)
+
     try:
         return importlib.import_module(path)
 

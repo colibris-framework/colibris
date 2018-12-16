@@ -5,7 +5,6 @@ import os
 import re
 import sys
 
-from pathlib import Path
 from dotenv import load_dotenv
 
 from colibris import utils
@@ -101,8 +100,8 @@ def _override_local_settings():
 
 
 def _override_env_settings():
-    load_dotenv(Path('.env.default'))
-    load_dotenv(Path('.env'), override=True)
+    load_dotenv('.env.default')
+    load_dotenv('.env', override=True)
 
     schema_class = settings_schemas.get_all_settings_schema()
     env_vars = schema_class().load(os.environ)
