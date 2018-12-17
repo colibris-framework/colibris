@@ -9,11 +9,10 @@ from webargs import aiohttpparser
 
 from colibris import api
 from colibris import app
+from colibris import authentication
 from colibris import settings
 from colibris import utils
 from colibris.api import BaseJSONException, envelope
-
-from colibris.authentication import exceptions as authentication_exceptions
 
 
 logger = logging.getLogger(__name__)
@@ -107,7 +106,7 @@ async def handle_auth(request, handler):
         try:
             account = _authentication_backend.authenticate(request)
 
-        except authentication_exceptions.AuthenticationException as e:
+        except authentication.AuthenticationException as e:
             logger.error('%s %s authentication failed: %s', method, path, e)
 
             raise api.UnauthenticatedException()
