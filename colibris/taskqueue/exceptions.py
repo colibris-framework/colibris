@@ -1,13 +1,12 @@
 
-from colibris.utils import ClassNameException
 
-
-class TaskQueueException(ClassNameException):
+class TaskQueueException(Exception):
     pass
 
 
 class TimeoutException(TaskQueueException):
-    pass
+    def __init__(self, timeout):
+        super().__init__('task did not complete within {} seconds'.format(timeout))
 
 
 class UnpicklableException(TaskQueueException):

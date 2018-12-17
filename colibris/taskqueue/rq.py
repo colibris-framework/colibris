@@ -62,7 +62,7 @@ class RQBackend(TaskQueueBackend):
             remaining_results = []
             for tup in self._pending_results:
                 try:
-                    result, future = tup
+                    result, timeout, future = tup
                     result.refresh()
 
                     if result.is_finished:
@@ -78,7 +78,7 @@ class RQBackend(TaskQueueBackend):
 
                         # transform rq timeouts into taskqueue timeouts
                         if isinstance(exc_value, rq.timeouts.JobTimeoutException):
-                            exc_value = TimeoutException()
+                            exc_value = TimeoutException(timeout)
 
                         future.set_exception(exc_value)
 
@@ -102,7 +102,7 @@ class RQBackend(TaskQueueBackend):
         future = loop.create_future()
         result = queue.enqueue(func, timeout=timeout, *args, **kwargs)
 
-        self._pending_results.append((result, future))
+        self._pending_results.append((result, timeout, future))
 
         return await future
 
