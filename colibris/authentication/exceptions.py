@@ -1,14 +1,14 @@
 
-from colibris.utils import ClassNameException
 
-
-class AuthenticationException(ClassNameException):
+class AuthenticationException(Exception):
     pass
 
 
 class NoSuchAccount(AuthenticationException):
-    pass
+    def __init__(self):
+        super().__init__('no such account')
 
 
 class IdentityVerificationFailed(AuthenticationException):
-    pass
+    def __init__(self):
+        super().__init__('identity verification failed')
