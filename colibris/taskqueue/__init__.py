@@ -4,6 +4,8 @@ import logging
 from colibris import settings
 from colibris import utils
 
+from .exceptions import *
+
 
 DEFAULT_TIMEOUT = 300  # seconds
 
