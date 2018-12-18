@@ -1,4 +1,6 @@
 
+import async_timeout
+import asyncio
 import logging
 
 from colibris import settings
@@ -32,7 +34,12 @@ def get_backend():
 
 
 async def execute(func, *args, timeout=DEFAULT_TIMEOUT, **kwargs):
-    return await get_backend().execute(func, *args, timeout=timeout, **kwargs)
+    try:
+        with async_timeout.timeout(timeout):
+            return await get_backend().execute(func, *args, timeout=timeout, **kwargs)
+
+    except asyncio.TimeoutError:
+        raise TimeoutException(timeout)
 
 
 def add_worker_arguments(parser):
