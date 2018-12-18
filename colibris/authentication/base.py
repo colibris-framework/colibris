@@ -27,6 +27,9 @@ class AuthenticationBackend:
 class NullBackend(AuthenticationBackend):
     _DUMMY_ACCOUNT = {}
 
+    def __init__(self, **kwargs):
+        pass
+
     def extract_auth_data(self, request):
         return None, None
 
