@@ -45,3 +45,5 @@ LOGGING = {
         }
     }
 }
+
+LOGGING_OVERRIDES = {}

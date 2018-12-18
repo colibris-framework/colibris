@@ -63,6 +63,8 @@ def main():
     # configure logging
     logging_config = dict(settings.LOGGING)
     logging_config['disable_existing_loggers'] = False
+    utils.dict_update_rec(logging_config, settings.LOGGING_OVERRIDES)
+
     logging.config.dictConfig(logging_config)
 
     command_class = ALL_COMMANDS[sys.argv[1]]

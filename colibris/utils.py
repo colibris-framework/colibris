@@ -1,5 +1,6 @@
 
 import builtins
+import collections
 import importlib
 import re
 
@@ -29,3 +30,14 @@ def import_module_or_none(path):
             return None
 
         raise
+
+
+def dict_update_rec(dest, source):
+    for k, v in source.items():
+        if ((k in dest) and isinstance(dest[k], dict) and
+            isinstance(source[k], collections.Mapping)):
+
+            dict_update_rec(dest[k], source[k])
+
+        else:
+            dest[k] = source[k]

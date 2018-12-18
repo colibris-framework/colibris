@@ -449,6 +449,10 @@ Controls the interface(s) on which the server listens. Defaults to `'0.0.0.0'`.
 Configures the logging mechanism.
 See [logging.config](https://docs.python.org/3.7/library/logging.config.html) for details.
 
+###### `LOGGING_OVERRIDES`
+
+Allows overriding parts of the logging configuration (for example silencing a library). 
+
 ###### `MIDDLEWARE`
 
 A list of all the middleware functions to be applied, in order, to each request/response. Defaults to:
