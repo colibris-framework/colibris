@@ -4,7 +4,7 @@ import base64
 import logging
 import pickle
 import redis
-import rq
+import rq.timeouts
 import traceback
 
 from rq import Connection
@@ -12,8 +12,8 @@ from rq.worker import Worker
 from rq.connections import get_current_connection
 from rq.queue import get_failed_queue
 
+from colibris.taskqueue import UnpicklableException, TimeoutException
 from colibris.taskqueue.base import TaskQueueBackend
-from colibris.taskqueue.exceptions import UnpicklableException
 
 
 DEFAULT_POLL_RESULTS_INTERVAL = 1  # seconds
@@ -62,7 +62,7 @@ class RQBackend(TaskQueueBackend):
             remaining_results = []
             for tup in self._pending_results:
                 try:
-                    result, future = tup
+                    result, timeout, future = tup
                     result.refresh()
 
                     if result.is_finished:
@@ -71,8 +71,14 @@ class RQBackend(TaskQueueBackend):
                     elif result.is_failed:
                         exc_value = base64.b64decode(result.exc_info)
                         exc_value = pickle.loads(exc_value)
+
+                        # treat exceptions that could not be pickled
                         if isinstance(exc_value, str):
                             exc_value = UnpicklableException(exc_value)
+
+                        # transform rq timeouts into taskqueue timeouts
+                        if isinstance(exc_value, rq.timeouts.JobTimeoutException):
+                            exc_value = TimeoutException(timeout)
 
                         future.set_exception(exc_value)
 
@@ -96,7 +102,7 @@ class RQBackend(TaskQueueBackend):
         future = loop.create_future()
         result = queue.enqueue(func, timeout=timeout, *args, **kwargs)
 
-        self._pending_results.append((result, future))
+        self._pending_results.append((result, timeout, future))
 
         return await future
 
