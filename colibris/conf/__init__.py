@@ -3,8 +3,8 @@ import importlib
 import inspect
 import os
 import re
+import sys
 
-from pathlib import Path
 from dotenv import load_dotenv
 
 from colibris import utils
@@ -20,14 +20,6 @@ _settings_store = {}
 def _is_setting_name(name):
     # only consider public members that are all in capitals
     return re.match('^[A-Z][A-Z0-9_]*$', name)
-
-
-def _set_project_package_settings():
-    project_package = utils.import_module_or_none(_settings_store['PROJECT_PACKAGE_NAME'])
-    if project_package is None:
-        project_package = importlib.import_module('colibris')
-
-    _settings_store.setdefault('PROJECT_PACKAGE_DIR', os.path.dirname(project_package.__file__))
 
 
 def _override_setting(name, value):
@@ -54,6 +46,28 @@ def _override_setting(name, value):
         _settings_store[name] = value
 
 
+def _setup_project_package():
+    # autodetect project package from main script path
+    main_script = sys.argv[0]
+    project_package_name = None
+    if main_script.endswith('manage.py'):  # using manage.py
+        main_script = os.path.realpath(main_script)
+        project_package_name = os.path.basename(os.path.dirname(main_script))
+        project_package_name = re.sub('[^a-z0-9_]', '', project_package_name).lower()
+
+    else:  # using a setuptools console script wrapper
+        with open(main_script, 'rt') as main_module_file:
+            main_content = main_module_file.read()
+            m = re.search(r'from (\w+).manage import main', main_content)
+            if m:
+                project_package_name = m.group(1)
+
+    _settings_store['PROJECT_PACKAGE_NAME'] = project_package_name
+
+    project_package = importlib.import_module(project_package_name)
+    _settings_store.setdefault('PROJECT_PACKAGE_DIR', os.path.dirname(project_package.__file__))
+
+
 def _setup_default_settings():
     for name, value in inspect.getmembers(defaultsettings):
         if not _is_setting_name(name):
@@ -65,7 +79,11 @@ def _setup_default_settings():
 def _override_project_settings():
     project_settings_module = utils.import_module_or_none('settings')
     if project_settings_module is None:
-        pass
+        # try settings module from project package
+        project_settings_path = '{}.settings'.format(_settings_store['PROJECT_PACKAGE_NAME'])
+        project_settings_module = utils.import_module_or_none(project_settings_path)
+        if project_settings_module is None:
+            return
 
     for name, value in inspect.getmembers(project_settings_module):
         if not _is_setting_name(name):
@@ -87,8 +105,8 @@ def _override_local_settings():
 
 
 def _override_env_settings():
-    load_dotenv(Path('.env.default'))
-    load_dotenv(Path('.env'), override=True)
+    load_dotenv('.env.default')
+    load_dotenv('.env', override=True)
 
     schema_class = settings_schemas.get_all_settings_schema()
     env_vars = schema_class().load(os.environ)
@@ -108,10 +126,10 @@ def _apply_tweaks():
 
 def _initialize():
     _setup_default_settings()
+    _setup_project_package()
     _override_project_settings()
     _override_local_settings()
     _override_env_settings()
-    _set_project_package_settings()
     _apply_tweaks()
 
 

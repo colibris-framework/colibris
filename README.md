@@ -320,8 +320,25 @@ Lock your dependencies with their versions in `Pipfile.lock`:
 Install all of your project's dependencies:
 
     pipenv sync
+    
+#### Using `setuptools`
 
-#### Build Docker Image
+The project's skeleton comes with a `setup.py` file, effectively allowing your project to be packaged with `setuptools`.
+
+To create a package of your project, run:
+
+    python setup.py sdist
+    
+You'll then find your packaged project at `dist/${PROJECT_NAME}-${VERSION}.tar.gz`. The version is automatically read
+from your main package's `__init__.py`.
+
+The provided setup file will create a console script having your project's main package name, that will basically do
+exactly what `manage.py` does.
+
+One thing that is worth noting when using `setuptools` to deploy a project is that the `manage.py` and `settings.py`
+files that used to be in your project's root folder will now live in the main package of your project. 
+
+#### Building Docker Image
 
 Build your local docker image, optionally tagging it with your version:
 
@@ -333,7 +350,7 @@ You can run your container locally as follows:
 
     docker run -it ${PPROJECT_NAME}:${VERSION} -p 8888:8888
 
-#### Use `docker-compose`
+#### Using `docker-compose`
 
 Uncomment/add needed services to `docker-compose.yml`:
 
@@ -361,7 +378,7 @@ file. It has a higher precedence than the project's `settings` module.
 #### Environment Variables
 
 Settings can be overridden using environment variables. Environment variables have the highest precedence when it comes
-to specifying settings.
+to specifying settings. This is the recommended way of particularizing setting values on specific deployments.
 
 For simple settings, such as `DEBUG`, the corresponding environment variable coincides with the setting.
 

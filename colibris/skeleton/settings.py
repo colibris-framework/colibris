@@ -1,6 +1,4 @@
 
-PROJECT_PACKAGE_NAME = '__packagename__'
-
 DEBUG = True
 
 LISTEN = '0.0.0.0'
