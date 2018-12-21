@@ -75,7 +75,7 @@ def _add_route_tuple(route):
 
     method, path, handler, authorize = route
 
-    if 'View' in handler.__name__:
+    if inspect.isclass(handler):
         try:
             webapp.router.add_view(path, handler)
         except RuntimeError:
