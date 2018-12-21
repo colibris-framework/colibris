@@ -75,7 +75,15 @@ def _add_route_tuple(route):
 
     method, path, handler, authorize = route
 
-    webapp.router.add_route(method, path, handler)
+    if 'View' in handler.__name__:
+        try:
+            webapp.router.add_view(path, handler)
+        except RuntimeError:
+            # view was already added because of possible duplication of views in routes
+            pass
+    else:
+        webapp.router.add_route(method, path, handler)
+
     routes_by_path[path] = route
 
 
