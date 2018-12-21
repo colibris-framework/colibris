@@ -86,7 +86,7 @@ class RQBackend(TaskQueueBackend):
                         remaining_results.append(tup)
 
                 except Exception as e:
-                    logger.error('polling results failed: ', e, exc_info=True)
+                    logger.error('polling results failed: %s', e, exc_info=True)
 
             self._pending_results = remaining_results
 
