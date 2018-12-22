@@ -65,12 +65,17 @@ class RQBackend(TaskQueueBackend):
                     result, timeout, future = tup
                     result.refresh()
 
-                    if result.is_finished:
+                    if result.is_finished and not future.cancelled():
                         future.set_result(result.return_value)
 
                     elif result.is_failed:
-                        exc_value = base64.b64decode(result.exc_info)
-                        exc_value = pickle.loads(exc_value)
+                        try:
+                            exc_value = base64.b64decode(result.exc_info)
+                            exc_value = pickle.loads(exc_value)
+
+                        except Exception as e:
+                            logger.error('failed to decode exception: %s', e, exc_value=True)
+                            exc_value = UnpicklableException(result.exc_info)
 
                         # treat exceptions that could not be pickled
                         if isinstance(exc_value, str):
