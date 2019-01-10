@@ -342,7 +342,7 @@ files that used to be in your project's root folder will now live in the main pa
 
 Build your local docker image, optionally tagging it with your version:
 
-    docker build -t ${PROJECT_NAME}:${VERSION}
+    docker build -t ${PROJECT_NAME}:${VERSION} .
 
 #### Manually Run Container
 
