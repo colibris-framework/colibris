@@ -116,7 +116,7 @@ class RQBackend(TaskQueueBackend):
         try:
             pickled_exc_value = pickle.dumps(exc_value)
 
-        except pickle.PickleError:
+        except (pickle.PickleError, TypeError):
             logger.error('exception could not be pickled')
             exc_string = Worker._get_safe_exception_string(traceback.format_exception(exc_type, exc_value, tb))
             pickled_exc_value = pickle.dumps(exc_string)
