@@ -28,8 +28,8 @@ services:
 #    command: >
 #      bash -c "wait-for-it db:5432 -t 10 -s &&
 #               wait-for-it cache:6379 -t 10 -s &&
-#               python manage.py migrate &&
-#               python manage.py runserver"
+#               __packagename__ migrate &&
+#               __packagename__ runserver"
     ports:
       - "8888:8888"
 #    depends_on:

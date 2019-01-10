@@ -8,10 +8,10 @@ COPY . /tmp/project
 WORKDIR /tmp/project
 
 RUN pipenv install --system --deploy
-RUN rm -rf /root/.cache/*
-RUN python setup.py install
-#RUN rm -rf /tmp/project
-#WORKDIR /
+RUN python setup.py sdist
+RUN pip install dist/*
+RUN rm -rf /tmp/project /root/.cache/*
+WORKDIR /
 
 EXPOSE 8888
-CMD ["python", "manage.py", "runserver"]
+CMD ["__packagename__", "runserver"]
