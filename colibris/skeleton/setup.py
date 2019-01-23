@@ -2,6 +2,13 @@
 import os
 import re
 
+try:
+    # Speeds up load time by eliminating the pkg_resources overhead.
+    import fastentrypoints
+
+except ImportError:
+    pass
+
 from setuptools import setup, find_packages
 from setuptools.command.sdist import sdist
 
