@@ -76,7 +76,7 @@ In `settings.py`, set:
         'backend': 'colibris.persist.PostgresqlDatabase',
         'name': 'yourproject',
         'host': '127.0.0.1',
-        'port': 3316,
+        'port': 5432,
         'username': 'username',
         'password': 'password'
     }
