@@ -74,7 +74,7 @@ class RQBackend(TaskQueueBackend):
                             exc_value = pickle.loads(exc_value)
 
                         except Exception as e:
-                            logger.error('failed to decode exception: %s', e, exc_value=True)
+                            logger.error('failed to decode exception: %s', e, exc_info=True)
                             exc_value = UnpicklableException(result.exc_info)
 
                         # treat exceptions that could not be pickled
