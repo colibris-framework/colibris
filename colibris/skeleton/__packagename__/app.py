@@ -1,5 +1,6 @@
 
 from colibris import app
+from colibris import persist
 
 #
 # def init(webapp, loop):
@@ -9,7 +10,8 @@ from colibris import app
 # def get_health():
 #     # return your health status or raise app.HealthException()
 #
-#     return {
-#         'healthy': 'yes'
-#     }
+#     if not persist.connectivity_check():
+#         raise app.HealthException('database connectivity check failed')
+#
+#     return 'healthy'
 #

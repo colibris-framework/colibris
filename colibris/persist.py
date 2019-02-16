@@ -54,6 +54,17 @@ def get_database():
     return _database
 
 
+def connectivity_check():
+    # run a dummy SQL statement to check connectivity with DB server
+
+    try:
+        list(get_database().execute_sql("select 'dummy'"))
+        return True
+
+    except Exception:
+        return False
+
+
 class Model(peewee.Model):
     # this is currently necessary for aiohttp-apispec request data validation
     def __iter__(self):
