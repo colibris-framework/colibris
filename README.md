@@ -451,7 +451,11 @@ See [logging.config](https://docs.python.org/3.7/library/logging.config.html) fo
 
 ###### `LOGGING_OVERRIDES`
 
-Allows overriding parts of the logging configuration (for example silencing a library). 
+Allows overriding parts of the logging configuration (for example silencing a library).
+
+###### `MAX_REQUEST_BODY_SIZE`
+
+Controls the maximum allowed size of a request body, in bytes. Defaults to `10MB`.  
 
 ###### `MIDDLEWARE`
 

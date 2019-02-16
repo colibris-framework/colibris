@@ -25,7 +25,7 @@ def _init_webapp():
     for path in settings.MIDDLEWARE:
         middleware.append(utils.import_member(path))
 
-    return web.Application(middlewares=middleware)
+    return web.Application(middlewares=middleware, client_max_size=settings.MAX_REQUEST_BODY_SIZE)
 
 
 # app

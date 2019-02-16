@@ -17,6 +17,7 @@ class CommonSchema(SettingsSchema):
     DEBUG = fields.Boolean()
     LISTEN = fields.String()
     PORT = fields.Integer()
+    MAX_REQUEST_BODY_SIZE = fields.Integer()
     API_DOCS_PATH = fields.String()
     DATABASE = fields.String()
 
