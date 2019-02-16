@@ -1,6 +1,7 @@
 
 import asyncio
 import inspect
+import logging
 import time
 
 from aiohttp import web
@@ -12,6 +13,7 @@ from colibris import settings
 from colibris import utils
 
 
+logger = logging.getLogger(__name__)
 middleware = []
 routes_by_path = {}  # indexed by path
 
@@ -58,6 +60,15 @@ async def get_health():
     return {
         'uptime': int(time.time() - _start_time)
     }
+
+
+async def _initial_health_check(app):
+    try:
+        await get_health()
+
+    except Exception as e:
+        logger.critical('initial health check problem: %s', e)
+        raise
 
 
 # routes
@@ -119,3 +130,4 @@ _init_project_routes()
 
 webapp.on_startup.append(_init_app)
 webapp.on_startup.append(_build_routes_cache)
+webapp.on_startup.append(_initial_health_check)
