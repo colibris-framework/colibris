@@ -13,8 +13,8 @@ Create a virtual environment for your new project:
 
 Install `colibris`:
 
-    pip install git+https://gitlab.com/safefleet/colibris.git
-
+    pip install colibris
+    
 (For mac users) Install gnu sed:
 
     brew install gnu-sed --with-default-names
