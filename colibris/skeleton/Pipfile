@@ -4,7 +4,7 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-colibris = {git = 'https://gitlab.com/safefleet/colibris.git'}
+colibris = "*"
 
 [dev-packages]
 

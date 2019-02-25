@@ -1,7 +1,7 @@
 
 
 from aiohttp import web
-from aiohttp_apispec import docs, use_kwargs, marshal_with
+from aiohttp_apispec import docs, request_schema, response_schema
 
 from colibris import api
 from colibris.schemas import many_envelope
@@ -16,7 +16,7 @@ from __packagename__ import schemas
 #
 # @docs(tags=['Users'],
 #       summary='Reveal details about the current user')
-# @marshal_with(schemas.UserSchema())
+# @response_schema(schemas.UserSchema())
 # def get_me(request):
 #     if request.account:
 #         result = schemas.UserSchema().dump(request.account)
@@ -29,7 +29,7 @@ from __packagename__ import schemas
 #
 # @docs(tags=['Users'],
 #       summary='Reveal details about a specific user')
-# @marshal_with(schemas.UserSchema())
+# @response_schema(schemas.UserSchema())
 # def get_user(request):
 #     user_id = request.match_info['id']
 #     user = get_object_or_404(models.User, user_id)
@@ -40,7 +40,7 @@ from __packagename__ import schemas
 #
 # @docs(tags=['Users'],
 #       summary='List all users')
-# @marshal_with(many_envelope(schemas.UserSchema))
+# @response_schema(many_envelope(schemas.UserSchema))
 # def list_users(request):
 #     users = models.User.select().order_by(models.User.username.asc())
 #     result = schemas.UserSchema(many=True).dump(list(users))
@@ -50,8 +50,8 @@ from __packagename__ import schemas
 #
 # @docs(tags=['Users'],
 #       summary='Add a new user')
-# @use_kwargs(schemas.UserSchema())
-# @marshal_with(schemas.UserSchema())
+# @request_schema(schemas.UserSchema())
+# @response_schema(schemas.UserSchema())
 # def add_user(request):
 #     if models.User.select().where(models.User.username == request.data['username']).exists():
 #         raise api.DuplicateException(models.User, 'username')
@@ -64,8 +64,8 @@ from __packagename__ import schemas
 #
 # @docs(tags=['Users'],
 #       summary='Update an existing user')
-# @use_kwargs(schemas.UserSchema(partial=True))
-# @marshal_with(schemas.UserSchema(partial=True))
+# @request_schema(schemas.UserSchema(partial=True))
+# @response_schema(schemas.UserSchema(partial=True))
 # def update_user(request):
 #     user_id = request.match_info['id']
 #     user = get_object_or_404(models.User, user_id)
