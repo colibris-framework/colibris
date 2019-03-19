@@ -8,6 +8,20 @@ from marshmallow import EXCLUDE as MM_EXCLUDE
 _settings_schemas = []
 
 
+class ColonSeparatedStringsField(fields.Field):
+    def _serialize(self, value, attr, obj, **kwargs):
+        if value is None:
+            return ''
+
+        return ':'.join(value)
+
+    def _deserialize(self, value, attr, data, **kwargs):
+        if value is None:
+            return None
+
+        return value.split(':')
+
+
 class SettingsSchema(MMSchema):
     class Meta:
         unknown = MM_EXCLUDE
@@ -109,8 +123,13 @@ class AllDatabaseSchema(SQLiteDatabaseSchema,
 
 # template
 
-class AllTemplateSchema:
+class JinjaTemplateSchema(SettingsSchema):
+    pass
+
+
+class AllTemplateSchema(JinjaTemplateSchema):
     TEMPLATE_BACKEND = fields.String()
+    TEMPLATE_PATHS = ColonSeparatedStringsField()
 
 
 # task queue
