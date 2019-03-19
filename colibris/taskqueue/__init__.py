@@ -23,7 +23,7 @@ def get_backend():
         backend_settings = dict(settings.TASK_QUEUE)
         backend_path = backend_settings.pop('backend', None)
         if backend_path is None:
-            return
+            raise TaskQueueNotConfigured()
 
         backend_class = utils.import_member(backend_path)
         _backend = backend_class(**backend_settings)
