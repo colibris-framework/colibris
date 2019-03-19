@@ -157,17 +157,6 @@ In `settings.py`, set:
     }
 
 
-## Web Server
-
-Start the web server by running:
-
-    ./manage.py runserver
-
-Then you can test it by pointing your browser to:
-
-    http://localhost:8888
-
-
 ## Migrations
 
 #### Create Migrations
@@ -185,6 +174,17 @@ You can optionally specify a name for your migrations:
 To apply migrations on the currently configured database, use:
 
     ./manage.py migrate
+
+
+## Web Server
+
+Start the web server by running:
+
+    ./manage.py runserver
+
+Then you can test it by pointing your browser to:
+
+    http://localhost:8888
 
 
 ## App Initialization
