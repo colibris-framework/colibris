@@ -22,7 +22,7 @@ def get_backend():
         backend_settings = dict(settings.TEMPLATE)
         backend_path = backend_settings.pop('backend', None)
         if backend_path is None:
-            return
+            raise TemplateNotConfigured()
 
         # inject package dir into path array
         paths = backend_settings.get('paths', [])
