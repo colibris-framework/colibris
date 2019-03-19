@@ -19,7 +19,6 @@ class CommonSchema(SettingsSchema):
     PORT = fields.Integer()
     MAX_REQUEST_BODY_SIZE = fields.Integer()
     API_DOCS_PATH = fields.String()
-    DATABASE = fields.String()
 
 
 # authentication
@@ -108,7 +107,13 @@ class AllDatabaseSchema(SQLiteDatabaseSchema,
     DATABASE_BACKEND = fields.String()
 
 
-# cache
+# template
+
+class AllTemplateSchema:
+    TEMPLATE_BACKEND = fields.String()
+
+
+# task queue
 
 class RQTaskQueueSchema(SettingsSchema):
     TASK_QUEUE_HOST = fields.String()
@@ -137,4 +142,5 @@ register_settings_schema(AllAuthenticationSchema)
 register_settings_schema(AllAuthorizationSchema)
 register_settings_schema(AllCacheSchema)
 register_settings_schema(AllDatabaseSchema)
+register_settings_schema(AllTemplateSchema)
 register_settings_schema(AllTaskQueueSchema)
