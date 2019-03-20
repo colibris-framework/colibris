@@ -128,9 +128,9 @@ def _init_swagger():
 
 webapp = _init_webapp()
 
+_init_project_routes()
 _init_default_routes()
 _init_swagger()
-_init_project_routes()
 
 webapp.on_startup.append(_init_app)
 webapp.on_startup.append(_update_routes_cache)
