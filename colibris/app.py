@@ -15,7 +15,7 @@ from colibris import utils
 
 logger = logging.getLogger(__name__)
 middleware = []
-routes_by_path = {}  # indexed by path
+routes = {}  # indexed by path and then by method
 
 _project_app = None
 _start_time = time.time()
@@ -73,11 +73,11 @@ async def _initial_health_check(app):
 
 # routes
 
-async def _build_routes_cache(app):
-    # add route paths to routes cache
+async def _update_routes_cache(app):
+    # make sure extra routes (such as those added by swagger) are also present in the routes cache
     for r in app.router.routes():
         path = r.resource.canonical
-        routes_by_path.setdefault(path, (r.method, path, r.handler, None))
+        routes.setdefault(path, {}).setdefault(r.method, (r.method, path, r.handler, None))
 
 
 def _add_route_tuple(route):
@@ -86,16 +86,18 @@ def _add_route_tuple(route):
 
     method, path, handler, authorize = route
 
+    # add route to cache; check for duplicates
+    routes_by_method = routes.setdefault(path, {})
+    if method in routes_by_method:
+        raise default_routes.DuplicateRoute(method, path)
+
+    routes_by_method[method] = route
+
     if inspect.isclass(handler):
-        try:
-            webapp.router.add_view(path, handler)
-        except RuntimeError:
-            # view was already added because of possible duplication of views in routes
-            pass
+        webapp.router.add_view(path, handler)
+
     else:
         webapp.router.add_route(method, path, handler)
-
-    routes_by_path[path] = route
 
 
 def _init_default_routes():
@@ -129,5 +131,5 @@ _init_swagger()
 _init_project_routes()
 
 webapp.on_startup.append(_init_app)
-webapp.on_startup.append(_build_routes_cache)
+webapp.on_startup.append(_update_routes_cache)
 webapp.on_startup.append(_initial_health_check)
