@@ -4,7 +4,7 @@ import inspect
 import logging
 import time
 
-from aiohttp import web
+from aiohttp import web, hdrs
 from aiohttp_apispec import setup_aiohttp_apispec
 from aiohttp_swagger import setup_swagger
 
@@ -81,23 +81,25 @@ async def _update_routes_cache(app):
 
 
 def _add_route_tuple(route):
-    if len(route) < 4:
+    while len(route) < 4:
         route = route + (None,)
 
     method, path, handler, authorize = route
 
-    # add route to cache; check for duplicates
-    routes_by_method = routes.setdefault(path, {})
-    if method in routes_by_method:
-        raise default_routes.DuplicateRoute(method, path)
+    if inspect.isclass(handler):  # class-based view
+        method = hdrs.METH_ANY
 
-    routes_by_method[method] = route
+    # Add route to cache. Use setdefault() since we don't want to alter already existing routes.
+    routes.setdefault(path, {}).setdefault(method, route)
 
-    if inspect.isclass(handler):
-        webapp.router.add_view(path, handler)
+    # aiohttp reuses the last resource if paths and methods
+    # if and only if two successive routes are the same, which is kind of random.
 
-    else:
-        webapp.router.add_route(method, path, handler)
+    # Explicitly add resource instead of using add_route(),
+    # since we want to prevent reusing the last resource.
+
+    resource = webapp.router.add_resource(path)
+    resource.add_route(method, handler)
 
 
 def _init_default_routes():
