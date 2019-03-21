@@ -94,7 +94,11 @@ async def handle_auth(request, handler):
         raise request.match_info.http_exception
 
     path = request.match_info.route.resource.canonical
-    route = app.routes_by_path.get(path)
+    routes_by_path = app.routes.get(path)
+    if not routes_by_path:  # shouldn't happen
+        raise web.HTTPNotFound()
+
+    route = routes_by_path.get(request.method)
     if not route:  # shouldn't happen
         raise web.HTTPNotFound()
 

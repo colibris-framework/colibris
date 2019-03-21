@@ -108,6 +108,9 @@ Add your views by editing the `views.py` file:
 Associate URL paths to views by editing the `routes.py` file: 
 
     nano ${PACKAGE}/routes.py
+    
+If you need routes for static files (recommended only for development), add your static prefix/path associations to
+`STATIC_ROUTES`.
 
 
 ## Authentication
