@@ -102,9 +102,18 @@ def _add_route_tuple(route):
     resource.add_route(method, handler)
 
 
+def _add_static_route_tuple(route):
+    fs_path, prefix = route
+
+    webapp.router.add_static(prefix, fs_path)
+
+
 def _init_default_routes():
     for route in default_routes.ROUTES:
         _add_route_tuple(route)
+
+    for route in default_routes.STATIC_ROUTES:
+        _add_static_route_tuple(route)
 
 
 def _init_project_routes():
@@ -114,6 +123,9 @@ def _init_project_routes():
 
     for _route in getattr(project_routes, 'ROUTES', []):
         _add_route_tuple(_route)
+
+    for _route in getattr(project_routes, 'STATIC_ROUTES', []):
+        _add_static_route_tuple(_route)
 
 
 # apispec/swagger support
