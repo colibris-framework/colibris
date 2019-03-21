@@ -1,4 +1,7 @@
 
+import os
+
+from colibris import settings
 from colibris.authorization import ANY_PERMISSION
 
 from __packagename__ import views
@@ -17,4 +20,13 @@ from __packagename__.constants import ROLE_ADMIN, ROLE_REGULAR
 #
 #     ('GET',    '/my_resource/{id}', views.get_my_resource, {ROLE_ADMIN, ROLE_REGULAR}),
 # ]
+#
+
+#
+# Add static routes, for development purposes
+#
+# if settings.DEBUG:
+#     STATIC_ROUTES = [
+#         (os.path.join(settings.PROJECT_PACKAGE_DIR, 'static'), '/static'),
+#     ]
 #
