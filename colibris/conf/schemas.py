@@ -8,6 +8,20 @@ from marshmallow import EXCLUDE as MM_EXCLUDE
 _settings_schemas = []
 
 
+class ColonSeparatedStringsField(fields.Field):
+    def _serialize(self, value, attr, obj, **kwargs):
+        if value is None:
+            return ''
+
+        return ':'.join(value)
+
+    def _deserialize(self, value, attr, data, **kwargs):
+        if value is None:
+            return None
+
+        return value.split(':')
+
+
 class SettingsSchema(MMSchema):
     class Meta:
         unknown = MM_EXCLUDE
@@ -19,7 +33,6 @@ class CommonSchema(SettingsSchema):
     PORT = fields.Integer()
     MAX_REQUEST_BODY_SIZE = fields.Integer()
     API_DOCS_PATH = fields.String()
-    DATABASE = fields.String()
 
 
 # authentication
@@ -108,7 +121,18 @@ class AllDatabaseSchema(SQLiteDatabaseSchema,
     DATABASE_BACKEND = fields.String()
 
 
-# cache
+# template
+
+class JinjaTemplateSchema(SettingsSchema):
+    pass
+
+
+class AllTemplateSchema(JinjaTemplateSchema):
+    TEMPLATE_BACKEND = fields.String()
+    TEMPLATE_PATHS = ColonSeparatedStringsField()
+
+
+# task queue
 
 class RQTaskQueueSchema(SettingsSchema):
     TASK_QUEUE_HOST = fields.String()
@@ -137,4 +161,5 @@ register_settings_schema(AllAuthenticationSchema)
 register_settings_schema(AllAuthorizationSchema)
 register_settings_schema(AllCacheSchema)
 register_settings_schema(AllDatabaseSchema)
+register_settings_schema(AllTemplateSchema)
 register_settings_schema(AllTaskQueueSchema)

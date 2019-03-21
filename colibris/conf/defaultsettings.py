@@ -19,6 +19,7 @@ AUTHORIZATION = {}
 
 CACHE = {}
 DATABASE = {}
+TEMPLATE = {}
 TASK_QUEUE = {}
 
 API_DOCS_PATH = '/api/docs'
