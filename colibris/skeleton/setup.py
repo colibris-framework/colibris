@@ -56,7 +56,8 @@ setup(
     description='Project description.',
     packages=find_packages(include=PROJECT_PACKAGE_NAME + '/*') + [PROJECT_PACKAGE_NAME + '.migrations'],
     package_data={
-        PROJECT_PACKAGE_NAME: package_data_rec(PROJECT_PACKAGE_NAME, 'templates')
+        PROJECT_PACKAGE_NAME: (package_data_rec(PROJECT_PACKAGE_NAME, 'templates') +
+                               package_data_rec(PROJECT_PACKAGE_NAME, 'static'))
     },
     entry_points={
         'console_scripts': [
