@@ -37,7 +37,7 @@ setup(
         'python-dotenv'
     ],
     url='',
-    license='',
+    license='BSD',
     description='A collection of libraries glued together to make writing RESTful microservices easier.',
     packages=find_packages(include='colibris/*'),
     package_data={

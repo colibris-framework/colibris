@@ -20,6 +20,8 @@ class ModelSchemaOpts(marshmallow_peewee.schema.SchemaOpts):
             self.name = getattr(meta, 'name', camelcase_to_underscore(self.model.__name__))
             self.name_plural = getattr(meta, 'name_plural', self.name + 's')
 
+        self.load_instance = getattr(meta, 'load_instance', False)
+
         self.datetimeformat = DEFAULT_DATETIME_FORMAT
 
 
@@ -33,6 +35,13 @@ class ModelSchema(marshmallow_peewee.ModelSchema):
 
         else:
             return envelope.wrap_one(data)
+
+    @post_load
+    def make_instance(self, data):
+        if not self.opts.load_instance:
+            return data
+
+        return super().make_instance(data)
 
 
 def many_envelope(schema_class):
