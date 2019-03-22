@@ -132,5 +132,5 @@ async def handle_schema_validation(request, handler):
 
 
 @aiohttpparser.parser.error_handler
-def _handle_schema_validation_error(error, req, schema):
+def _handle_schema_validation_error(error, req, schema, status_code, headers):
     raise HTTPSchemaValidationError(error)
