@@ -53,10 +53,12 @@ from __packagename__ import schemas
 # @request_schema(schemas.UserSchema())
 # @response_schema(schemas.UserSchema())
 # def add_user(request):
-#     if models.User.select().where(models.User.username == request.data['username']).exists():
+#     data = request['data']
+#
+#     if models.User.select().where(models.User.username == data['username']).exists():
 #         raise api.DuplicateException(models.User, 'username')
 #
-#     user = models.User.create(**request.data)
+#     user = models.User.create(**data)
 #     result = schemas.UserSchema().dump(user)
 #
 #     return web.json_response(result, status=201)
@@ -69,13 +71,14 @@ from __packagename__ import schemas
 # def update_user(request):
 #     user_id = request.match_info['id']
 #     user = get_object_or_404(models.User, user_id)
+#     data = request['data']
 #
-#     query = (models.User.username == request.data['username'] and
-#              models.User.id != user_id)
-#     if models.User.select().where(query).exists():
-#         raise api.DuplicateException(models.User, 'username')
+#     if 'username' in data:
+#         query = (models.User.username == data['username'] and models.User.id != user_id)
+#         if models.User.select().where(query).exists():
+#             raise api.DuplicateException(models.User, 'username')
 #
-#     user.update_fields(request.data)
+#     user.update_fields(data)
 #
 #     user.save()
 #     result = schemas.UserSchema().dump(user)
