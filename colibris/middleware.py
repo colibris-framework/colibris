@@ -93,20 +93,13 @@ async def handle_auth(request, handler):
     if request.match_info.http_exception is not None:
         raise request.match_info.http_exception
 
+    authorization = app.route_auth_mapping.get(request.match_info.route)
+    method = request.method
     path = request.match_info.route.resource.canonical
-    routes_by_path = app.routes.get(path)
-    if not routes_by_path:  # shouldn't happen
-        raise web.HTTPNotFound()
 
-    route = routes_by_path.get(request.method)
-    if not route:  # shouldn't happen
-        raise web.HTTPNotFound()
-
-    method, path, _handler, permissions = route
-
-    # only go through authentication if route specifies permissions;
-    # otherwise route is considered public
-    if permissions:
+    # Only go through authentication if route specifies permissions;
+    # otherwise route is considered public.
+    if authorization is not None:
         try:
             account = _authentication_backend.authenticate(request)
 
@@ -118,7 +111,7 @@ async def handle_auth(request, handler):
         # at this point we can safely associate request with account
         request.account = account
 
-        if not _authorization_backend.authorize(account, method, path, permissions):
+        if not _authorization_backend.authorize(account, method, path, authorization):
             logger.error('%s %s forbidden for %s', method, path, account)
 
             raise api.ForbiddenException()

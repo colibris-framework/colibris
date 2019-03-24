@@ -15,7 +15,7 @@ from colibris import utils
 
 logger = logging.getLogger(__name__)
 middleware = []
-routes = {}  # indexed by path and then by method
+route_auth_mapping = {}
 
 _project_app = None
 _start_time = time.time()
@@ -73,13 +73,6 @@ async def _initial_health_check(app):
 
 # routes
 
-async def _update_routes_cache(app):
-    # make sure extra routes (such as those added by swagger) are also present in the routes cache
-    for r in app.router.routes():
-        path = r.resource.canonical
-        routes.setdefault(path, {}).setdefault(r.method, (r.method, path, r.handler, None))
-
-
 def _add_route_tuple(route):
     while len(route) < 4:
         route = route + (None,)
@@ -89,17 +82,16 @@ def _add_route_tuple(route):
     if inspect.isclass(handler):  # class-based view
         method = hdrs.METH_ANY
 
-    # Add route to cache. Use setdefault() since we don't want to alter already existing routes.
-    routes.setdefault(path, {}).setdefault(method, route)
-
-    # aiohttp reuses the last resource if paths and methods
-    # if and only if two successive routes are the same, which is kind of random.
+    # aiohttp reuses the last resource if and only if two successive routes are the same,
+    # which is kind of random.
 
     # Explicitly add resource instead of using add_route(),
     # since we want to prevent reusing the last resource.
 
     resource = webapp.router.add_resource(path)
-    resource.add_route(method, handler)
+    resource_route = resource.add_route(method, handler)
+
+    route_auth_mapping[resource_route] = authorize
 
 
 def _add_static_route_tuple(route):
@@ -145,5 +137,4 @@ _init_default_routes()
 _init_swagger()
 
 webapp.on_startup.append(_init_app)
-webapp.on_startup.append(_update_routes_cache)
 webapp.on_startup.append(_initial_health_check)
