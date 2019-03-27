@@ -22,28 +22,32 @@ def _is_setting_name(name):
     return re.match('^[A-Z][A-Z0-9_]*$', name)
 
 
+def _override_setting_rec(setting_dict, name, value):
+    parts = name.split('_')
+    for i in range(len(parts) - 1):
+        root_name = '_'.join(parts[:i + 1])
+        d = setting_dict.get(root_name)
+        if not isinstance(d, dict):
+            continue
+
+        key = '_'.join(parts[i + 1:])
+        _override_setting_rec(d, key.lower(), value)
+
+        break
+
+    else:
+        # simply add the new setting to the setting dict
+        setting_dict[name] = value
+
+
 def _override_setting(name, value):
     # do we have the setting corresponding to the given name?
     if name in _settings_store:
         _settings_store[name] = value
         return
 
-    # try dictionary with items
-    parts = name.split('_')
-    for i in range(len(parts) - 1):
-        dname = '_'.join(parts[:i + 1])
-        d = _settings_store.get(dname)
-        if not isinstance(d, dict):
-            continue
-
-        dkey = '_'.join(parts[i + 1:])
-        d[dkey.lower()] = value  # dictionary keys are lower-case, by convention
-
-        break
-
-    else:
-        # lastly, we simply add the new setting to the module
-        _settings_store[name] = value
+    # recursively update dictionary with items recur
+    _override_setting_rec(_settings_store, name, value)
 
 
 def _setup_project_package():
