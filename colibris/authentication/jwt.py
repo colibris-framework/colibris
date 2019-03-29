@@ -15,27 +15,34 @@ class JWTException(AuthenticationException):
 
 
 class JWTBackend(ModelBackend):
-    def __init__(self, identity_claim='sub', **kwargs):
+    def __init__(self, identity_claim='sub', cookie_name=None, **kwargs):
         self.identity_claim = identity_claim
+        self.cookie_name = cookie_name
 
         super().__init__(**kwargs)
 
     def extract_auth_data(self, request):
+        token = None
+
         auth_header = request.headers.get(_AUTH_HEADER)
-        if auth_header is None:
-            raise JWTException('missing authorization header')
+        if auth_header is not None:  # First look for auth header.
+            m = _AUTH_TOKEN_REGEX.match(auth_header)
+            if not m:
+                raise JWTException('invalid authorization header')
 
-        m = _AUTH_TOKEN_REGEX.match(auth_header)
-        if not m:
-            raise JWTException('invalid authorization header')
+            token = m.group(1)
 
-        token = m.group(1)
+        elif self.cookie_name:  # Then look in cookies.
+            token = request.cookies.get(self.cookie_name)
+
+        if not token:
+            raise JWTException('missing token')
 
         try:
             jwt_decoded = jwt.decode(token, verify=False)
 
         except jwt.DecodeError:
-            raise JWTException('invalid authorization header')
+            raise JWTException('invalid token')
 
         identity = jwt_decoded.get(self.identity_claim)
         if identity is None:
