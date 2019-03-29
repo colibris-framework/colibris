@@ -133,7 +133,7 @@ In `settings.py`, set:
         'cookie_name': 'auth_token'
     }
     
-The `auth_token` property is optional and tells the backend to look for the token in cookies as well, in addition to the
+The `cookie_name` property is optional and tells the backend to look for the token in cookies as well, in addition to the
 `Authorization` header.
 
 
