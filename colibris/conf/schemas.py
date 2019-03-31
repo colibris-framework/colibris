@@ -45,6 +45,7 @@ class ModelAuthenticationSchema(SettingsSchema):
 
 class JWTAuthenticationSchema(ModelAuthenticationSchema):
     AUTHENTICATION_IDENTITY_CLAIM = fields.String()
+    AUTHENTICATION_COOKIE_NAME = fields.String()
 
 
 class AllAuthenticationSchema(JWTAuthenticationSchema):
