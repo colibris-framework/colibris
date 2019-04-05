@@ -124,7 +124,7 @@ async def handle_auth(request, handler):
             raise api.UnauthenticatedException()
 
         # at this point we can safely associate request with account
-        request.account = account
+        request['account'] = account
 
         if not _authorization_backend.authorize(account, method, path, authorization):
             raise api.ForbiddenException()

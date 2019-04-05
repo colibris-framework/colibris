@@ -62,7 +62,8 @@ setup(
     },
     entry_points={
         'console_scripts': [
-            '{project_name}={package_name}.manage:main'.format(project_name=PROJECT_NAME, package_name=PROJECT_PACKAGE_NAME),
+            '{project_name}={package_name}.manage:main'.format(project_name=PROJECT_NAME,
+                                                               package_name=PROJECT_PACKAGE_NAME),
         ]
     },
     cmdclass={

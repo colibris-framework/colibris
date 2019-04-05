@@ -18,11 +18,7 @@ from __packagename__ import schemas
 #       summary='Reveal details about the current user')
 # @response_schema(schemas.UserSchema())
 # def get_me(request):
-#     if request.account:
-#         result = schemas.UserSchema().dump(request.account)
-#
-#     else:
-#         result = None
+#     result = schemas.UserSchema().dump(request['account'])
 #
 #     return web.json_response(result)
 #
