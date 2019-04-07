@@ -4,6 +4,8 @@ DEBUG = True
 LISTEN = '0.0.0.0'
 PORT = 8888
 
+SECRET_KEY = 'replace-me-with-random-ascii-string'
+
 # DATABASE = {
 #     'backend': 'colibris.persist.PostgresqlDatabase',
 #     'name': '__packagename__',

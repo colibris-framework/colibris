@@ -8,6 +8,8 @@ PORT = 8888
 
 MAX_REQUEST_BODY_SIZE = 10 * 1024 * 1024
 
+SECRET_KEY = None
+
 MIDDLEWARE = [
     'colibris.middleware.handle_errors_json',
     'colibris.middleware.handle_auth',

@@ -471,6 +471,10 @@ define your own settings schemas in your `settings.py` and decorate them accordi
 
 #### Available Settings
 
+###### `API_DOCS_PATH`
+
+Controls the path where the API documentation is served. Defaults to `/api/docs`.
+
 ###### `AUTHENTICATION`
 
 Configures the authentication backend. Should be defined as a dictionary with at least one entry, `backend`,
@@ -543,3 +547,7 @@ Sets the path to the project directory. By default, it is automatically deduced.
 ###### `PROJECT_PACKAGE_NAME`
 
 Sets the main project package name. Defaults to `'${PROJECT_NAME}'`.
+
+###### `SECRET_KEY`
+
+Sets the project secret key that is used to create various tokens. Defaults to `None` and must be set explicitly.
