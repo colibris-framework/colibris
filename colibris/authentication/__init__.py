@@ -7,8 +7,12 @@ from colibris import utils
 from .exceptions import *
 
 
+ACCOUNT_ACTION_LOGIN = 'login'
+ACCOUNT_ACTION_LOGIN_PERSISTENT = 'login_persistent'
+ACCOUNT_ACTION_LOGOUT = 'logout'
+
 _REQUEST_ACCOUNT_ITEM_NAME = 'account'
-_REQUEST_ACCOUNT_PERSISTENT_ITEM_NAME = 'account_persistent'
+_REQUEST_ACCOUNT_ACTION = 'account_action'
 
 
 logger = logging.getLogger(__name__)
@@ -42,21 +46,27 @@ def get_account(request):
     return request.get(_REQUEST_ACCOUNT_ITEM_NAME)
 
 
-def is_persistent_account(request):
-    return request.get(_REQUEST_ACCOUNT_PERSISTENT_ITEM_NAME)
+def get_account_action(request):
+    return request.get(_REQUEST_ACCOUNT_ACTION)
 
 
 def login(request, account, persistent):
     logger.debug('logging in account "%s" (persistent=%s)', account, persistent)
 
     request[_REQUEST_ACCOUNT_ITEM_NAME] = account
-    request[_REQUEST_ACCOUNT_PERSISTENT_ITEM_NAME] = persistent
+
+    if persistent:
+        request[_REQUEST_ACCOUNT_ACTION] = ACCOUNT_ACTION_LOGIN_PERSISTENT
+
+    else:
+        request[_REQUEST_ACCOUNT_ACTION] = ACCOUNT_ACTION_LOGIN
 
 
 def logout(request):
     account = request.pop(_REQUEST_ACCOUNT_ITEM_NAME, None)
     if account:
         logger.debug('logged out account "%s"', account)
+        request[_REQUEST_ACCOUNT_ACTION] = ACCOUNT_ACTION_LOGOUT
 
 
 def response_login(response, account, persistent):
