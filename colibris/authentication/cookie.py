@@ -12,8 +12,9 @@ class CookieException(AuthenticationException):
 
 
 class CookieBackendMixin:
-    def __init__(self, cookie_name=None, validity_seconds=DEFAULT_VALIDITY_SECONDS, **kwargs):
+    def __init__(self, cookie_name=None, cookie_domain=None, validity_seconds=DEFAULT_VALIDITY_SECONDS, **kwargs):
         self.cookie_name = cookie_name
+        self.cookie_domain = cookie_domain
         self.validity_seconds = validity_seconds
 
     def cookie_login(self, response, persistent, token):
@@ -24,8 +25,9 @@ class CookieBackendMixin:
         cookie.set(self.cookie_name, token, token)
         cookie['httponly'] = True
         cookie['secure'] = not settings.DEBUG
-        #cookie['domain'] = settings.ROOT_DOMAIN  # TODO define me
         cookie['path'] = '/'
+        if self.cookie_domain:
+            cookie['domain'] = self.cookie_domain
 
         if persistent:
             cookie['expires'] = self.validity_seconds
@@ -40,8 +42,9 @@ class CookieBackendMixin:
         cookie.set(self.cookie_name, 'invalid', 'invalid')
         cookie['httponly'] = True
         cookie['secure'] = not settings.DEBUG
-        #cookie['domain'] = settings.ROOT_DOMAIN  # TODO define me
         cookie['path'] = '/'
         cookie['expires'] = 0
+        if self.cookie_domain:
+            cookie['domain'] = self.cookie_domain
 
         response.cookies[self.cookie_name] = cookie

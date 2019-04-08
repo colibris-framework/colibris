@@ -23,9 +23,6 @@ class JWTBackend(ModelBackend, CookieBackendMixin):
     def __init__(self, identity_claim='sub', **kwargs):
         self.identity_claim = identity_claim
 
-        # Cookie token storage is disabled by default
-        kwargs.setdefault('cookie_name', None)
-
         super().__init__(**kwargs)
 
     def extract_auth_data(self, request):

@@ -45,6 +45,7 @@ class ModelAuthenticationSchema(SettingsSchema):
 
 class CookieAuthenticationSchema(SettingsSchema):
     AUTHENTICATION_COOKIE_NAME = fields.String()
+    AUTHENTICATION_COOKIE_DOMAIN = fields.String()
     AUTHENTICATION_VALIDITY_SECONDS = fields.Number()
 
 
