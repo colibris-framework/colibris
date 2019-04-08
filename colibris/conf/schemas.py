@@ -43,9 +43,13 @@ class ModelAuthenticationSchema(SettingsSchema):
     AUTHENTICATION_SECRET_FIELD = fields.String()
 
 
-class JWTAuthenticationSchema(ModelAuthenticationSchema):
-    AUTHENTICATION_IDENTITY_CLAIM = fields.String()
+class CookieAuthenticationSchema(SettingsSchema):
     AUTHENTICATION_COOKIE_NAME = fields.String()
+    AUTHENTICATION_VALIDITY_SECONDS = fields.Number()
+
+
+class JWTAuthenticationSchema(ModelAuthenticationSchema, CookieAuthenticationSchema):
+    AUTHENTICATION_IDENTITY_CLAIM = fields.String()
 
 
 class AllAuthenticationSchema(JWTAuthenticationSchema):

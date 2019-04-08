@@ -130,11 +130,14 @@ In `settings.py`, set:
         'identity_claim': 'sub',
         'identity_field': 'username',
         'secret_field': 'password',
-        'cookie_name': 'auth_token'
+        'cookie_name': 'auth_token',
+        'validity_seconds': 3600 * 24 * 30
     }
     
 The `cookie_name` property is optional and tells the backend to look for the token in cookies as well, in addition to the
 `Authorization` header.
+
+The `validity_seconds` property is optional and configures the given validity for the token.
 
 
 ## Authorization
