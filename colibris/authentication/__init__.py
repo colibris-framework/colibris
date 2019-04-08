@@ -7,7 +7,7 @@ from colibris import utils
 from .exceptions import *
 
 
-REQUEST_ACCOUNT_ITEM_NAME = 'account'
+_REQUEST_ACCOUNT_ITEM_NAME = 'account'
 
 
 logger = logging.getLogger(__name__)
@@ -33,24 +33,24 @@ def get_backend():
 
 def authenticate(request):
     account = get_backend().authenticate(request)
-    request[REQUEST_ACCOUNT_ITEM_NAME] = account
+    request[_REQUEST_ACCOUNT_ITEM_NAME] = account
 
     return account
 
 
 def get_account(request):
-    return request.get(REQUEST_ACCOUNT_ITEM_NAME)
+    return request.get(_REQUEST_ACCOUNT_ITEM_NAME)
 
 
 def login(request, account, persistent):
     logger.debug('logging in account "%s"', account)
 
     get_backend().login(request, account, persistent)
-    request[REQUEST_ACCOUNT_ITEM_NAME] = account
+    request[_REQUEST_ACCOUNT_ITEM_NAME] = account
 
 
 def logout(request):
-    account = request.pop(REQUEST_ACCOUNT_ITEM_NAME, None)
+    account = request.pop(_REQUEST_ACCOUNT_ITEM_NAME, None)
     if account:
         get_backend().logout(request)
         logger.debug('logged out account "%s"', account)
