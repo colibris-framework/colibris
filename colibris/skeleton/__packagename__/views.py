@@ -19,7 +19,8 @@ from __packagename__ import schemas
 #       summary='Reveal details about the current user')
 # @response_schema(schemas.UserSchema())
 # def get_me(request):
-#     result = schemas.UserSchema().dump(request[authentication.REQUEST_ACCOUNT_ITEM_NAME])  # TODO replace with auth.get_account()
+#     user = authentication.get_account(request)
+#     result = schemas.UserSchema().dump(user)
 #
 #     return web.json_response(result)
 #
