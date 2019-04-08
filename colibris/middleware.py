@@ -39,7 +39,7 @@ class HTTPSchemaValidationError(web.HTTPUnprocessableEntity):
 
 def _extract_request_logging_info(request):
     info = '{method} {path}'.format(method=request.method, path=request.path)
-    account = getattr(request, 'account', None)
+    account = request.get(authentication.REQUEST_ACCOUNT_ITEM_NAME)
     if account:
         info += ' (account={})'.format(account)
 
@@ -124,7 +124,7 @@ async def handle_auth(request, handler):
             raise api.UnauthenticatedException()
 
         # at this point we can safely associate request with account
-        request['account'] = account
+        request[authentication.REQUEST_ACCOUNT_ITEM_NAME] = account
 
         if not _authorization_backend.authorize(account, method, path, authorization):
             raise api.ForbiddenException()
