@@ -103,6 +103,8 @@ async def handle_auth(request, handler):
     method = request.method
     path = request.match_info.route.resource.canonical
 
+    request = authentication.process_request(request)
+
     # Only go through authentication if route specifies permissions;
     # otherwise route is considered public.
     if authorization_info is not None:
@@ -116,19 +118,7 @@ async def handle_auth(request, handler):
             raise api.ForbiddenException()
 
     response = await handler(request)
-
-    # Handle logins and logouts
-    account_action = authentication.get_account_action(request)
-    if account_action:
-        account = authentication.get_account(request)
-        if account_action == authentication.ACCOUNT_ACTION_LOGIN:
-            response = authentication.response_login(response, account, persistent=False)
-
-        elif account_action == authentication.ACCOUNT_ACTION_LOGIN_PERSISTENT:
-            response = authentication.response_login(response, account, persistent=True)
-
-        elif account_action == authentication.ACCOUNT_ACTION_LOGOUT:
-            response = authentication.response_logout(response)
+    response = authentication.process_response(request, response)
 
     return response
 

@@ -67,12 +67,12 @@ class JWTBackend(ModelBackend, CookieBackendMixin):
 
         return True
 
-    def response_login(self, response, account, persistent):
+    def prepare_login_response(self, response, account, persistent):
         self.cookie_login(response, persistent, self.build_jwt(account))
 
         return response
 
-    def response_logout(self, response):
+    def prepare_logout_response(self, response):
         self.cookie_logout(response)
 
         return response
