@@ -10,18 +10,13 @@ from webargs import aiohttpparser
 from colibris import api
 from colibris import app
 from colibris import authentication
+from colibris import authorization
 from colibris import settings
 from colibris import utils
 from colibris.api import BaseJSONException, envelope
 
 
 logger = logging.getLogger(__name__)
-
-_authorization_backend_settings = dict(settings.AUTHORIZATION)
-_authorization_backend_path = _authorization_backend_settings.pop('backend',
-                                                                  'colibris.authorization.base.NullBackend')
-_authorization_backend_class = utils.import_member(_authorization_backend_path)
-_authorization_backend = _authorization_backend_class(**_authorization_backend_settings)
 
 
 class HTTPSchemaValidationError(web.HTTPUnprocessableEntity):
@@ -33,7 +28,7 @@ class HTTPSchemaValidationError(web.HTTPUnprocessableEntity):
 
 def _extract_request_logging_info(request):
     info = '{method} {path}'.format(method=request.method, path=request.path)
-    account = request.get(authentication.REQUEST_ACCOUNT_ITEM_NAME)
+    account = authentication.get_account(request)
     if account:
         info += ' (account={})'.format(account)
 
@@ -104,20 +99,20 @@ async def handle_auth(request, handler):
     if request.match_info.http_exception is not None:
         raise request.match_info.http_exception
 
-    authorization = app.route_auth_mapping.get(request.match_info.route)
+    authorization_info = app.route_auth_mapping.get(request.match_info.route)
     method = request.method
     path = request.match_info.route.resource.canonical
 
     # Only go through authentication if route specifies permissions;
     # otherwise route is considered public.
-    if authorization is not None:
+    if authorization_info is not None:
         try:
             account = authentication.authenticate(request)
 
         except authentication.AuthenticationException:
             raise api.UnauthenticatedException()
 
-        if not _authorization_backend.authorize(account, method, path, authorization):
+        if not authorization.authorize(account, method, path, authorization_info):
             raise api.ForbiddenException()
 
     return await handler(request)
