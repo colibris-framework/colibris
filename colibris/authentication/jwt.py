@@ -56,16 +56,17 @@ class JWTBackend(ModelBackend, CookieBackendMixin):
 
         return identity, token
 
-    def verify_identity(self, account, auth_data):
+    def verify_identity(self, request, account, auth_data):
         secret = self.get_secret(account)
 
         try:
             jwt.decode(auth_data, key=secret, verify=True)
 
         except jwt.InvalidSignatureError:
-            return False
+            raise JWTException('invalid signature')
 
-        return True
+        if self.is_csrf_enabled():
+            self.verify_csrf(request, account)
 
     def prepare_login_response(self, response, account, persistent):
         self.cookie_login(response, persistent, self.build_jwt(account))
@@ -86,3 +87,11 @@ class JWTBackend(ModelBackend, CookieBackendMixin):
         }
 
         return jwt.encode(algorithm=JWT_ALG, payload=token_claims, key=self.get_secret(account)).decode()
+
+    def process_response(self, request, response):
+        response = super().process_response(request, response)
+
+        if self.is_csrf_enabled():
+            self.set_csrf(request, response)
+
+        return response

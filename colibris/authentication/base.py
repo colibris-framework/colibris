@@ -17,7 +17,7 @@ class AuthenticationBackend:
     def lookup_account(self, identity):
         raise NotImplementedError
 
-    def verify_identity(self, account, auth_data):
+    def verify_identity(self, request, account, auth_data):
         raise NotImplementedError
 
     def authenticate(self, request):
@@ -26,8 +26,7 @@ class AuthenticationBackend:
         if account is None:
             raise NoSuchAccount()
 
-        if not self.verify_identity(account, auth_data):
-            raise IdentityVerificationFailed()
+        self.verify_identity(request, account, auth_data)
 
         return account
 
@@ -79,8 +78,8 @@ class NullBackend(AuthenticationBackend):
     def lookup_account(self, identity):
         return self._DUMMY_ACCOUNT
 
-    def verify_identity(self, account, auth_data):
-        return True
+    def verify_identity(self, request, account, auth_data):
+        pass
 
     def authenticate(self, request):
         return self._DUMMY_ACCOUNT
