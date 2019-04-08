@@ -31,15 +31,17 @@ class JWTBackend(ModelBackend, CookieBackendMixin):
     def extract_auth_data(self, request):
         token = None
 
+        # First look for auth header
         auth_header = request.headers.get(_AUTH_HEADER)
-        if auth_header is not None:  # First look for auth header
+        if auth_header is not None:
             m = _AUTH_TOKEN_REGEX.match(auth_header)
             if not m:
                 raise JWTException('invalid authorization header')
 
             token = m.group(1)
 
-        elif self.cookie_name:  # Then look in cookies
+        # Then look in cookies
+        elif self.cookie_name:
             token = request.cookies.get(self.cookie_name)
 
         if not token:
