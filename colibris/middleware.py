@@ -105,6 +105,7 @@ async def handle_auth(request, handler):
 
     # Only go through authentication if route specifies permissions;
     # otherwise route is considered public.
+    account = None
     if authorization_info is not None:
         try:
             account = authentication.authenticate(request)
@@ -115,7 +116,19 @@ async def handle_auth(request, handler):
         if not authorization.authorize(account, method, path, authorization_info):
             raise api.ForbiddenException()
 
-    return await handler(request)
+    response = await handler(request)
+
+    # Detect logins and logouts (accounts before and after view execution)
+    after_account = authentication.get_account(request)
+    persistent = authentication.is_persistent_account(request)
+    if after_account != account:
+        if after_account:  # Login
+            response = authentication.response_login(response, after_account, persistent=persistent)
+
+        else:  # Logout
+            response = authentication.response_logout(response)
+
+    return response
 
 
 @web.middleware

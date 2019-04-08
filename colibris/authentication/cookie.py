@@ -2,18 +2,24 @@
 from http.cookies import Morsel
 
 from colibris import settings
-
+from colibris.authentication.exceptions import AuthenticationException
 
 DEFAULT_VALIDITY_SECONDS = 3600 * 24 * 30
-DEFAULT_COOKIE_NAME = 'auth_token'
+
+
+class CookieException(AuthenticationException):
+    pass
 
 
 class CookieBackendMixin:
-    def __init__(self, cookie_name=DEFAULT_COOKIE_NAME, validity_seconds=DEFAULT_VALIDITY_SECONDS, **kwargs):
+    def __init__(self, cookie_name=None, validity_seconds=DEFAULT_VALIDITY_SECONDS, **kwargs):
         self.cookie_name = cookie_name
         self.validity_seconds = validity_seconds
 
-    def cookie_login(self, request, persistent, token):
+    def cookie_login(self, response, persistent, token):
+        if not self.cookie_name:
+            raise CookieException('login attempt without a configured cookie name')
+
         cookie = Morsel()
         cookie.set(self.cookie_name, token, token)
         cookie['httponly'] = True
@@ -24,9 +30,12 @@ class CookieBackendMixin:
         if persistent:
             cookie['expires'] = self.validity_seconds
 
-        request.cookies[self.cookie_name] = cookie
+        response.cookies[self.cookie_name] = cookie
 
-    def cookie_logout(self, request):
+    def cookie_logout(self, response):
+        if not self.cookie_name:
+            raise CookieException('logout attempt without a configured cookie name')
+
         cookie = Morsel()
         cookie.set(self.cookie_name, 'invalid', 'invalid')
         cookie['httponly'] = True
@@ -35,4 +44,4 @@ class CookieBackendMixin:
         cookie['path'] = '/'
         cookie['expires'] = 0
 
-        request.cookies[self.cookie_name] = cookie
+        response.cookies[self.cookie_name] = cookie

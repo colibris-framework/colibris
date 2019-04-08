@@ -16,7 +16,6 @@ def get_backend():
     global _backend
 
     if _backend is None:
-
         backend_settings = dict(settings.AUTHORIZATION)
         backend_path = backend_settings.pop('backend', 'colibris.authorization.base.NullBackend')
         backend_class = utils.import_member(backend_path)

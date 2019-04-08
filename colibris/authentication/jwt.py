@@ -70,17 +70,15 @@ class JWTBackend(ModelBackend, CookieBackendMixin):
 
         return True
 
-    def login(self, request, account, persistent):
-        if not self.cookie_name:
-            raise JWTException('login attempt without a configured cookie name')
+    def response_login(self, response, account, persistent):
+        self.cookie_login(response, persistent, self.build_jwt(account))
 
-        self.cookie_login(request, persistent, self.build_jwt(account))
+        return response
 
-    def logout(self, request):
-        if not self.cookie_name:
-            raise JWTException('logout attempt without a configured cookie name')
+    def response_logout(self, response):
+        self.cookie_logout(response)
 
-        self.cookie_logout(request)
+        return response
 
     def build_jwt(self, account):
         now = int(time.time())

@@ -8,6 +8,7 @@ from .exceptions import *
 
 
 _REQUEST_ACCOUNT_ITEM_NAME = 'account'
+_REQUEST_ACCOUNT_PERSISTENT_ITEM_NAME = 'account_persistent'
 
 
 logger = logging.getLogger(__name__)
@@ -19,7 +20,6 @@ def get_backend():
     global _backend
 
     if _backend is None:
-
         backend_settings = dict(settings.AUTHENTICATION)
         backend_path = backend_settings.pop('backend', 'colibris.authentication.base.NullBackend')
         backend_class = utils.import_member(backend_path)
@@ -42,15 +42,26 @@ def get_account(request):
     return request.get(_REQUEST_ACCOUNT_ITEM_NAME)
 
 
-def login(request, account, persistent):
-    logger.debug('logging in account "%s"', account)
+def is_persistent_account(request):
+    return request.get(_REQUEST_ACCOUNT_PERSISTENT_ITEM_NAME)
 
-    get_backend().login(request, account, persistent)
+
+def login(request, account, persistent):
+    logger.debug('logging in account "%s" (persistent=%s)', account, persistent)
+
     request[_REQUEST_ACCOUNT_ITEM_NAME] = account
+    request[_REQUEST_ACCOUNT_PERSISTENT_ITEM_NAME] = persistent
 
 
 def logout(request):
     account = request.pop(_REQUEST_ACCOUNT_ITEM_NAME, None)
     if account:
-        get_backend().logout(request)
         logger.debug('logged out account "%s"', account)
+
+
+def response_login(response, account, persistent):
+    return get_backend().response_login(response, account, persistent)
+
+
+def response_logout(response):
+    return get_backend().response_logout(response)

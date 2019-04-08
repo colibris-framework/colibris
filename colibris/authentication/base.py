@@ -23,11 +23,11 @@ class AuthenticationBackend:
 
         return account
 
-    def login(self, request, account, persistent):
-        pass
+    def response_login(self, response, account, persistent):
+        return response
 
-    def logout(self, request):
-        pass
+    def response_logout(self, response):
+        return response
 
 
 class NullBackend(AuthenticationBackend):
