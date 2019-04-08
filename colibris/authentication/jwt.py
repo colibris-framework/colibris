@@ -20,11 +20,13 @@ class JWTException(AuthenticationException):
 
 
 class JWTBackend(ModelBackend, CookieBackendMixin):
-    def __init__(self, identity_claim='sub', cookie_name=None, **kwargs):
+    def __init__(self, identity_claim='sub', **kwargs):
         self.identity_claim = identity_claim
-        self.cookie_name = cookie_name
 
-        super().__init__(**kwargs)  # TODO does this work for mixins?
+        # Cookie token storage is disabled by default
+        kwargs.setdefault('cookie_name', None)
+
+        super().__init__(**kwargs)
 
     def extract_auth_data(self, request):
         token = None
@@ -67,9 +69,15 @@ class JWTBackend(ModelBackend, CookieBackendMixin):
         return True
 
     def login(self, request, account, persistent):
+        if not self.cookie_name:
+            raise JWTException('login attempt without a configured cookie name')
+
         self.cookie_login(request, persistent, self.build_jwt(account))
 
     def logout(self, request):
+        if not self.cookie_name:
+            raise JWTException('logout attempt without a configured cookie name')
+
         self.cookie_logout(request)
 
     def build_jwt(self, account):

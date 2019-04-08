@@ -1,16 +1,11 @@
 
 from http.cookies import Morsel
 
-from colibris.authentication.exceptions import AuthenticationException
 from colibris import settings
 
 
 DEFAULT_VALIDITY_SECONDS = 3600 * 24 * 30
 DEFAULT_COOKIE_NAME = 'auth_token'
-
-
-class JWTException(AuthenticationException):
-    pass
 
 
 class CookieBackendMixin:
