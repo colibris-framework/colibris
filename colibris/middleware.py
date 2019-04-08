@@ -17,12 +17,6 @@ from colibris.api import BaseJSONException, envelope
 
 logger = logging.getLogger(__name__)
 
-_authentication_backend_settings = dict(settings.AUTHENTICATION)
-_authentication_backend_path = _authentication_backend_settings.pop('backend',
-                                                                    'colibris.authentication.base.NullBackend')
-_authentication_backend_class = utils.import_member(_authentication_backend_path)
-_authentication_backend = _authentication_backend_class(**_authentication_backend_settings)
-
 _authorization_backend_settings = dict(settings.AUTHORIZATION)
 _authorization_backend_path = _authorization_backend_settings.pop('backend',
                                                                   'colibris.authorization.base.NullBackend')
@@ -118,13 +112,10 @@ async def handle_auth(request, handler):
     # otherwise route is considered public.
     if authorization is not None:
         try:
-            account = _authentication_backend.authenticate(request)
+            account = authentication.authenticate(request)
 
-        except authentication.AuthenticationException as e:
+        except authentication.AuthenticationException:
             raise api.UnauthenticatedException()
-
-        # at this point we can safely associate request with account
-        request[authentication.REQUEST_ACCOUNT_ITEM_NAME] = account
 
         if not _authorization_backend.authorize(account, method, path, authorization):
             raise api.ForbiddenException()

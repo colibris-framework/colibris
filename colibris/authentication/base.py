@@ -23,6 +23,12 @@ class AuthenticationBackend:
 
         return account
 
+    def login(self, request, account, persistent):
+        pass
+
+    def logout(self, request):
+        pass
+
 
 class NullBackend(AuthenticationBackend):
     _DUMMY_ACCOUNT = {}
