@@ -93,7 +93,18 @@ class CookieBackendMixin:
             raise CSRFValidationException()
 
     def set_csrf(self, request, response):
-        response.cookies['csrf_token'] = self.get_csrf_token(request)
+        token = self.get_csrf_token(request)
+        if not token:
+            return
+
+        cookie = Morsel()
+        cookie.set(self.csrf_token_cookie_name, token, token)
+        cookie['secure'] = not settings.DEBUG
+        cookie['path'] = '/'
+        if self.cookie_domain:
+            cookie['domain'] = self.cookie_domain
+
+        response.cookies['csrf_token'] = cookie
 
     @staticmethod
     def get_csrf_token(request, account=None):
@@ -102,6 +113,9 @@ class CookieBackendMixin:
             return token
 
         account = account or authentication.get_account(request)
+        if account is None:
+            return
+
         account_id = str(account).encode()
         token = hmac.new(_SECRET_KEY, account_id, hashlib.sha256).hexdigest()
 
