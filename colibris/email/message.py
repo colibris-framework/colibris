@@ -8,6 +8,8 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from email.utils import formatdate, make_msgid
 
+from colibris import settings
+
 
 _cached_domain = None
 
@@ -21,7 +23,7 @@ class EmailMessage:
         self.subject = subject
         self.body = body
 
-        self.from_ = from_ or []
+        self.from_ = from_ or settings.EMAIL['default_from']
         self.to = to or []
         self.cc = cc or []
         self.bcc = bcc or []
