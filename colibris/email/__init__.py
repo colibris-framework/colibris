@@ -27,4 +27,9 @@ def get_backend():
 
 def send(email_message):
     logger.debug('sending %s', email_message)
-    return get_backend().send(email_message)
+    return get_backend().send_messages([email_message])
+
+
+def send_many(email_messages):
+    logger.debug('sending %d messages', len(email_messages))
+    return get_backend().send_messages(email_messages)
