@@ -152,6 +152,12 @@ class AllTaskQueueSchema(RQTaskQueueSchema):
     TASK_QUEUE_BACKEND = fields.String()
 
 
+# email
+
+class AllEmailSchema:
+    EMAIL_BACKEND = fields.String()
+
+
 def register_settings_schema(schema):
     _settings_schemas.append(schema)
 
@@ -169,3 +175,4 @@ register_settings_schema(AllCacheSchema)
 register_settings_schema(AllDatabaseSchema)
 register_settings_schema(AllTemplateSchema)
 register_settings_schema(AllTaskQueueSchema)
+register_settings_schema(AllEmailSchema)
