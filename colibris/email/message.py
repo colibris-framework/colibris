@@ -17,17 +17,17 @@ _cached_domain = None
 class EmailMessage:
     ENCODING = 'utf-8'
 
-    def __init__(self, subject, body, from_=None, to=None, cc=None, bcc=None,
-                 reply_to=None, headers=None):
+    def __init__(self, subject, body, to, cc=None, bcc=None,
+                 from_=None, reply_to=None, headers=None):
 
         self.subject = subject
         self.body = body
 
         self.from_ = from_ or settings.EMAIL['default_from']
-        self.to = to or []
-        self.cc = cc or []
-        self.bcc = bcc or []
-        self.reply_to = reply_to or []
+        self.to = to
+        self.cc = cc
+        self.bcc = bcc
+        self.reply_to = reply_to
 
         self.attachments = []
         self.headers = headers or {}  # TODO headers should be case insensitive
@@ -52,14 +52,29 @@ class EmailMessage:
 
         msg['Subject'] = self.subject
         msg['From'] = self.headers.get('From', self.from_)
-        msg['To'] = self.headers.get('From', self.to)
-        msg['Cc'] = self.headers.get('From', self.cc)
-        msg['Reply-To'] = self.headers.get('From', self.reply_to)
+        msg['To'] = ', '.join(self.headers.get('To', self.to))
+
+        cc = self.headers.get('Cc')
+        if cc is None and self.cc:
+            cc = ', '.join(self.cc)
+        if cc is not None:
+            msg['Cc'] = cc
+
+        bcc = self.headers.get('Bcc')
+        if bcc is None and self.bcc:
+            bcc = ', '.join(self.bcc)
+        if bcc is not None:
+            msg['Bcc'] = bcc
+
+        reply_to = self.headers.get('Reply-To')
+        if reply_to is None and self.reply_to:
+            reply_to = ', '.join(self.reply_to)
+        if reply_to is not None:
+            msg['Reply-To'] = reply_to
 
         date = self.headers.get('Date')
         if date is None:
             date = formatdate()
-
         msg['Date'] = date
 
         msg_id = self.headers.get('Message-ID')
@@ -68,8 +83,8 @@ class EmailMessage:
                 _cached_domain = socket.getfqdn()
 
             msg_id = make_msgid(domain=_cached_domain)
-
         msg['Message-ID'] = msg_id
+
         for name, value in self.headers.items():
             msg[name] = value
 
