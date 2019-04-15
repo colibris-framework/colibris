@@ -27,10 +27,20 @@ class SMTPBackend(EmailBackend):
 
     async def send_messages_async(self, email_messages):
         logger.debug('connecting to %s:%d', self.host, self.port)
-        client = await self.connect()
+        try:
+            client = await self.connect()
+
+        except Exception as e:
+            logger.error('failed to connect: %s', e, exc_info=True)
+            return
+
         for i, message in enumerate(email_messages):
             logger.debug('sending message %d/%d', i + 1, len(email_messages))
-            await client.send_message(message.prepare())
+            try:
+                await client.send_message(message.prepare())
+
+            except Exception as e:
+                logger.error('failed to send message (%s): %s', message, e, exc_info=True)
 
         logger.debug('closing connection')
         client.close()
