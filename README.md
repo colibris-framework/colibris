@@ -345,6 +345,8 @@ You'll see the email content printed at standard output.
 
 #### SMTP Backend
 
+Make sure you have the `aiosmtplib` python package installed.
+
 In `settings.py`, set:
 
     EMAIL = {
