@@ -154,7 +154,16 @@ class AllTaskQueueSchema(RQTaskQueueSchema):
 
 # email
 
-class AllEmailSchema:
+class SMTPEmailSchema(SettingsSchema):
+    EMAIL_HOST = fields.String()
+    EMAIL_PORT = fields.Integer()
+    EMAIL_USERNAME = fields.String()
+    EMAIL_PASSWORD = fields.String()
+    EMAIL_USE_TLS = fields.Boolean()
+    EMAIL_TIMEOUT = fields.Integer()
+
+
+class AllEmailSchema(SMTPEmailSchema):
     EMAIL_BACKEND = fields.String()
 
 

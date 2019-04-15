@@ -9,8 +9,10 @@ logger = logging.getLogger(__name__)
 
 
 class ConsoleBackend(EmailBackend):
-    def __init__(self):
+    def __init__(self, **kwargs):
         self.stream = sys.stdout
+
+        super().__init__(**kwargs)
 
     def send_messages(self, email_messages):
         for message in email_messages:

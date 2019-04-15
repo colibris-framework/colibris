@@ -12,13 +12,15 @@ logger = logging.getLogger(__name__)
 
 
 class SMTPBackend(EmailBackend):
-    def __init__(self, host, port, username=None, password=None, use_tls=False, timeout=DEFAULT_TIMEOUT):
+    def __init__(self, host, port, username=None, password=None, use_tls=False, timeout=DEFAULT_TIMEOUT, **kwargs):
         self.host = host
         self.port = port
         self.username = username
         self.password = password
         self.use_tls = use_tls
         self.timeout = timeout
+
+        super().__init__(**kwargs)
 
     def send_messages(self, email_messages):
         asyncio.ensure_future(self.send_messages_async(email_messages))
@@ -28,7 +30,7 @@ class SMTPBackend(EmailBackend):
         client = await self.connect()
         for i, message in enumerate(email_messages):
             logger.debug('sending message %d/%d', i + 1, len(email_messages))
-            await client.send_message(message)
+            await client.send_message(message.prepare())
 
         logger.debug('closing connection')
         client.close()
