@@ -15,10 +15,8 @@ _cached_domain = None
 
 
 class EmailMessage:
-    ENCODING = 'utf-8'
-
     def __init__(self, subject, body, to, cc=None, bcc=None,
-                 from_=None, reply_to=None, headers=None):
+                 from_=None, reply_to=None, headers=None, html=None):
 
         self.subject = subject
         self.body = body
@@ -29,26 +27,32 @@ class EmailMessage:
         self.bcc = bcc
         self.reply_to = reply_to
 
-        self.attachments = []
         self.headers = headers or {}  # TODO headers should be case insensitive
+        self.attachments = []
+        self.html = html
 
     def __str__(self):
         to = ', '.join(('<{}>'.format(t) for t in self.to))
         return 'email to {to}: {subject}'.format(to=to, subject=self.subject)
 
     def prepare(self):
+        msg = MIMEText(self.body, _charset='utf-8')
+        msg = self._prepare_attachments(msg)
+        msg = self._prepare_headers(msg)
+
+        return msg
+
+    def attach(self, filename, content, mimetype=None):
+        mimetype = mimetype or mimetypes.guess_type(filename)[0]
+        basetype, subtype = mimetype.split('/', 1)
+
+        if basetype == 'text' and isinstance(content, bytes):
+            content = content.decode()
+
+        self.attachments.append((content, mimetype, filename))
+
+    def _prepare_headers(self, msg):
         global _cached_domain
-
-        msg = MIMEText(self.body, _charset=self.ENCODING)
-
-        if self.attachments:
-            multipart_msg = MIMEMultipart()
-            multipart_msg.attach(msg)
-
-            for attachment in self.attachments:
-                multipart_msg.attach(self._prepare_attachment(*attachment))
-
-            msg = multipart_msg
 
         msg['Subject'] = self.subject
         msg['From'] = self.headers.get('From', self.from_)
@@ -90,31 +94,43 @@ class EmailMessage:
 
         return msg
 
-    def attach(self, filename, content, mimetype=None):
-        mimetype = mimetype or mimetypes.guess_type(filename)[0]
-        basetype, subtype = mimetype.split('/', 1)
+    def _prepare_attachments(self, msg):
+        if self.html:
+            self.attachments.append((self.html, 'text/html', None))
 
-        if basetype == 'text' and isinstance(content, bytes):
-            content = content.decode()
+        if self.attachments:
+            subtype = 'mixed'
+            if self.html:
+                # If html is supplied, use it as an alternative to textual body
+                subtype = 'alternative'
 
-        self.attachments.append((filename, content, mimetype))
+            multipart_msg = MIMEMultipart(_subtype=subtype)
+            multipart_msg.attach(msg)
 
-    def _prepare_attachment(self, filename, content, mimetype):
+            for attachment in self.attachments:
+                multipart_msg.attach(self._prepare_attachment(*attachment))
+
+            return multipart_msg
+
+        return msg
+
+    def _prepare_attachment(self, content, mimetype, filename=None):
         basetype, subtype = mimetype.split('/', 1)
         if basetype == 'text':
-            attachment = MIMEText(content, subtype, self.ENCODING)
+            attachment = MIMEText(content, subtype, _charset='utf-8')
 
         else:
             attachment = MIMEBase(basetype, subtype)
             attachment.set_payload(content)
             encoders.encode_base64(attachment)
 
-        try:
-            filename.encode('ascii')
+        if filename:
+            try:
+                filename.encode('ascii')
 
-        except UnicodeEncodeError:
-            filename = ('utf-8', '', filename)
+            except UnicodeEncodeError:
+                filename = ('utf-8', '', filename)
 
-        attachment.add_header('Content-Disposition', 'attachment', filename=filename)
+            attachment.add_header('Content-Disposition', 'attachment', filename=filename)
 
         return attachment
