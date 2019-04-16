@@ -23,6 +23,9 @@ CACHE = {}
 DATABASE = {}
 TEMPLATE = {}
 TASK_QUEUE = {}
+EMAIL = {
+    'default_from': 'webmaster@localhost'
+}
 
 API_DOCS_PATH = '/api/docs'
 

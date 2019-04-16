@@ -152,6 +152,21 @@ class AllTaskQueueSchema(RQTaskQueueSchema):
     TASK_QUEUE_BACKEND = fields.String()
 
 
+# email
+
+class SMTPEmailSchema(SettingsSchema):
+    EMAIL_HOST = fields.String()
+    EMAIL_PORT = fields.Integer()
+    EMAIL_USERNAME = fields.String()
+    EMAIL_PASSWORD = fields.String()
+    EMAIL_USE_TLS = fields.Boolean()
+    EMAIL_TIMEOUT = fields.Integer()
+
+
+class AllEmailSchema(SMTPEmailSchema):
+    EMAIL_BACKEND = fields.String()
+
+
 def register_settings_schema(schema):
     _settings_schemas.append(schema)
 
@@ -169,3 +184,4 @@ register_settings_schema(AllCacheSchema)
 register_settings_schema(AllDatabaseSchema)
 register_settings_schema(AllTemplateSchema)
 register_settings_schema(AllTaskQueueSchema)
+register_settings_schema(AllEmailSchema)
