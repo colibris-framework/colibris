@@ -422,32 +422,11 @@ Add your dependencies to `Pipfile`:
 
     nano Pipfile
     
-If you're using PostgreSQL, you may want to add:
+For example, if you're using PostgreSQL, you may want to add:
 
     [packages]
     ....
     psycopg2-binary = "*"
-    ...
-
-If you're using JWT for authentication, you may want to add:
-
-    [packages]
-    ....
-    pyjwt = "*"
-    ...
-
-If you're using Redis for caching or background tasks, you may want to add:
-
-    [packages]
-    ....
-    redis = "*"
-    ...
-
-If you're using Jinja2 for template rendering, you may want to add:
-
-    [packages]
-    ....
-    jinja2 = "*"
     ...
 
 #### Lock Down Versions
