@@ -9,11 +9,12 @@ from colibris.template import base
 
 
 class JinjaBackend(base.TemplateBackend):
-    def __init__(self, paths):
+    def __init__(self, paths, extensions=None):
         super().__init__(paths)
 
         self.loader = FileSystemLoader(paths)
-        self.env = Environment(loader=self.loader, autoescape=select_autoescape())
+        self.env = Environment(loader=self.loader, autoescape=select_autoescape(),
+                               extensions=extensions or ())
 
     def render(self, template_name, context):
         try:

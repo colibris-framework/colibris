@@ -285,8 +285,11 @@ Make sure to have the `jinja2` python package installed.
 In `settings.py`, set:
 
     TEMPLATE = {
-        'backend': 'colibris.template.jinja.JinjaBackend'
+        'backend': 'colibris.template.jinja.JinjaBackend',
+        'extensions': [...]
     }
+
+Field `extensions` is optional and represents a list of extensions to be used by the Jinja2 environment.
 
 
 ## Email Sending
