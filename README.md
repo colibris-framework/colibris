@@ -286,10 +286,14 @@ In `settings.py`, set:
 
     TEMPLATE = {
         'backend': 'colibris.template.jinja.JinjaBackend',
-        'extensions': [...]
+        'extensions': [...],
+        'translations': 'gettext'
     }
 
 Field `extensions` is optional and represents a list of extensions to be used by the Jinja2 environment.
+
+Field `translations` is optional and, if present, will enable `gettext`-based Jinja2 translations. Its value is the path
+to a python object that implements the `gettext` functions (such as the standard library `gettext`).
 
 
 ## Email Sending
