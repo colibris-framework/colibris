@@ -10,24 +10,13 @@ from webargs import aiohttpparser
 from colibris import api
 from colibris import app
 from colibris import authentication
+from colibris import authorization
 from colibris import settings
 from colibris import utils
 from colibris.api import BaseJSONException, envelope
 
 
 logger = logging.getLogger(__name__)
-
-_authentication_backend_settings = dict(settings.AUTHENTICATION)
-_authentication_backend_path = _authentication_backend_settings.pop('backend',
-                                                                    'colibris.authentication.base.NullBackend')
-_authentication_backend_class = utils.import_member(_authentication_backend_path)
-_authentication_backend = _authentication_backend_class(**_authentication_backend_settings)
-
-_authorization_backend_settings = dict(settings.AUTHORIZATION)
-_authorization_backend_path = _authorization_backend_settings.pop('backend',
-                                                                  'colibris.authorization.base.NullBackend')
-_authorization_backend_class = utils.import_member(_authorization_backend_path)
-_authorization_backend = _authorization_backend_class(**_authorization_backend_settings)
 
 
 class HTTPSchemaValidationError(web.HTTPUnprocessableEntity):
@@ -39,7 +28,7 @@ class HTTPSchemaValidationError(web.HTTPUnprocessableEntity):
 
 def _extract_request_logging_info(request):
     info = '{method} {path}'.format(method=request.method, path=request.path)
-    account = getattr(request, 'account', None)
+    account = authentication.get_account(request)
     if account:
         info += ' (account={})'.format(account)
 
@@ -110,26 +99,28 @@ async def handle_auth(request, handler):
     if request.match_info.http_exception is not None:
         raise request.match_info.http_exception
 
-    authorization = app.route_auth_mapping.get(request.match_info.route)
+    authorization_info = app.route_auth_mapping.get(request.match_info.route)
     method = request.method
     path = request.match_info.route.resource.canonical
 
+    request = authentication.process_request(request)
+
     # Only go through authentication if route specifies permissions;
     # otherwise route is considered public.
-    if authorization is not None:
+    if authorization_info is not None:
         try:
-            account = _authentication_backend.authenticate(request)
+            account = authentication.authenticate(request)
 
-        except authentication.AuthenticationException as e:
+        except authentication.AuthenticationException:
             raise api.UnauthenticatedException()
 
-        # at this point we can safely associate request with account
-        request['account'] = account
-
-        if not _authorization_backend.authorize(account, method, path, authorization):
+        if not authorization.authorize(account, method, path, authorization_info):
             raise api.ForbiddenException()
 
-    return await handler(request)
+    response = await handler(request)
+    response = authentication.process_response(request, response)
+
+    return response
 
 
 @web.middleware

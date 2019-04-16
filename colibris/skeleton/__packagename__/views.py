@@ -4,6 +4,7 @@ from aiohttp import web
 from aiohttp_apispec import docs, request_schema, response_schema
 
 from colibris import api
+from colibris import authentication
 from colibris.schemas import many_envelope
 from colibris.shortcuts import get_object_or_404
 
@@ -18,7 +19,8 @@ from __packagename__ import schemas
 #       summary='Reveal details about the current user')
 # @response_schema(schemas.UserSchema())
 # def get_me(request):
-#     result = schemas.UserSchema().dump(request['account'])
+#     user = authentication.get_account(request)
+#     result = schemas.UserSchema().dump(user)
 #
 #     return web.json_response(result)
 #
