@@ -285,7 +285,7 @@ Make sure to have the `jinja2` python package installed.
 In `settings.py`, set:
 
     TEMPLATE = {
-        'backend': 'colibris.template.jinja.JinjaBackend',
+        'backend': 'colibris.template.jinja2.Jinja2Backend',
         'extensions': [...],
         'translations': 'gettext'
     }

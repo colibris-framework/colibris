@@ -129,11 +129,11 @@ class AllDatabaseSchema(SQLiteDatabaseSchema,
 
 # template
 
-class JinjaTemplateSchema(SettingsSchema):
+class Jinja2TemplateSchema(SettingsSchema):
     pass
 
 
-class AllTemplateSchema(JinjaTemplateSchema):
+class All2TemplateSchema(Jinja2TemplateSchema):
     TEMPLATE_BACKEND = fields.String()
     TEMPLATE_PATHS = ColonSeparatedStringsField()
 
@@ -182,6 +182,6 @@ register_settings_schema(AllAuthenticationSchema)
 register_settings_schema(AllAuthorizationSchema)
 register_settings_schema(AllCacheSchema)
 register_settings_schema(AllDatabaseSchema)
-register_settings_schema(AllTemplateSchema)
+register_settings_schema(All2TemplateSchema)
 register_settings_schema(AllTaskQueueSchema)
 register_settings_schema(AllEmailSchema)

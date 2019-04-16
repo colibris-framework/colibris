@@ -9,7 +9,7 @@ from colibris.template import base
 from colibris.template import exceptions
 
 
-class JinjaBackend(base.TemplateBackend):
+class Jinja2Backend(base.TemplateBackend):
     def __init__(self, paths, extensions=None, translations=None):
         super().__init__(paths)
 
