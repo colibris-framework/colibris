@@ -285,8 +285,15 @@ Make sure to have the `jinja2` python package installed.
 In `settings.py`, set:
 
     TEMPLATE = {
-        'backend': 'colibris.template.jinja.JinjaBackend'
+        'backend': 'colibris.template.jinja2.Jinja2Backend',
+        'extensions': [...],
+        'translations': 'gettext'
     }
+
+Field `extensions` is optional and represents a list of extensions to be used by the Jinja2 environment.
+
+Field `translations` is optional and, if present, will enable `gettext`-based Jinja2 translations. Its value is the path
+to a python object that implements the `gettext` functions (such as the standard library `gettext`).
 
 
 ## Email Sending
@@ -422,32 +429,11 @@ Add your dependencies to `Pipfile`:
 
     nano Pipfile
     
-If you're using PostgreSQL, you may want to add:
+For example, if you're using PostgreSQL, you may want to add:
 
     [packages]
     ....
     psycopg2-binary = "*"
-    ...
-
-If you're using JWT for authentication, you may want to add:
-
-    [packages]
-    ....
-    pyjwt = "*"
-    ...
-
-If you're using Redis for caching or background tasks, you may want to add:
-
-    [packages]
-    ....
-    redis = "*"
-    ...
-
-If you're using Jinja2 for template rendering, you may want to add:
-
-    [packages]
-    ....
-    jinja2 = "*"
     ...
 
 #### Lock Down Versions

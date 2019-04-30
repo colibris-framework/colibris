@@ -4,16 +4,26 @@ from jinja2 import FileSystemLoader
 from jinja2 import TemplateNotFound, TemplateSyntaxError, TemplateError
 from jinja2 import select_autoescape
 
-from colibris.template import exceptions
+from colibris import utils
 from colibris.template import base
+from colibris.template import exceptions
 
 
-class JinjaBackend(base.TemplateBackend):
-    def __init__(self, paths):
+class Jinja2Backend(base.TemplateBackend):
+    def __init__(self, paths, extensions=None, translations=None):
         super().__init__(paths)
 
+        extensions = extensions or []
+        if translations:
+            extensions.append('jinja2.ext.i18n')
+
         self.loader = FileSystemLoader(paths)
-        self.env = Environment(loader=self.loader, autoescape=select_autoescape())
+        self.env = Environment(loader=self.loader, autoescape=select_autoescape(),
+                               extensions=extensions)
+
+        if translations:
+            translations = utils.import_member(translations)
+            self.env.install_gettext_translations(translations, newstyle=True)
 
     def render(self, template_name, context):
         try:

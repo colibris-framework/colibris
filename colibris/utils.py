@@ -10,6 +10,11 @@ def camelcase_to_underscore(s):
 
 
 def import_member(path):
+    # The member could actually be a package/module itself
+    module = import_module_or_none(path)
+    if module:
+        return module
+
     parts = path.split('.')
     module_path = '.'.join(parts[:-1])
     member_name = parts[-1]
@@ -20,6 +25,7 @@ def import_member(path):
 
 
 def import_module_or_none(path):
+    # In Python < 3.6 we don't have ModuleNotFoundError
     ModuleNotFoundError = getattr(builtins, 'ModuleNotFoundError', ImportError)
 
     try:
