@@ -72,7 +72,7 @@ from __packagename__ import schemas
 #     data = request['data']
 #
 #     if 'username' in data:
-#         query = (models.User.username == data['username'] and models.User.id != user_id)
+#         query = ((models.User.username == data['username']) & (models.User.id != user_id))
 #         if models.User.select().where(query).exists():
 #             raise api.DuplicateException(models.User, 'username')
 #
