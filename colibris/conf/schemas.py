@@ -33,6 +33,7 @@ class CommonSchema(SettingsSchema):
     PORT = fields.Integer()
     MAX_REQUEST_BODY_SIZE = fields.Integer()
     API_DOCS_PATH = fields.String()
+    SECRET_KEY = fields.String()
 
 
 # authentication
