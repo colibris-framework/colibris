@@ -1,9 +1,8 @@
 
 import marshmallow_peewee.schema
 
-from marshmallow import Schema, ValidationError
-from marshmallow import pre_dump, post_dump, pre_load, post_load, validates_schema
-from marshmallow import fields, validate
+from marshmallow import *
+from marshmallow import validate
 
 from colibris.api import envelope
 from colibris.utils import camelcase_to_underscore
