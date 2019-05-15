@@ -33,6 +33,9 @@ class ModelBackend(AuthenticationBackend):
     def get_identity_field(self):
         return getattr(self.model, self.identity_field)
 
+    def get_identity_value(self, auth_data):
+        raise NotImplementedError
+
     def get_active_field(self):
         return getattr(self.model, self.active_field)
 
@@ -41,6 +44,3 @@ class ModelBackend(AuthenticationBackend):
 
     def get_secret(self, account):
         return getattr(account, self.secret_field)
-
-    def get_identity_value(self, auth_data):
-        raise NotImplementedError
