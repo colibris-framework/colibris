@@ -14,9 +14,9 @@ class TimeoutException(TaskQueueException):
         super().__init__('task did not complete within {} seconds'.format(timeout))
 
 
-class UnpicklableException(TaskQueueException):
+class TaskExecException(TaskQueueException):
     def __init__(self, exc_str):
         self.exc_str = exc_str
 
     def __str__(self):
-        return self.exc_str
+        return 'exception while executing task:\n{}'.format(self.exc_str)

@@ -1,18 +1,13 @@
 
 import asyncio
-import base64
 import logging
-import pickle
 import redis
 import rq.timeouts
-import traceback
 
 from rq import Connection
 from rq.worker import Worker
-from rq.connections import get_current_connection
-from rq.queue import get_failed_queue
 
-from colibris.taskqueue import UnpicklableException, TimeoutException
+from colibris.taskqueue import TaskExecException, TimeoutException
 from colibris.taskqueue.base import TaskQueueBackend
 
 
@@ -69,21 +64,11 @@ class RQBackend(TaskQueueBackend):
                         future.set_result(result.return_value)
 
                     elif result.is_failed:
-                        try:
-                            exc_value = base64.b64decode(result.exc_info)
-                            exc_value = pickle.loads(exc_value)
+                        exc_value = TaskExecException(result.exc_info)
 
-                        except Exception as e:
-                            logger.error('failed to decode exception: %s', e, exc_info=True)
-                            exc_value = UnpicklableException(result.exc_info)
-
-                        # treat exceptions that could not be pickled
-                        if isinstance(exc_value, str):
-                            exc_value = UnpicklableException(exc_value)
-
-                        # transform rq timeouts into taskqueue timeouts
-                        if isinstance(exc_value, rq.timeouts.JobTimeoutException):
-                            exc_value = TimeoutException(timeout)
+                        # # transform rq timeouts into taskqueue timeouts
+                        # if isinstance(exc_value, rq.timeouts.JobTimeoutException):
+                        #     exc_value = TimeoutException(timeout)
 
                         future.set_exception(exc_value)
 
@@ -111,27 +96,11 @@ class RQBackend(TaskQueueBackend):
 
         return await future
 
-    @staticmethod
-    def handle_task_exception(job, exc_type, exc_value, tb):
-        try:
-            pickled_exc_value = pickle.dumps(exc_value)
-
-        except (pickle.PickleError, TypeError):
-            logger.error('exception could not be pickled')
-            exc_string = Worker._get_safe_exception_string(traceback.format_exception(exc_type, exc_value, tb))
-            pickled_exc_value = pickle.dumps(exc_string)
-
-        # we need to encode pickled_exc_value using base64, since pickle is not guaranteed to be ASCII
-        pickled_exc_value = base64.b64encode(pickled_exc_value).decode()
-
-        failed_queue = get_failed_queue(get_current_connection(), job.__class__)
-        failed_queue.quarantine(job, exc_info=pickled_exc_value)
-
     def add_worker_arguments(self, parser):
         parser.add_argument('--queue-name', help='The task queue name ("default" if unspecified)',
                             type=str, default='default')
 
     def run_worker(self, options):
         with Connection(self._get_connection()):
-            w = Worker([options.queue_name], exception_handlers=[self.handle_task_exception])
+            w = Worker([options.queue_name])
             w.work()
