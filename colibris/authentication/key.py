@@ -19,20 +19,14 @@ class ApiKeyBackend(ModelBackend):
         if auth_header is not None:
             m = _AUTH_TOKEN_REGEX.match(auth_header)
             if not m:
-                raise ApiKeyException('Invalid authorization header')
+                raise ApiKeyException('invalid authorization header')
 
             token = m.group(1)
 
         if not token:
-            raise ApiKeyException('Missing token')
+            raise ApiKeyException('missing token')
 
         return token
 
-    def authenticate(self, request):
-        identity = self.extract_auth_data(request)
-        account = self.lookup_account(identity)
-
-        if account is None:
-            raise ApiKeyException('Account not known')
-
-        return account
+    def get_identity_value(self, auth_data):
+        return auth_data

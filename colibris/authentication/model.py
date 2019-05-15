@@ -13,8 +13,11 @@ class ModelBackend(AuthenticationBackend):
 
         super().__init__(**kwargs)
 
-    def lookup_account(self, identity):
-        query = self.get_identity_field() == identity
+    def lookup_account(self, auth_data):
+        value = self.get_identity_value(auth_data)
+        field = self.get_identity_field()
+        query = field == value
+
         if self.active_field:
             query = query & (self.get_active_field() == True)
 
@@ -38,3 +41,6 @@ class ModelBackend(AuthenticationBackend):
 
     def get_secret(self, account):
         return getattr(account, self.secret_field)
+
+    def get_identity_value(self, auth_data):
+        raise NotImplementedError

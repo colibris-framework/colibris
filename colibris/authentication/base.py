@@ -1,6 +1,6 @@
 
 from colibris import authentication
-from colibris.authentication.exceptions import NoSuchAccount, IdentityVerificationFailed
+from colibris.authentication.exceptions import NoSuchAccount
 
 
 _ACCOUNT_ACTION_LOGIN = 'login'
@@ -18,11 +18,12 @@ class AuthenticationBackend:
         raise NotImplementedError
 
     def verify_identity(self, request, account, auth_data):
-        raise NotImplementedError
+        # To be overridden if identity verification is needed.
+        pass
 
     def authenticate(self, request):
-        identity, auth_data = self.extract_auth_data(request)
-        account = self.lookup_account(identity)
+        auth_data = self.extract_auth_data(request)
+        account = self.lookup_account(auth_data)
         if account is None:
             raise NoSuchAccount()
 

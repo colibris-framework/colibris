@@ -54,13 +54,19 @@ class JWTBackend(ModelBackend, CookieBackendMixin):
         if identity is None:
             raise JWTException('missing identity claim')
 
-        return identity, token
+        return {
+            'identity': identity,
+            'token': token
+        }
+
+    def get_identity_value(self, auth_data):
+        return auth_data['identity']
 
     def verify_identity(self, request, account, auth_data):
         secret = self.get_secret(account)
 
         try:
-            jwt.decode(auth_data, key=secret, verify=True)
+            jwt.decode(auth_data['token'], key=secret, verify=True)
 
         except jwt.InvalidSignatureError:
             raise JWTException('invalid signature')
