@@ -4,7 +4,7 @@ from colibris.authentication.base import AuthenticationBackend
 
 
 class ModelBackend(AuthenticationBackend):
-    def __init__(self, model, identity_field, secret_field, active_field=None, inactive_field=None, **kwargs):
+    def __init__(self, model, identity_field, secret_field=None, active_field=None, inactive_field=None, **kwargs):
         self.model = utils.import_member(model)
         self.identity_field = identity_field
         self.secret_field = secret_field
