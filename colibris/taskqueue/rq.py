@@ -7,7 +7,7 @@ import rq.timeouts
 from rq import Connection
 from rq.worker import Worker
 
-from colibris.taskqueue import TaskExecException, TimeoutException
+from colibris.taskqueue import TaskExecException
 from colibris.taskqueue.base import TaskQueueBackend
 
 
@@ -66,11 +66,8 @@ class RQBackend(TaskQueueBackend):
                     elif result.is_failed:
                         exc_value = TaskExecException(result.exc_info)
 
-                        # # transform rq timeouts into taskqueue timeouts
-                        # if isinstance(exc_value, rq.timeouts.JobTimeoutException):
-                        #     exc_value = TimeoutException(timeout)
-
-                        future.set_exception(exc_value)
+                        if not future.cancelled():
+                            future.set_exception(exc_value)
 
                     else:
                         remaining_results.append(tup)
@@ -90,7 +87,7 @@ class RQBackend(TaskQueueBackend):
 
         loop = asyncio.get_event_loop()
         future = loop.create_future()
-        result = queue.enqueue(func, job_timeout=timeout, *args, **kwargs)
+        result = queue.enqueue(func, job_timeout=timeout, args=args, kwargs=kwargs)
 
         self._pending_results.append((result, timeout, future))
 
