@@ -105,7 +105,7 @@ class RQBackend(TaskQueueBackend):
 
         loop = asyncio.get_event_loop()
         future = loop.create_future()
-        result = queue.enqueue(func, timeout=timeout, *args, **kwargs)
+        result = queue.enqueue(func, job_timeout=timeout, *args, **kwargs)
 
         self._pending_results.append((result, timeout, future))
 
