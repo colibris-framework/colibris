@@ -147,7 +147,7 @@ The `validity_seconds` property is optional and configures the given validity fo
 In `settings.py`, set:
 
     AUTHENTICATION = {
-        'backend': 'colibris.authentication.key.ApiKeyBackend',
+        'backend': 'colibris.authentication.apikey.APIKeyBackend',
         'model': 'yourproject.models.User',
         'identity_field': 'secret',
     }

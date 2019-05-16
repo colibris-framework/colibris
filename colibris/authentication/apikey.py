@@ -11,7 +11,7 @@ class ApiKeyException(AuthenticationException):
     pass
 
 
-class ApiKeyBackend(ModelBackend):
+class APIKeyBackend(ModelBackend):
     def extract_auth_data(self, request):
         token = None
 

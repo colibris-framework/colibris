@@ -16,7 +16,7 @@ class ModelBackend(AuthenticationBackend):
     def lookup_account(self, auth_data):
         value = self.get_identity_value(auth_data)
         field = self.get_identity_field()
-        query = field == value
+        query = (field == value)
 
         if self.active_field:
             query = query & (self.get_active_field() == True)
