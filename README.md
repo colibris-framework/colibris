@@ -142,6 +142,16 @@ The `cookie_domain` property is optional and configures the cookie domain.
 
 The `validity_seconds` property is optional and configures the given validity for the token.
 
+#### API Key Backend
+
+In `settings.py`, set:
+
+    AUTHENTICATION = {
+        'backend': 'colibris.authentication.apikey.APIKeyBackend',
+        'model': 'yourproject.models.User',
+        'key_field': 'secret',
+    }
+
 
 ## Authorization
 

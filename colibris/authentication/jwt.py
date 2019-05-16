@@ -20,8 +20,10 @@ class JWTException(AuthenticationException):
 
 
 class JWTBackend(ModelBackend, CookieBackendMixin):
-    def __init__(self, identity_claim='sub', **kwargs):
+    def __init__(self, identity_field, secret_field, identity_claim='sub', **kwargs):
         self.identity_claim = identity_claim
+        self.identity_field = identity_field
+        self.secret_field = secret_field
 
         super().__init__(**kwargs)
 
@@ -54,13 +56,22 @@ class JWTBackend(ModelBackend, CookieBackendMixin):
         if identity is None:
             raise JWTException('missing identity claim')
 
-        return identity, token
+        return {
+            'identity': identity,
+            'token': token
+        }
+
+    def get_lookup_value(self, auth_data):
+        return auth_data['identity']
+
+    def get_lookup_field(self):
+        return getattr(self.model, self.identity_field)
 
     def verify_identity(self, request, account, auth_data):
         secret = self.get_secret(account)
 
         try:
-            jwt.decode(auth_data, key=secret, verify=True)
+            jwt.decode(auth_data['token'], key=secret, verify=True)
 
         except jwt.InvalidSignatureError:
             raise JWTException('invalid signature')
@@ -95,3 +106,6 @@ class JWTBackend(ModelBackend, CookieBackendMixin):
             self.set_csrf(request, response)
 
         return response
+
+    def get_secret(self, account):
+        return getattr(account, self.secret_field)
