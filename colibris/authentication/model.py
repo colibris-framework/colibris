@@ -4,18 +4,16 @@ from colibris.authentication.base import AuthenticationBackend
 
 
 class ModelBackend(AuthenticationBackend):
-    def __init__(self, model, identity_field, secret_field=None, active_field=None, inactive_field=None, **kwargs):
+    def __init__(self, model, active_field=None, inactive_field=None, **kwargs):
         self.model = utils.import_member(model)
-        self.identity_field = identity_field
-        self.secret_field = secret_field
         self.active_field = active_field
         self.inactive_field = inactive_field
 
         super().__init__(**kwargs)
 
     def lookup_account(self, auth_data):
-        value = self.get_identity_value(auth_data)
-        field = self.get_identity_field()
+        value = self.get_lookup_value(auth_data)
+        field = self.get_lookup_field()
         query = (field == value)
 
         if self.active_field:
@@ -30,10 +28,10 @@ class ModelBackend(AuthenticationBackend):
         except self.model.DoesNotExist:
             return None
 
-    def get_identity_field(self):
-        return getattr(self.model, self.identity_field)
+    def get_lookup_field(self):
+        raise NotImplementedError
 
-    def get_identity_value(self, auth_data):
+    def get_lookup_value(self, auth_data):
         raise NotImplementedError
 
     def get_active_field(self):
@@ -41,6 +39,3 @@ class ModelBackend(AuthenticationBackend):
 
     def get_inactive_field(self):
         return getattr(self.model, self.inactive_field)
-
-    def get_secret(self, account):
-        return getattr(account, self.secret_field)

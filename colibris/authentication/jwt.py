@@ -20,8 +20,10 @@ class JWTException(AuthenticationException):
 
 
 class JWTBackend(ModelBackend, CookieBackendMixin):
-    def __init__(self, identity_claim='sub', **kwargs):
+    def __init__(self, identity_field, secret_field, identity_claim='sub', **kwargs):
         self.identity_claim = identity_claim
+        self.identity_field = identity_field
+        self.secret_field = secret_field
 
         super().__init__(**kwargs)
 
@@ -59,8 +61,11 @@ class JWTBackend(ModelBackend, CookieBackendMixin):
             'token': token
         }
 
-    def get_identity_value(self, auth_data):
+    def get_lookup_value(self, auth_data):
         return auth_data['identity']
+
+    def get_lookup_field(self):
+        return getattr(self.model, self.identity_field)
 
     def verify_identity(self, request, account, auth_data):
         secret = self.get_secret(account)
@@ -101,3 +106,6 @@ class JWTBackend(ModelBackend, CookieBackendMixin):
             self.set_csrf(request, response)
 
         return response
+
+    def get_secret(self, account):
+        return getattr(account, self.secret_field)

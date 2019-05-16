@@ -149,7 +149,7 @@ In `settings.py`, set:
     AUTHENTICATION = {
         'backend': 'colibris.authentication.apikey.APIKeyBackend',
         'model': 'yourproject.models.User',
-        'identity_field': 'secret',
+        'key_field': 'secret',
     }
 
 
