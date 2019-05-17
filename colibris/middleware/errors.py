@@ -4,26 +4,17 @@ import logging
 import re
 
 from aiohttp import web
-from aiohttp_apispec import validation_middleware
-from webargs import aiohttpparser
 
-from colibris import api
 from colibris import app
 from colibris import authentication
-from colibris import authorization
 from colibris import settings
 from colibris import utils
 from colibris.api import BaseJSONException, envelope
 
+from .schema import HTTPSchemaValidationError
+
 
 logger = logging.getLogger(__name__)
-
-
-class HTTPSchemaValidationError(web.HTTPUnprocessableEntity):
-    def __init__(self, schema_error, **kwargs):
-        super().__init__(**kwargs)
-
-        self.details = schema_error.messages
 
 
 def _extract_request_logging_info(request):
@@ -92,42 +83,3 @@ async def handle_errors_json(request, handler):
             details = traceback.format_exc()
 
         return web.json_response(envelope.wrap_error(code, message, details), status=500)
-
-
-@web.middleware
-async def handle_auth(request, handler):
-    if request.match_info.http_exception is not None:
-        raise request.match_info.http_exception
-
-    authorization_info = app.route_auth_mapping.get(request.match_info.route)
-    method = request.method
-    path = request.match_info.route.resource.canonical
-
-    request = authentication.process_request(request)
-
-    # Only go through authentication if route specifies permissions;
-    # otherwise route is considered public.
-    if authorization_info is not None:
-        try:
-            account = authentication.authenticate(request)
-
-        except authentication.AuthenticationException:
-            raise api.UnauthenticatedException()
-
-        if not authorization.authorize(account, method, path, authorization_info):
-            raise api.ForbiddenException()
-
-    response = await handler(request)
-    response = authentication.process_response(request, response)
-
-    return response
-
-
-@web.middleware
-async def handle_schema_validation(request, handler):
-    return await validation_middleware(request, handler)
-
-
-@aiohttpparser.parser.error_handler
-def _handle_schema_validation_error(error, req, schema, status_code, headers):
-    raise HTTPSchemaValidationError(error)
