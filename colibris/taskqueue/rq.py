@@ -7,8 +7,8 @@ import rq.timeouts
 from rq import Connection
 from rq.worker import Worker
 
-from colibris.taskqueue import TaskExecException
-from colibris.taskqueue.base import TaskQueueBackend
+from . import TaskExecException
+from .base import TaskQueueBackend
 
 
 DEFAULT_POLL_RESULTS_INTERVAL = 1  # seconds

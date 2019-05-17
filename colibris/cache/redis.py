@@ -2,7 +2,7 @@
 import pickle
 import redis
 
-from colibris.cache.base import CacheBackend, ABSENT
+from .base import CacheBackend, ABSENT
 
 
 class RedisBackend(CacheBackend):

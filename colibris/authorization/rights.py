@@ -1,6 +1,6 @@
 
-from colibris.authorization import ANY_PERMISSION
-from colibris.authorization.model import ModelBackend
+from . import ANY_PERMISSION
+from .model import ModelBackend
 
 
 class RightsBackend(ModelBackend):

@@ -3,7 +3,8 @@ import logging
 
 from colibris import settings
 from colibris import utils
-from colibris.cache.base import ABSENT
+
+from .base import ABSENT
 
 
 DEFAULT_LIFETIME = 300  # seconds

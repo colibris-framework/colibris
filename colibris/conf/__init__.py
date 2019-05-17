@@ -9,9 +9,9 @@ from dotenv import load_dotenv
 
 from colibris import utils
 
-from colibris.conf import defaultsettings
-from colibris.conf import lazysettings
-from colibris.conf import schemas as settings_schemas
+from . import defaultsettings
+from . import lazysettings
+from . import schemas as settings_schemas
 
 
 _settings_store = {}

@@ -3,7 +3,7 @@ import aiosmtplib
 import asyncio
 import logging
 
-from colibris.email.base import EmailBackend
+from .base import EmailBackend
 
 
 DEFAULT_TIMEOUT = 60

@@ -1,6 +1,6 @@
 
-from colibris import authentication
-from colibris.authentication.exceptions import NoSuchAccount
+from . import get_account
+from .exceptions import NoSuchAccount
 
 
 _ACCOUNT_ACTION_LOGIN = 'login'
@@ -54,7 +54,7 @@ class AuthenticationBackend:
         # Handle logins and logouts
         account_action = request.get(_REQUEST_ACCOUNT_ACTION_ITEM_NAME)
         if account_action:
-            account = authentication.get_account(request)
+            account = get_account(request)
             if account_action == _ACCOUNT_ACTION_LOGIN:
                 response = self.prepare_login_response(response, account, persistent=False)
 

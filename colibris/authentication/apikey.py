@@ -1,7 +1,9 @@
+
 import re
 
-from colibris.authentication.exceptions import AuthenticationException
-from colibris.authentication.model import ModelBackend
+from .exceptions import AuthenticationException
+from .model import ModelBackend
+
 
 _AUTH_HEADER = 'Authorization'
 _AUTH_TOKEN_REGEX = re.compile('Bearer (.+)', re.IGNORECASE)

@@ -3,7 +3,8 @@ import logging
 
 from colibris import settings
 from colibris import utils
-from colibris.email.message import EmailMessage
+
+from .message import EmailMessage
 
 
 logger = logging.getLogger(__name__)

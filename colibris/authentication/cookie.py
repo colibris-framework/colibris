@@ -5,9 +5,10 @@ import hmac
 from http.cookies import Morsel
 
 from colibris import settings
-from colibris import authentication
 from colibris.api.exceptions import BaseJSONException
-from colibris.authentication.exceptions import AuthenticationException
+
+from . import get_account
+from .exceptions import AuthenticationException
 
 
 DEFAULT_VALIDITY_SECONDS = 3600 * 24 * 30
@@ -112,7 +113,7 @@ class CookieBackendMixin:
         if token:
             return token
 
-        account = account or authentication.get_account(request)
+        account = account or get_account(request)
         if account is None:
             return
 

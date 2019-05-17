@@ -1,5 +1,5 @@
 
-from colibris.authorization import ANY_PERMISSION
+from . import ANY_PERMISSION
 
 
 class AuthorizationBackend:

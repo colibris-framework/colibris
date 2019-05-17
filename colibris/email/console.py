@@ -2,7 +2,7 @@
 import logging
 import sys
 
-from colibris.email.base import EmailBackend
+from .base import EmailBackend
 
 
 logger = logging.getLogger(__name__)
