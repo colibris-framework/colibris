@@ -54,7 +54,7 @@ from __packagename__ import schemas
 #     data = request['data']
 #
 #     if models.User.select().where(models.User.username == data['username']).exists():
-#         raise api.DuplicateException(models.User, 'username')
+#         raise api.DuplicateModelException(models.User, 'username')
 #
 #     user = models.User.create(**data)
 #     result = schemas.UserSchema().dump(user)
@@ -74,7 +74,7 @@ from __packagename__ import schemas
 #     if 'username' in data:
 #         query = ((models.User.username == data['username']) & (models.User.id != user_id))
 #         if models.User.select().where(query).exists():
-#             raise api.DuplicateException(models.User, 'username')
+#             raise api.DuplicateModelException(models.User, 'username')
 #
 #     user.update_fields(data)
 #

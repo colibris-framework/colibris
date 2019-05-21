@@ -29,17 +29,17 @@ class ForbiddenException(BaseJSONException):
         super().__init__(code='forbidden', message='Access to requested resource is forbidden.', status=403)
 
 
-class DuplicateException(InvalidRequest):
-    def __init__(self, model, field):
-        super().__init__('duplicate_{}'.format(field),
-                         'A {} with this {} already exists.'.format(model._meta.name, field))
-
-
 class NotFoundException(BaseJSONException):
     def __init__(self, resource='resource'):
         super().__init__('not_found',
                          'The requested {} cannot be found.'.format(resource),
                          status=404)
+
+
+class DuplicateModelException(InvalidRequest):
+    def __init__(self, model, field):
+        super().__init__('duplicate_{}'.format(field),
+                         'A {} with this {} already exists.'.format(model._meta.name, field))
 
 
 class ModelNotFoundException(NotFoundException):
