@@ -173,7 +173,8 @@ def register_settings_schema(schema):
 
 
 def get_all_settings_schema():
-    return type('AllSettingsSchema', tuple(_settings_schemas), {})
+    meta = type('Meta', (), {})
+    return type('AllSettingsSchema', tuple(_settings_schemas), {'Meta': meta})
 
 
 # put together known schemas
