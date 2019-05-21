@@ -1,14 +1,15 @@
 
 import logging
 
-from colibris import commands
 from colibris import taskqueue
+
+from . import BaseCommand
 
 
 logger = logging.getLogger(__name__)
 
 
-class RunWorkerCommand(commands.BaseCommand):
+class RunWorkerCommand(BaseCommand):
     def add_arguments(self, parser):
         taskqueue.add_worker_arguments(parser)
 

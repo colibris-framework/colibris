@@ -1,7 +1,7 @@
 
 import time
 
-from colibris.cache.base import CacheBackend, ABSENT
+from .base import CacheBackend, ABSENT
 
 
 DEFAULT_MAX_ENTRIES = 1e5

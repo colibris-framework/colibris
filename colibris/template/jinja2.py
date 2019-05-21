@@ -5,8 +5,9 @@ from jinja2 import TemplateNotFound, TemplateSyntaxError, TemplateError
 from jinja2 import select_autoescape
 
 from colibris import utils
-from colibris.template import base
-from colibris.template import exceptions
+
+from . import base
+from . import exceptions
 
 
 class Jinja2Backend(base.TemplateBackend):

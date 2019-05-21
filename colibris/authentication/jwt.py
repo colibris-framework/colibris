@@ -3,9 +3,9 @@ import jwt
 import re
 import time
 
-from colibris.authentication.cookie import CookieBackendMixin
-from colibris.authentication.exceptions import AuthenticationException
-from colibris.authentication.model import ModelBackend
+from .cookie import CookieBackendMixin
+from .exceptions import AuthenticationException
+from .model import ModelBackend
 
 
 _AUTH_HEADER = 'Authorization'
