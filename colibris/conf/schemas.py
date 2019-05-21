@@ -1,8 +1,9 @@
 
-from marshmallow import Schema as MMSchema, ValidationError
 from marshmallow import pre_dump, post_dump, pre_load, post_load, validates_schema
 from marshmallow import fields, validate
+from marshmallow import ValidationError
 from marshmallow import EXCLUDE as MM_EXCLUDE
+from marshmallow.schema import Schema as MMSchema, SchemaMeta as MMSchemaMeta, SchemaOpts as MMSchemaOpts
 
 
 _settings_schemas = []
@@ -22,9 +23,26 @@ class ColonSeparatedStringsField(fields.Field):
         return value.split(':')
 
 
-class SettingsSchema(MMSchema):
-    class Meta:
-        unknown = MM_EXCLUDE
+class SettingsSchemaOpts(MMSchemaOpts):
+    def __init__(self, meta, **kwargs):
+        super().__init__(meta, **kwargs)
+
+        self.unknown = getattr(meta, 'unknown', MM_EXCLUDE)  # Ignore other env variables, by default
+        self.prefix = getattr(meta, 'prefix', '')
+
+
+class SettingsSchemaMeta(MMSchemaMeta):
+    @classmethod
+    def get_declared_fields(mcs, klass, cls_fields, inherited_fields, dict_cls):
+        prefix = klass.opts.prefix
+        cls_fields = [(prefix + n, v) for n, v in cls_fields]
+        inherited_fields = [(prefix + n, v) for n, v in inherited_fields]
+
+        return MMSchemaMeta.get_declared_fields(klass, cls_fields, inherited_fields, dict_cls)
+
+
+class SettingsSchema(MMSchema, metaclass=SettingsSchemaMeta):
+    OPTIONS_CLASS = SettingsSchemaOpts
 
 
 class CommonSchema(SettingsSchema):
