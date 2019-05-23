@@ -18,6 +18,7 @@ update-wiki:
     - git config --global user.name "Mr. Robot"
     - export GIT_SSH_COMMAND="ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no"
   script:
+    - git clone git@gitlab.com:safefleet/${CI_PROJECT_NAME}.wiki.git ../${CI_PROJECT_NAME}.wiki
     - cp README.md ../${CI_PROJECT_NAME}.wiki/home.md
     - cd ../${CI_PROJECT_NAME}.wiki
     - sed -i '1s/^/[[_TOC_]]\n\n----\n/' home.md
