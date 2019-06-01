@@ -17,6 +17,10 @@ from . import schemas as settings_schemas
 _settings_store = {}
 
 
+class InvalidSetting(Exception):
+    pass
+
+
 def _is_setting_name(name):
     # only consider public members that are all in capitals
     return re.match('^[A-Z][A-Z0-9_]*$', name)
