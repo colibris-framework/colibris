@@ -17,7 +17,7 @@ from . import schemas as settings_schemas
 _settings_store = {}
 
 
-class InvalidSetting(Exception):
+class ImproperlyConfigured(Exception):
     pass
 
 
@@ -132,11 +132,11 @@ def _override_env_settings():
         env_vars = schema_class().load(os.environ)
 
     except settings_schemas.ValidationError as e:
-        # Pull the first erroneous field with its first error message to form an InvalidSetting exception
+        # Pull the first erroneous field with its first error message to form an ImproperlyConfigured exception
         field, messages = list(e.messages.items())[0]
         message = messages[0]
 
-        raise InvalidSetting('{}: {}'.format(field, message))
+        raise ImproperlyConfigured('{}: {}'.format(field, message))
 
     for name, value in env_vars.items():
         if value is None:
