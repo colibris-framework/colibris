@@ -127,7 +127,16 @@ def _override_env_settings():
     load_dotenv('.env', override=True)
 
     schema_class = settings_schemas.get_all_settings_schema()
-    env_vars = schema_class().load(os.environ)
+
+    try:
+        env_vars = schema_class().load(os.environ)
+
+    except settings_schemas.ValidationError as e:
+        # Pull the first erroneous field with its first error message to form an InvalidSetting exception
+        field, messages = list(e.messages.items())[0]
+        message = messages[0]
+
+        raise InvalidSetting('{}: {}'.format(field, message))
 
     for name, value in env_vars.items():
         if value is None:
