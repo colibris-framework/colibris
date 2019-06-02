@@ -1,5 +1,8 @@
 
-class TaskQueueBackend:
+from colibris.conf.backends import BackendMixin
+
+
+class TaskQueueBackend(BackendMixin):
     async def execute(self, func, *args, timeout, **kwargs):
         raise NotImplementedError
 
