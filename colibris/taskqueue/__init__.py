@@ -31,4 +31,5 @@ def run_worker(options):
     TaskQueueBackend.get_instance().run_worker(options)
 
 
-TaskQueueBackend.configure(settings.TASK_QUEUE)
+def setup():
+    TaskQueueBackend.configure(settings.TASK_QUEUE)

@@ -20,4 +20,5 @@ def send_many(email_messages):
     return EmailBackend.get_instance().send_messages(email_messages)
 
 
-EmailBackend.configure(settings.EMAIL)
+def setup():
+    EmailBackend.configure(settings.EMAIL)

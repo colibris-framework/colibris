@@ -3,12 +3,12 @@ from peewee import PostgresqlDatabase, MySQLDatabase, SqliteDatabase
 
 from colibris.conf.backends import BackendMixin
 
-from . import logger
-
 
 class DatabaseBackend(BackendMixin):
     @classmethod
     def get_instance(cls):
+        from . import logger  # colibris.persist logger
+
         instance = super(DatabaseBackend, cls).get_instance()
 
         # Connect to DB as soon as the backend is instantiated

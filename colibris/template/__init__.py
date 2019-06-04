@@ -23,7 +23,11 @@ def render_string(template_str, **context):
     return TemplateBackend.get_instance().render_string(template_str, context)
 
 
-# Prepend package template dir to path array
-paths = [os.path.join(settings.PROJECT_PACKAGE_DIR, PACKAGE_TEMPLATE_PATH)] + list(settings.TEMPLATE.get('paths', []))
+def setup():
+    template_settings = dict(settings.TEMPLATE)
+    package_template_path = os.path.join(settings.PROJECT_PACKAGE_DIR, PACKAGE_TEMPLATE_PATH)
 
-TemplateBackend.configure(dict(settings.TEMPLATE, paths=paths))
+    # Prepend package template dir to path array
+    template_settings['path'] = [package_template_path] + list(template_settings.get('paths', []))
+
+    TemplateBackend.configure(template_settings)
