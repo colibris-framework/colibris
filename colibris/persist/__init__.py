@@ -11,6 +11,7 @@ except ImportError:
 from colibris import settings
 
 from .backends import DatabaseBackend, PostgreSQLBackend, MySQLBackend, SQLiteBackend
+from .models import Model
 
 
 _PEEWEE_DB_PARAMS_MAPPING = {
@@ -41,7 +42,7 @@ def connectivity_check():
         return False
 
 
-def _prepare_db_settings():
+def setup():
     db_settings = dict(settings.DATABASE)
     db_settings.setdefault('autorollback', True)
 
@@ -50,10 +51,6 @@ def _prepare_db_settings():
         if param in db_settings:
             db_settings[pparam] = db_settings.pop(param)
 
-    return db_settings
+    DatabaseBackend.configure(db_settings)
 
-
-DatabaseBackend.configure(_prepare_db_settings())
-
-# This needs to be imported here, after defining get_database()
-from .models import Model
+    models.set_database(get_database())

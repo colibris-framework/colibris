@@ -1,7 +1,8 @@
 
 import peewee
 
-from . import get_database
+
+_database_proxy = peewee.DatabaseProxy()
 
 
 class Model(peewee.Model):
@@ -14,4 +15,8 @@ class Model(peewee.Model):
             setattr(self, n, v)
 
     class Meta:
-        database = get_database()
+        database = _database_proxy
+
+
+def set_database(database):
+    _database_proxy.initialize(database)
