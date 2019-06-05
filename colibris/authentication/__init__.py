@@ -2,8 +2,8 @@
 import logging
 
 from colibris import settings
-from colibris import utils
 
+from .base import AuthenticationBackend
 from .exceptions import *
 
 
@@ -12,26 +12,9 @@ _REQUEST_ACCOUNT_ITEM_NAME = 'account'
 
 logger = logging.getLogger(__name__)
 
-_backend = None
-
-
-def get_backend():
-    global _backend
-
-    if _backend is None:
-        backend_settings = dict(settings.AUTHENTICATION)
-        backend_path = backend_settings.pop('backend', 'colibris.authentication.base.NullBackend')
-        backend_class = utils.import_member(backend_path)
-
-        logger.debug('creating backend of class %s', backend_path)
-
-        _backend = backend_class(**backend_settings)
-
-    return _backend
-
 
 def authenticate(request):
-    account = get_backend().authenticate(request)
+    account = AuthenticationBackend.get_instance().authenticate(request)
     request[_REQUEST_ACCOUNT_ITEM_NAME] = account
 
     return account
@@ -45,19 +28,23 @@ def login(request, account, persistent):
     logger.debug('logging in account "%s" (persistent=%s)', account, persistent)
 
     request[_REQUEST_ACCOUNT_ITEM_NAME] = account
-    get_backend().login(request, persistent)
+    AuthenticationBackend.get_instance().login(request, persistent)
 
 
 def logout(request):
     account = request.pop(_REQUEST_ACCOUNT_ITEM_NAME, None)
     if account:
         logger.debug('logging out account "%s"', account)
-        get_backend().logout(request)
+        AuthenticationBackend.get_instance().logout(request)
 
 
 def process_request(request):
-    return get_backend().process_request(request)
+    return AuthenticationBackend.get_instance().process_request(request)
 
 
 def process_response(request, response):
-    return get_backend().process_response(request, response)
+    return AuthenticationBackend.get_instance().process_response(request, response)
+
+
+def setup():
+    AuthenticationBackend.configure(settings.AUTHENTICATION)

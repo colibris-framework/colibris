@@ -1,5 +1,6 @@
 
-from . import get_account
+from colibris.conf.backends import BackendMixin
+
 from .exceptions import NoSuchAccount
 
 
@@ -10,7 +11,7 @@ _ACCOUNT_ACTION_LOGOUT = 'logout'
 _REQUEST_ACCOUNT_ACTION_ITEM_NAME = 'account_action'
 
 
-class AuthenticationBackend:
+class AuthenticationBackend(BackendMixin):
     def extract_auth_data(self, request):
         raise NotImplementedError
 
@@ -51,6 +52,8 @@ class AuthenticationBackend:
         return request
 
     def process_response(self, request, response):
+        from . import get_account
+
         # Handle logins and logouts
         account_action = request.get(_REQUEST_ACCOUNT_ACTION_ITEM_NAME)
         if account_action:
@@ -65,22 +68,3 @@ class AuthenticationBackend:
                 response = self.prepare_logout_response(response)
 
         return response
-
-
-class NullBackend(AuthenticationBackend):
-    _DUMMY_ACCOUNT = {}
-
-    def __init__(self, **kwargs):
-        pass
-
-    def extract_auth_data(self, request):
-        return None, None
-
-    def lookup_account(self, identity):
-        return self._DUMMY_ACCOUNT
-
-    def verify_identity(self, request, account, auth_data):
-        pass
-
-    def authenticate(self, request):
-        return self._DUMMY_ACCOUNT

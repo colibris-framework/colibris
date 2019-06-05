@@ -16,7 +16,10 @@ MIDDLEWARE = [
     'colibris.middleware.schema.handle_schema_validation',
 ]
 
-AUTHENTICATION = {}
+AUTHENTICATION = {
+    'backend': 'colibris.authentication.base.NullBackend'
+}
+
 AUTHORIZATION = {
     'backend': 'colibris.authorization.base.NullBackend'
 }
