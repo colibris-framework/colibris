@@ -5,6 +5,7 @@ import os
 from peewee import *
 try:
     from playhouse.postgres_ext import *
+
 except ImportError:
     pass
 
