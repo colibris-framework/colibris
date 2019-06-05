@@ -8,16 +8,8 @@ from . import ImproperlyConfigured
 
 logger = logging.getLogger(__name__)
 
-_backend_classes = []
 
-
-class _BackendMixinMeta(type):
-    def __init__(cls, *args, **kwargs):
-        type.__init__(cls, *args, **kwargs)
-        _backend_classes.append(cls)
-
-
-class BackendMixin(metaclass=_BackendMixinMeta):
+class BackendMixin:
     _instance = None
     _class = None
     _settings = None
@@ -45,9 +37,9 @@ class BackendMixin(metaclass=_BackendMixinMeta):
                 raise ImproperlyConfigured('class for {} has not been specified'.format(cls.__name__))
 
             cls._instance = cls._class(**cls._settings)
+            cls._instance.on_create()
 
         return cls._instance
 
-
-# The base backend mixin also gets added to the backend classes list, but we don't want it there.
-_backend_classes.remove(BackendMixin)
+    def on_create(self):
+        pass
