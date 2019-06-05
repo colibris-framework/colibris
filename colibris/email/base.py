@@ -1,10 +1,5 @@
 
-import logging
-
 from colibris.conf.backends import BackendMixin
-
-
-logger = logging.getLogger(__name__)
 
 
 class EmailBackend(BackendMixin):
