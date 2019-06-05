@@ -49,12 +49,9 @@ async def _init_app(app):
 
 async def get_health():
     if hasattr(_project_app, 'get_health'):
-        gh = _project_app.get_health
-        if inspect.iscoroutinefunction(gh):
-            h = await gh()
-
-        else:
-            h = gh()
+        h = _project_app.get_health()
+        if inspect.isawaitable(h):
+            h = await h
 
         return h
 
