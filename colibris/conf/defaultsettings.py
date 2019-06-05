@@ -17,7 +17,9 @@ MIDDLEWARE = [
 ]
 
 AUTHENTICATION = {}
-AUTHORIZATION = {}
+AUTHORIZATION = {
+    'backend': 'colibris.authorization.base.NullBackend'
+}
 
 CACHE = {}
 DATABASE = {}

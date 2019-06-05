@@ -28,6 +28,6 @@ def setup():
     package_template_path = os.path.join(settings.PROJECT_PACKAGE_DIR, PACKAGE_TEMPLATE_PATH)
 
     # Prepend package template dir to path array
-    template_settings['path'] = [package_template_path] + list(template_settings.get('paths', []))
+    template_settings['paths'] = [package_template_path] + list(template_settings.get('paths', []))
 
     TemplateBackend.configure(template_settings)
