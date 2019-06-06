@@ -13,7 +13,7 @@ from . import settings
 from . import schemas as settings_schemas
 
 
-_settings_store = {}
+_default_logging_dict = settings.LOGGING  # Remember original logging config to tell if changed
 
 
 class ImproperlyConfigured(Exception):
@@ -45,12 +45,12 @@ def _override_setting_rec(setting_dict, name, value):
 
 def override_setting(name, value):
     # Do we have the setting corresponding to the given name?
-    if name in _settings_store:
-        _settings_store[name] = value
+    if name in settings.__dict__:
+        setattr(settings, name, value)
         return
 
     # Recursively update dictionary with items
-    _override_setting_rec(_settings_store, name, value)
+    _override_setting_rec(settings.__dict__, name, value)
 
 
 def _setup_project_package():
@@ -79,22 +79,14 @@ def _setup_project_package():
     if project_package_name is None:
         raise ImproperlyConfigured('could not identify project package name')
 
-    _settings_store['PROJECT_PACKAGE_NAME'] = project_package_name
+    settings.PROJECT_PACKAGE_NAME = project_package_name
 
     project_package = importlib.import_module(project_package_name)
-    _settings_store.setdefault('PROJECT_PACKAGE_DIR', os.path.dirname(project_package.__file__))
-
-
-def _setup_default_settings():
-    for name, value in inspect.getmembers(settings):
-        if not _is_setting_name(name):
-            continue
-
-        _settings_store[name] = value
+    settings.PROJECT_PACKAGE_DIR = os.path.dirname(project_package.__file__)
 
 
 def _override_project_settings():
-    project_settings_path = '{}.settings'.format(_settings_store['PROJECT_PACKAGE_NAME'])
+    project_settings_path = '{}.settings'.format(settings.PROJECT_PACKAGE_NAME)
     project_settings_module = utils.import_module_or_none(project_settings_path)
     if project_settings_module is None:
         return
@@ -140,15 +132,14 @@ def _override_env_settings():
 
 def _apply_tweaks():
     # Update default log level according to DEBUG flag
-    if _settings_store['LOGGING'] is settings.LOGGING and not _settings_store['DEBUG']:
-        _settings_store['LOGGING']['root']['level'] = 'INFO'
+    if settings.LOGGING is _default_logging_dict and not settings.DEBUG:
+        settings.LOGGING['root']['level'] = 'INFO'
 
 
 def setup():
     load_dotenv('.env.default')
     load_dotenv('.env', override=True)
 
-    _setup_default_settings()
     _setup_project_package()
     _override_project_settings()
     _override_local_settings()

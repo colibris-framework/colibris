@@ -1,5 +1,6 @@
 
-PROJECT_PACKAGE_NAME = 'colibris'
+PROJECT_PACKAGE_NAME = ''
+PROJECT_PACKAGE_DIR = ''
 
 DEBUG = True
 
@@ -28,9 +29,7 @@ CACHE = {}
 DATABASE = {}
 TEMPLATE = {}
 TASK_QUEUE = {}
-EMAIL = {
-    'default_from': 'webmaster@localhost'
-}
+EMAIL = {}
 
 API_DOCS_PATH = '/api/docs'
 
@@ -54,7 +53,7 @@ LOGGING = {
     },
     'loggers': {
         'peewee_migrate': {
-            'level': 'DEBUG'  # always show details when doing migrations
+            'level': 'DEBUG'  # Always show details when doing migrations
         }
     }
 }
