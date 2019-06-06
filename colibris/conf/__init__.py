@@ -25,34 +25,6 @@ def _is_setting_name(name):
     return re.match('^[A-Z][A-Z0-9_]*$', name)
 
 
-def _override_setting_rec(setting_dict, name, value):
-    parts = name.split('_')
-    for i in range(len(parts) - 1):
-        root_name = '_'.join(parts[:i + 1])
-        d = setting_dict.get(root_name)
-        if not isinstance(d, dict):
-            continue
-
-        key = '_'.join(parts[i + 1:])
-        _override_setting_rec(d, key.lower(), value)
-
-        break
-
-    else:
-        # Simply add the new setting to the setting dict
-        setting_dict[name] = value
-
-
-def override_setting(name, value):
-    # Do we have the setting corresponding to the given name?
-    if name in settings.__dict__:
-        setattr(settings, name, value)
-        return
-
-    # Recursively update dictionary with items
-    _override_setting_rec(settings.__dict__, name, value)
-
-
 def _setup_project_package():
     # Autodetect project package from main script path
     main_script = sys.argv[0]
@@ -85,7 +57,7 @@ def _setup_project_package():
     settings.PROJECT_PACKAGE_DIR = os.path.dirname(project_package.__file__)
 
 
-def _override_project_settings():
+def _setup_project_settings():
     project_settings_path = '{}.settings'.format(settings.PROJECT_PACKAGE_NAME)
     project_settings_module = utils.import_module_or_none(project_settings_path)
     if project_settings_module is None:
@@ -95,27 +67,7 @@ def _override_project_settings():
         if not _is_setting_name(name):
             continue
 
-        override_setting(name, value)
-
-
-def _override_env_settings():
-    schema_class = settings_schemas.get_all_settings_schema()
-
-    try:
-        env_vars = schema_class().load(os.environ)
-
-    except settings_schemas.ValidationError as e:
-        # Pull the first erroneous field with its first error message to form an ImproperlyConfigured exception
-        field, messages = list(e.messages.items())[0]
-        message = messages[0]
-
-        raise ImproperlyConfigured('{}: {}'.format(field, message))
-
-    for name, value in env_vars.items():
-        if value is None:
-            continue
-
-        override_setting(name, value)
+        setattr(settings, name, value)
 
 
 def _apply_tweaks():
@@ -129,6 +81,5 @@ def setup():
     load_dotenv('.env', override=True)
 
     _setup_project_package()
-    _override_project_settings()
-    _override_env_settings()
+    _setup_project_settings()
     _apply_tweaks()
