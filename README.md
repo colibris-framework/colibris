@@ -47,7 +47,7 @@ enabled and the persistence layer is disabled.
 In `settings.py`, set:
 
     DATABASE = {
-        'backend': 'colibris.persist.SqliteDatabase',
+        'backend': 'colibris.persist.SQLiteBackend',
         'name': '/path/to/yourproject.db'
     }
 
@@ -58,7 +58,7 @@ Make sure to have the `mysqldb` or `pymysql` python package installed.
 In `settings.py`, set:
 
     DATABASE = {
-        'backend': 'colibris.persist.MysqlDatabase',
+        'backend': 'colibris.persist.MySQLBackend',
         'name': 'yourproject',
         'host': '127.0.0.1',
         'port': 3316,
@@ -73,7 +73,7 @@ Make sure to have the `psycopg2-binary` python package installed.
 In `settings.py`, set:
 
     DATABASE = {
-        'backend': 'colibris.persist.PostgresqlDatabase',
+        'backend': 'colibris.persist.PostgreSQLBackend',
         'name': 'yourproject',
         'host': '127.0.0.1',
         'port': 5432,

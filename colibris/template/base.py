@@ -1,5 +1,8 @@
 
-class TemplateBackend:
+from colibris.conf.backends import BackendMixin
+
+
+class TemplateBackend(BackendMixin):
     def __init__(self, paths):
         self.paths = paths
 

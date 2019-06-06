@@ -1,8 +1,11 @@
 
+from colibris.conf.backends import BackendMixin
+
+
 ABSENT = object()
 
 
-class CacheBackend:
+class CacheBackend(BackendMixin):
     def get(self, key):
         raise NotImplementedError
 

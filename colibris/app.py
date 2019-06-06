@@ -17,13 +17,14 @@ logger = logging.getLogger(__name__)
 middleware = []
 route_auth_mapping = {}
 
+_web_app = None
 _project_app = None
 _start_time = time.time()
 
 
-# webapp & middleware
+# web app & middleware
 
-def _init_webapp():
+def _init_web_app():
     for path in settings.MIDDLEWARE:
         middleware.append(utils.import_member(path))
 
@@ -48,12 +49,9 @@ async def _init_app(app):
 
 async def get_health():
     if hasattr(_project_app, 'get_health'):
-        gh = _project_app.get_health
-        if inspect.iscoroutinefunction(gh):
-            h = await gh()
-
-        else:
-            h = gh()
+        h = _project_app.get_health()
+        if inspect.isawaitable(h):
+            h = await h
 
         return h
 
@@ -73,7 +71,7 @@ async def _initial_health_check(app):
 
 # routes
 
-def _add_route_tuple(route):
+def _add_route_tuple(web_app, route):
     while len(route) < 4:
         route = route + (None,)
 
@@ -88,53 +86,59 @@ def _add_route_tuple(route):
     # Explicitly add resource instead of using add_route(),
     # since we want to prevent reusing the last resource.
 
-    resource = webapp.router.add_resource(path)
+    resource = web_app.router.add_resource(path)
     resource_route = resource.add_route(method, handler)
 
     route_auth_mapping[resource_route] = authorize
 
 
-def _add_static_route_tuple(route):
+def _add_static_route_tuple(web_app, route):
     fs_path, prefix = route
 
-    webapp.router.add_static(prefix, fs_path)
+    web_app.router.add_static(prefix, fs_path)
 
 
-def _init_default_routes():
+def _init_default_routes(web_app):
     for route in default_routes.ROUTES:
-        _add_route_tuple(route)
+        _add_route_tuple(web_app, route)
 
     for route in default_routes.STATIC_ROUTES:
-        _add_static_route_tuple(route)
+        _add_static_route_tuple(web_app, route)
 
 
-def _init_project_routes():
+def _init_project_routes(web_app):
     project_routes = utils.import_module_or_none('{}.routes'.format(settings.PROJECT_PACKAGE_NAME))
     if project_routes is None:
         return
 
     for _route in getattr(project_routes, 'ROUTES', []):
-        _add_route_tuple(_route)
+        _add_route_tuple(web_app, _route)
 
     for _route in getattr(project_routes, 'STATIC_ROUTES', []):
-        _add_static_route_tuple(_route)
+        _add_static_route_tuple(web_app, _route)
 
 
 # apispec/swagger support
 
-def _init_swagger():
+def _init_swagger(web_app):
     async def init_wrapper(app):
         setup_swagger(app=app, swagger_url=settings.API_DOCS_PATH, swagger_info=app['swagger_dict'])
 
-    setup_aiohttp_apispec(app=webapp, title='API Documentation')
-    webapp.on_startup.append(init_wrapper)
+    setup_aiohttp_apispec(app=web_app, title='API Documentation')
+    web_app.on_startup.append(init_wrapper)
 
 
-webapp = _init_webapp()
+def get_web_app():
+    global _web_app
 
-_init_project_routes()
-_init_default_routes()
-_init_swagger()
+    if _web_app is None:
+        _web_app = _init_web_app()
 
-webapp.on_startup.append(_init_app)
-webapp.on_startup.append(_initial_health_check)
+        _init_project_routes(_web_app)
+        _init_default_routes(_web_app)
+        _init_swagger(_web_app)
+
+        _web_app.on_startup.append(_init_app)
+        _web_app.on_startup.append(_initial_health_check)
+
+    return _web_app

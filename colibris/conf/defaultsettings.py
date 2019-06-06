@@ -16,8 +16,13 @@ MIDDLEWARE = [
     'colibris.middleware.schema.handle_schema_validation',
 ]
 
-AUTHENTICATION = {}
-AUTHORIZATION = {}
+AUTHENTICATION = {
+    'backend': 'colibris.authentication.base.NullBackend'
+}
+
+AUTHORIZATION = {
+    'backend': 'colibris.authorization.base.NullBackend'
+}
 
 CACHE = {}
 DATABASE = {}

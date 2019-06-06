@@ -17,8 +17,12 @@ from . import schemas as settings_schemas
 _settings_store = {}
 
 
+class ImproperlyConfigured(Exception):
+    pass
+
+
 def _is_setting_name(name):
-    # only consider public members that are all in capitals
+    # Only consider public members that are all in capitals
     return re.match('^[A-Z][A-Z0-9_]*$', name)
 
 
@@ -36,22 +40,22 @@ def _override_setting_rec(setting_dict, name, value):
         break
 
     else:
-        # simply add the new setting to the setting dict
+        # Simply add the new setting to the setting dict
         setting_dict[name] = value
 
 
 def _override_setting(name, value):
-    # do we have the setting corresponding to the given name?
+    # Do we have the setting corresponding to the given name?
     if name in _settings_store:
         _settings_store[name] = value
         return
 
-    # recursively update dictionary with items recur
+    # Recursively update dictionary with items
     _override_setting_rec(_settings_store, name, value)
 
 
 def _setup_project_package():
-    # autodetect project package from main script path
+    # Autodetect project package from main script path
     main_script = sys.argv[0]
     project_package_name = None
     if main_script.endswith('manage.py'):  # using manage.py
@@ -59,10 +63,10 @@ def _setup_project_package():
         project_package_name = os.path.basename(os.path.dirname(main_script))
         project_package_name = re.sub('[^a-z0-9_]', '', project_package_name).lower()
 
-    else:  # using a setuptools console script wrapper
+    else:  # Using a setuptools console script wrapper
         with open(main_script, 'rt') as main_module_file:
             main_content = main_module_file.read()
-            # try simple wrapper
+            # Try simple wrapper
             m = re.search(r'from (\w+).manage import main', main_content)
             if m:
                 project_package_name = m.group(1)
@@ -93,7 +97,7 @@ def _setup_default_settings():
 def _override_project_settings():
     project_settings_module = utils.import_module_or_none('settings')
     if project_settings_module is None:
-        # try settings module from project package
+        # Try settings module from project package
         project_settings_path = '{}.settings'.format(_settings_store['PROJECT_PACKAGE_NAME'])
         project_settings_module = utils.import_module_or_none(project_settings_path)
         if project_settings_module is None:
@@ -123,7 +127,16 @@ def _override_env_settings():
     load_dotenv('.env', override=True)
 
     schema_class = settings_schemas.get_all_settings_schema()
-    env_vars = schema_class().load(os.environ)
+
+    try:
+        env_vars = schema_class().load(os.environ)
+
+    except settings_schemas.ValidationError as e:
+        # Pull the first erroneous field with its first error message to form an ImproperlyConfigured exception
+        field, messages = list(e.messages.items())[0]
+        message = messages[0]
+
+        raise ImproperlyConfigured('{}: {}'.format(field, message))
 
     for name, value in env_vars.items():
         if value is None:
@@ -133,7 +146,7 @@ def _override_env_settings():
 
 
 def _apply_tweaks():
-    # update default log level according to DEBUG flag
+    # Update default log level according to DEBUG flag
     if _settings_store['LOGGING'] is defaultsettings.LOGGING and not _settings_store['DEBUG']:
         _settings_store['LOGGING']['root']['level'] = 'INFO'
 

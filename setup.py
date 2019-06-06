@@ -30,11 +30,13 @@ setup(
         'aiohttp',
         'aiohttp-apispec',
         'aiohttp-swagger',
+        'async-timeout',
         'marshmallow>=3.0.0b19',
         'marshmallow_peewee',
         'peewee',
         'peewee-migrate',
-        'python-dotenv'
+        'python-dotenv',
+        'webargs'
     ],
     url='',
     license='BSD',

@@ -4,11 +4,6 @@ class TemplateException(Exception):
     pass
 
 
-class TemplateNotConfigured(Exception):
-    def __init__(self):
-        super().__init__('template mechanism has not been configured')
-
-
 class TemplateNotFound(TemplateException):
     def __init__(self, name):
         self.name = name
