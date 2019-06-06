@@ -6,7 +6,7 @@ from peewee_migrate import Router
 from colibris import persist
 from colibris import settings
 
-from . import BaseCommand
+from .base import BaseCommand
 
 
 class MakeMigrationsCommand(BaseCommand):

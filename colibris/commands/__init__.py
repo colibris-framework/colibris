@@ -9,35 +9,13 @@ from colibris import utils
 from colibris import settings
 
 
-class BaseCommand:
-    def __init__(self, args):
-        self.args = args
-        self.parser = argparse.ArgumentParser()
-        self.add_arguments(self.parser)
-
-    def initialize(self):
-        pass
-
-    def run(self):
-        self.initialize()
-        options = self.parser.parse_args(self.args)
-        self.execute(options)
-
-    def add_arguments(self, parser):
-        pass
-
-    def execute(self, options):
-        raise NotImplementedError
-
-    @classmethod
-    def get_name(cls):
-        return cls.__name__[0:-7].lower()
+from .base import BaseCommand
 
 
 def gather_all_commands():
     global ALL_COMMANDS
 
-    # import any project-specific commands
+    # Import any project-specific commands
     utils.import_module_or_none('{}.commands'.format(settings.PROJECT_PACKAGE_NAME))
 
     ALL_COMMANDS = {c.get_name(): c for c in BaseCommand.__subclasses__()}

@@ -3,7 +3,7 @@ import logging
 
 from colibris import taskqueue
 
-from . import BaseCommand
+from .base import BaseCommand
 
 
 logger = logging.getLogger(__name__)

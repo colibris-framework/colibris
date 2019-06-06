@@ -4,7 +4,7 @@ import code
 from colibris import settings
 from colibris import utils
 
-from . import BaseCommand
+from .base import BaseCommand
 
 
 class ShellCommand(BaseCommand):
