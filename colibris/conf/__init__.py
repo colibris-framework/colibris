@@ -98,18 +98,6 @@ def _override_project_settings():
         override_setting(name, value)
 
 
-def _override_local_settings():
-    settings_local_module = utils.import_module_or_none('settingslocal')
-    if settings_local_module is None:
-        return
-
-    for name, value in inspect.getmembers(settings_local_module):
-        if not _is_setting_name(name):
-            continue
-
-        override_setting(name, value)
-
-
 def _override_env_settings():
     schema_class = settings_schemas.get_all_settings_schema()
 
@@ -142,6 +130,5 @@ def setup():
 
     _setup_project_package()
     _override_project_settings()
-    _override_local_settings()
     _override_env_settings()
     _apply_tweaks()
