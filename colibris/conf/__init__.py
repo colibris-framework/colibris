@@ -123,9 +123,6 @@ def _override_local_settings():
 
 
 def _override_env_settings():
-    load_dotenv('.env.default')
-    load_dotenv('.env', override=True)
-
     schema_class = settings_schemas.get_all_settings_schema()
 
     try:
@@ -152,6 +149,9 @@ def _apply_tweaks():
 
 
 def _initialize():
+    load_dotenv('.env.default')
+    load_dotenv('.env', override=True)
+
     _setup_default_settings()
     _setup_project_package()
     _override_project_settings()
