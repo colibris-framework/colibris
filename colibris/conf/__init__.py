@@ -44,7 +44,7 @@ def _override_setting_rec(setting_dict, name, value):
         setting_dict[name] = value
 
 
-def _override_setting(name, value):
+def override_setting(name, value):
     # Do we have the setting corresponding to the given name?
     if name in _settings_store:
         _settings_store[name] = value
@@ -107,7 +107,7 @@ def _override_project_settings():
         if not _is_setting_name(name):
             continue
 
-        _override_setting(name, value)
+        override_setting(name, value)
 
 
 def _override_local_settings():
@@ -119,7 +119,7 @@ def _override_local_settings():
         if not _is_setting_name(name):
             continue
 
-        _override_setting(name, value)
+        override_setting(name, value)
 
 
 def _override_env_settings():
@@ -139,7 +139,7 @@ def _override_env_settings():
         if value is None:
             continue
 
-        _override_setting(name, value)
+        override_setting(name, value)
 
 
 def _apply_tweaks():
