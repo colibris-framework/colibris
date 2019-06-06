@@ -9,7 +9,7 @@ from dotenv import load_dotenv
 
 from colibris import utils
 
-from . import defaultsettings
+from . import settings
 from . import schemas as settings_schemas
 
 
@@ -86,7 +86,7 @@ def _setup_project_package():
 
 
 def _setup_default_settings():
-    for name, value in inspect.getmembers(defaultsettings):
+    for name, value in inspect.getmembers(settings):
         if not _is_setting_name(name):
             continue
 
@@ -94,13 +94,10 @@ def _setup_default_settings():
 
 
 def _override_project_settings():
-    project_settings_module = utils.import_module_or_none('settings')
+    project_settings_path = '{}.settings'.format(_settings_store['PROJECT_PACKAGE_NAME'])
+    project_settings_module = utils.import_module_or_none(project_settings_path)
     if project_settings_module is None:
-        # Try settings module from project package
-        project_settings_path = '{}.settings'.format(_settings_store['PROJECT_PACKAGE_NAME'])
-        project_settings_module = utils.import_module_or_none(project_settings_path)
-        if project_settings_module is None:
-            return
+        return
 
     for name, value in inspect.getmembers(project_settings_module):
         if not _is_setting_name(name):
@@ -143,7 +140,7 @@ def _override_env_settings():
 
 def _apply_tweaks():
     # Update default log level according to DEBUG flag
-    if _settings_store['LOGGING'] is defaultsettings.LOGGING and not _settings_store['DEBUG']:
+    if _settings_store['LOGGING'] is settings.LOGGING and not _settings_store['DEBUG']:
         _settings_store['LOGGING']['root']['level'] = 'INFO'
 
 

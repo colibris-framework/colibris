@@ -15,7 +15,7 @@ from setuptools.command.sdist import sdist
 
 PROJECT_PACKAGE_NAME = '__packagename__'
 PROJECT_NAME = '__projectname__'
-ROOT_DIST_FILES = ['manage.py', 'settings.py']
+ROOT_DIST_FILES = ['manage.py']
 
 
 class SdistCommand(sdist):
