@@ -10,7 +10,6 @@ from dotenv import load_dotenv
 from colibris import utils
 
 from . import defaultsettings
-from . import lazysettings
 from . import schemas as settings_schemas
 
 
@@ -78,7 +77,7 @@ def _setup_project_package():
                     project_package_name = m.group(1)
     
     if project_package_name is None:
-        raise Exception('could not identify project package name')  # TODO replace with dedicated conf exception
+        raise ImproperlyConfigured('could not identify project package name')
 
     _settings_store['PROJECT_PACKAGE_NAME'] = project_package_name
 
@@ -148,7 +147,7 @@ def _apply_tweaks():
         _settings_store['LOGGING']['root']['level'] = 'INFO'
 
 
-def _initialize():
+def setup():
     load_dotenv('.env.default')
     load_dotenv('.env', override=True)
 
@@ -158,6 +157,3 @@ def _initialize():
     _override_local_settings()
     _override_env_settings()
     _apply_tweaks()
-
-
-settings = lazysettings.LazySettings(_settings_store, _initialize)

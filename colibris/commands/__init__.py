@@ -1,10 +1,10 @@
 
-import argparse
 import logging.config
 import sys
 
 import colibris
 
+from colibris import conf
 from colibris import utils
 from colibris import settings
 
@@ -33,6 +33,8 @@ def show_commands_usage():
 
 
 def main():
+    conf.setup()
+
     gather_all_commands()
 
     args = sys.argv
