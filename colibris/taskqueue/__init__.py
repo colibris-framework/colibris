@@ -3,7 +3,7 @@ import async_timeout
 import asyncio
 import logging
 
-from colibris import settings
+from colibris.conf import settings
 
 from .exceptions import *
 from .base import TaskQueueBackend

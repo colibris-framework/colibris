@@ -9,7 +9,7 @@ try:
 except ImportError:
     pass
 
-from colibris import settings
+from colibris.conf import settings
 
 from .backends import DatabaseBackend, PostgreSQLBackend, MySQLBackend, SQLiteBackend
 from .models import Model

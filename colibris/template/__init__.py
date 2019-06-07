@@ -2,7 +2,7 @@
 import logging
 import os
 
-from colibris import settings
+from colibris.conf import settings
 
 from .exceptions import *
 from .base import TemplateBackend

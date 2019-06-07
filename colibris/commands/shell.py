@@ -1,8 +1,8 @@
 
 import code
 
-from colibris import settings
 from colibris import utils
+from colibris.conf import settings
 
 from .base import BaseCommand
 

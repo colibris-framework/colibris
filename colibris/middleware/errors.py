@@ -7,9 +7,9 @@ from aiohttp import web
 
 from colibris import app
 from colibris import authentication
-from colibris import settings
 from colibris import utils
 from colibris.api import BaseJSONException, envelope
+from colibris.conf import settings
 
 from .schema import HTTPSchemaValidationError
 

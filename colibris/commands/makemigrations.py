@@ -4,7 +4,7 @@ import importlib
 from peewee_migrate import Router
 
 from colibris import persist
-from colibris import settings
+from colibris.conf import settings
 
 from .base import BaseCommand
 

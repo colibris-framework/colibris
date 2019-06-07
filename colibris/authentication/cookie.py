@@ -4,7 +4,7 @@ import hmac
 
 from http.cookies import Morsel
 
-from colibris import settings
+from colibris.conf import settings
 from colibris.api.exceptions import BaseJSONException
 
 from . import get_account

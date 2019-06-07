@@ -1,7 +1,7 @@
 
 import logging
 
-from colibris import settings
+from colibris.conf import settings
 
 from .base import AuthenticationBackend
 from .exceptions import *

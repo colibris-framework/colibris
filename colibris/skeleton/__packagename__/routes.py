@@ -1,7 +1,7 @@
 
 import os
 
-from colibris import settings
+from colibris.conf import settings
 from colibris.authorization import ANY_PERMISSION
 
 from __packagename__ import views

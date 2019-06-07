@@ -1,12 +1,11 @@
 
-import logging.config
 import sys
 
 import colibris
 
 from colibris import conf
 from colibris import utils
-from colibris import settings
+from colibris.conf import settings
 
 
 from .base import BaseCommand

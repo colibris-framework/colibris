@@ -1,8 +1,8 @@
 
 from aiohttp import web
 
-from colibris import settings
 from colibris import app
+from colibris.conf import settings
 
 from .base import BaseCommand
 

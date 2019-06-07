@@ -9,8 +9,8 @@ from aiohttp_apispec import setup_aiohttp_apispec
 from aiohttp_swagger import setup_swagger
 
 from colibris import routes as default_routes
-from colibris import settings
 from colibris import utils
+from colibris.conf import settings
 
 
 logger = logging.getLogger(__name__)
