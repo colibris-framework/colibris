@@ -1,12 +1,12 @@
 
+import logging
 
 from colibris import monkey  # Apply monkey patches before anything else
-
-from colibris.conf import settings
 
 from colibris import authentication
 from colibris import authorization
 from colibris import cache
+from colibris import conf
 from colibris import email
 from colibris import persist
 from colibris import taskqueue
@@ -24,3 +24,6 @@ def setup():
     persist.setup()
     taskqueue.setup()
     template.setup()
+
+
+logging.basicConfig(level=logging.DEBUG, handlers=[conf.get_logging_memory_handler()])

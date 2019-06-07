@@ -1,7 +1,8 @@
 
 import importlib
 import inspect
-import logging
+import logging.config
+import logging.handlers
 import os
 import re
 import sys
@@ -21,6 +22,7 @@ class ImproperlyConfigured(Exception):
 
 
 _default_logging_dict = settings.LOGGING  # Remember original logging config to tell if changed
+_logging_memory_handler = None
 
 
 def _is_setting_name(name):
@@ -73,10 +75,30 @@ def _setup_project_settings():
         setattr(settings, name, value)
 
 
-def _apply_tweaks():
+def _setup_logging():
     # Update default log level according to DEBUG flag
     if settings.LOGGING is _default_logging_dict and not settings.DEBUG:
         settings.LOGGING['root']['level'] = 'INFO'
+
+    logging_config = dict(settings.LOGGING)
+    logging_config['disable_existing_loggers'] = False
+    utils.dict_update_rec(logging_config, settings.LOGGING_OVERRIDES)
+
+    logging.config.dictConfig(logging_config)
+
+    # Handle logs emitted before logging setup
+    if _logging_memory_handler:
+        _logging_memory_handler.setTarget(logging.getLogger())
+        _logging_memory_handler.flush()
+
+
+def get_logging_memory_handler():
+    global _logging_memory_handler
+
+    if _logging_memory_handler is None:
+        _logging_memory_handler = logging.handlers.MemoryHandler(capacity=1e6, flushLevel=logging.CRITICAL)
+
+    return _logging_memory_handler
 
 
 def setup():
@@ -85,4 +107,4 @@ def setup():
 
     _setup_project_package()
     _setup_project_settings()
-    _apply_tweaks()
+    _setup_logging()

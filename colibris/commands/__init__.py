@@ -42,13 +42,6 @@ def main():
         show_commands_usage()
         sys.exit(1)
 
-    # Configure logging
-    logging_config = dict(settings.LOGGING)
-    logging_config['disable_existing_loggers'] = False
-    utils.dict_update_rec(logging_config, settings.LOGGING_OVERRIDES)
-
-    logging.config.dictConfig(logging_config)
-
     colibris.setup()
 
     command_class = ALL_COMMANDS[sys.argv[1]]
