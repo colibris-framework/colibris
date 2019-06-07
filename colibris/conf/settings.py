@@ -18,11 +18,11 @@ MIDDLEWARE = [
 ]
 
 AUTHENTICATION = {
-    'backend': 'colibris.authentication.base.NullBackend'
+    'backend': 'colibris.authentication.null.NullBackend'
 }
 
 AUTHORIZATION = {
-    'backend': 'colibris.authorization.base.NullBackend'
+    'backend': 'colibris.authorization.null.NullBackend'
 }
 
 CACHE = {}
