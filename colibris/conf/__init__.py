@@ -1,6 +1,7 @@
 
 import importlib
 import inspect
+import logging
 import os
 import re
 import sys
@@ -10,14 +11,16 @@ from dotenv import load_dotenv
 from colibris import utils
 
 from . import settings
-from . import schemas as settings_schemas
 
 
-_default_logging_dict = settings.LOGGING  # Remember original logging config to tell if changed
+logger = logging.getLogger(__name__)
 
 
 class ImproperlyConfigured(Exception):
     pass
+
+
+_default_logging_dict = settings.LOGGING  # Remember original logging config to tell if changed
 
 
 def _is_setting_name(name):

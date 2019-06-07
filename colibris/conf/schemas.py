@@ -9,6 +9,7 @@ from marshmallow.schema import Schema as MMSchema, SchemaMeta as MMSchemaMeta, S
 
 from . import ImproperlyConfigured
 from . import settings
+from . import logger
 
 
 class ColonSeparatedStringsField(fields.Field):
@@ -45,6 +46,7 @@ class SettingsSchemaMeta(MMSchemaMeta):
 
 class SettingsSchema(MMSchema, metaclass=SettingsSchemaMeta):
     OPTIONS_CLASS = SettingsSchemaOpts
+    LOG_FORMAT = 'loading %s = "%s"'
 
     def _override_setting_rec(self, setting_dict, name, value):
         parts = name.split('_')
@@ -70,9 +72,12 @@ class SettingsSchema(MMSchema, metaclass=SettingsSchemaMeta):
             return
 
         # Recursively update dictionary with items
-        self._override_env_setting_rec(settings.__dict__, name, value)
+        self._override_setting_rec(settings.__dict__, name, value)
 
-    def load(self, data):
+    def load(self, data, log_format=LOG_FORMAT):
+        for name, value in data.items():
+            logger.debug(log_format, name, value)
+
         try:
             loaded_settings = super().load(data)
 
@@ -90,4 +95,4 @@ class SettingsSchema(MMSchema, metaclass=SettingsSchemaMeta):
             self._override_setting(name, value)
 
     def load_from_env(self):
-        self.load(os.environ)
+        self.load(os.environ, log_format=self.LOG_FORMAT + ' from environment')
