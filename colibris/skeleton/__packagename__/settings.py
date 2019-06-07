@@ -1,4 +1,25 @@
 
+from colibris.conf.schemas import fields, SettingsSchema
+
+#
+# class GeneralSettingsSchema(SettingsSchema):
+#     DEBUG = fields.Boolean()
+#     LISTEN = fields.String()
+#     PORT = fields.Integer()
+#     SECRET_KEY = fields.String()
+#
+#
+# class DatabaseSettingsSchema(SettingsSchema):
+#     NAME = fields.String()
+#     HOST = fields.String()
+#     PORT = fields.Integer()
+#     USERNAME = fields.String()
+#     PASSWORD = fields.String()
+#
+#     class Meta:
+#         prefix = 'DATABASE_'
+#
+
 DEBUG = True
 
 LISTEN = '0.0.0.0'
@@ -7,7 +28,7 @@ PORT = 8888
 SECRET_KEY = 'replace-me-with-random-ascii-string'
 
 # DATABASE = {
-#     'backend': 'colibris.persist.PostgresqlDatabase',
+#     'backend': 'colibris.persist.PostgreSQLBackend',
 #     'name': '__packagename__',
 #     'host': '127.0.0.1',
 #     'port': 5432,
@@ -27,3 +48,8 @@ SECRET_KEY = 'replace-me-with-random-ascii-string'
 #     'backend': 'colibris.authorization.role.RoleBackend',
 #     'role_field': 'role'
 # }
+
+#
+# GeneralSettingsSchema().load_from_env(globals())
+# DatabaseSettingsSchema().load_from_env(globals())
+#
