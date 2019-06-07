@@ -8,8 +8,6 @@ from colibris import persist
 #
 #
 # def get_health():
-#     # return your health status or raise app.HealthException()
-#
 #     if not persist.connectivity_check():
 #         raise app.HealthException('database connectivity check failed')
 #

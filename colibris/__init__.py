@@ -26,4 +26,5 @@ def setup():
     template.setup()
 
 
+# Initially gather logging records into a memory handler and flush them as soon as logging is properly set up
 logging.basicConfig(level=logging.DEBUG, handlers=[conf.get_logging_memory_handler()])
