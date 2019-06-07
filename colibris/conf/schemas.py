@@ -65,16 +65,19 @@ class SettingsSchema(MMSchema, metaclass=SettingsSchemaMeta):
             # Simply add the new setting to the setting dict
             setting_dict[name] = value
 
-    def _override_setting(self, name, value):
+    def _override_setting(self, settings_dict, name, value):
         # Do we have the setting corresponding to the given name?
-        if name in settings.__dict__:
-            setattr(settings, name, value)
+        if name in settings_dict:
+            settings_dict[name] = value
             return
 
         # Recursively update dictionary with items
-        self._override_setting_rec(settings.__dict__, name, value)
+        self._override_setting_rec(settings_dict, name, value)
 
-    def load(self, data, log_format=LOG_FORMAT):
+    def load(self, data, target_settings=None, log_format=LOG_FORMAT):
+        if target_settings is None:
+            target_settings = settings.__dict__
+
         try:
             loaded_settings = super().load(data)
 
@@ -90,7 +93,7 @@ class SettingsSchema(MMSchema, metaclass=SettingsSchemaMeta):
                 continue
 
             logger.debug(log_format, name, value)
-            self._override_setting(name, value)
+            self._override_setting(target_settings, name, value)
 
-    def load_from_env(self):
-        self.load(os.environ, log_format=self.LOG_FORMAT + ' from environment')
+    def load_from_env(self, target_settings=None):
+        self.load(os.environ, target_settings, log_format=self.LOG_FORMAT + ' from environment')
