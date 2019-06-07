@@ -1,7 +1,7 @@
 
 import logging
 
-from colibris import monkey  # Apply monkey patches before anything else
+from colibris import monkey as __monkey  # Apply monkey patches before anything else
 
 from colibris import authentication
 from colibris import authorization
