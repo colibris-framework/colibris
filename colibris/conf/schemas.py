@@ -75,9 +75,6 @@ class SettingsSchema(MMSchema, metaclass=SettingsSchemaMeta):
         self._override_setting_rec(settings.__dict__, name, value)
 
     def load(self, data, log_format=LOG_FORMAT):
-        for name, value in data.items():
-            logger.debug(log_format, name, value)
-
         try:
             loaded_settings = super().load(data)
 
@@ -92,6 +89,7 @@ class SettingsSchema(MMSchema, metaclass=SettingsSchemaMeta):
             if value is None:
                 continue
 
+            logger.debug(log_format, name, value)
             self._override_setting(name, value)
 
     def load_from_env(self):
