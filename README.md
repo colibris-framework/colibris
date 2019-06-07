@@ -672,5 +672,5 @@ python path to the backend class. The rest of the entries are passed as argument
 
 ###### `TASKQUEUE`
 
-Configures the backgound tasks backend. Should be defined as a dictionary with at least one entry, `backend`,
+Configures the background tasks backend. Should be defined as a dictionary with at least one entry, `backend`,
 representing the python path to the backend class. The rest of the entries are passed as arguments to the constructor.
