@@ -14,6 +14,8 @@ from colibris import utils
 from . import settings
 
 
+ENV_DEFAULT = '.env.default'
+
 logger = logging.getLogger(__name__)
 
 
@@ -61,6 +63,16 @@ def _setup_project_package():
     settings.PROJECT_PACKAGE_DIR = os.path.dirname(project_package.__file__)
 
 
+def _setup_env():
+    # Try to load a default env file from the project package
+    path = os.path.join(settings.PROJECT_PACKAGE_DIR, ENV_DEFAULT)
+    if os.path.exists(path):
+        load_dotenv(path)
+
+    # Try to load an env file from the current directory
+    load_dotenv('.env', override=True)
+
+
 def _setup_project_settings():
     project_settings_path = '{}.settings'.format(settings.PROJECT_PACKAGE_NAME)
     project_settings_module = utils.import_module_or_none(project_settings_path)
@@ -101,9 +113,7 @@ def get_logging_memory_handler():
 
 
 def setup():
-    load_dotenv('.env.default')
-    load_dotenv('.env', override=True)
-
     _setup_project_package()
+    _setup_env()
     _setup_project_settings()
     _setup_logging()

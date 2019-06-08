@@ -579,11 +579,11 @@ Then import it in `${PACKAGE}/settings.py` and simply call `load_from_env` at th
 
     settingsschemas.load_from_env(globals())
 
-Environment variables can be put together in a `.env` file that is located in the root folder of the project. This file
-should never be added to git.
+Environment variables can be put together in a `.env` file that is located in the directory where you run your project
+from (usually the root folder of your project). This file should never be added to git.
 
-If you want your variables to be part of your project's repository, you can add them to `.env.default`, which should be
-added to git.
+If you want your variables to be part of your project's repository, you can add them to `${PACKAGE}/.env.default`, which
+should be added to git.
 
 #### Available Settings
 
