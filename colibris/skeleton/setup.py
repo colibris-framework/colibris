@@ -10,22 +10,10 @@ except ImportError:
     pass
 
 from setuptools import setup, find_packages
-from setuptools.command.sdist import sdist
 
 
 PROJECT_PACKAGE_NAME = '__packagename__'
 PROJECT_NAME = '__projectname__'
-ROOT_DIST_FILES = ['manage.py']
-
-
-class SdistCommand(sdist):
-    def make_release_tree(self, base_dir, files):
-        super().make_release_tree(base_dir, files)
-
-        # some files from the project root are be part
-        # of the project package when using setuptools
-        for file in ROOT_DIST_FILES:
-            self.copy_file(file, os.path.join(base_dir, PROJECT_PACKAGE_NAME, file))
 
 
 def package_data_rec(package, directory):
@@ -65,8 +53,5 @@ setup(
             '{project_name}={package_name}.manage:main'.format(project_name=PROJECT_NAME,
                                                                package_name=PROJECT_PACKAGE_NAME),
         ]
-    },
-    cmdclass={
-        'sdist': SdistCommand
     }
 )
