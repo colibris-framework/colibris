@@ -34,10 +34,9 @@ def _setup_project_package():
     # Autodetect project package from main script path
     main_script = sys.argv[0]
     project_package_name = None
-    if main_script.endswith('manage.py'):  # using manage.py
+    if main_script.endswith('manage.py'):  # Using manage.py
         main_script = os.path.realpath(main_script)
         project_package_name = os.path.basename(os.path.dirname(main_script))
-        project_package_name = re.sub('[^a-z0-9_]', '', project_package_name).lower()
 
     else:  # Using a setuptools console script wrapper
         with open(main_script, 'rt') as main_module_file:
