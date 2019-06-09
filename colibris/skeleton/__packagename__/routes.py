@@ -11,14 +11,9 @@ from __packagename__.constants import ROLE_ADMIN, ROLE_REGULAR
 # Routes example:
 #
 # ROUTES = [
-#     ('GET',    '/users/me',   views.get_me,       ANY_PERMISSION),
-#     ('GET',    '/users/{id}', views.get_user,     {ROLE_ADMIN}),
-#     ('GET',    '/users',      views.list_users,   {ROLE_ADMIN}),
-#     ('POST',   '/users',      views.add_user,     {ROLE_ADMIN}),
-#     ('PATCH',  '/users/{id}', views.update_user,  {ROLE_ADMIN}),
-#     ('DELETE', '/users/{id}', views.delete_user,  {ROLE_ADMIN}),
-#
-#     ('GET',    '/my_resource/{id}', views.get_my_resource, {ROLE_ADMIN, ROLE_REGULAR}),
+#     ('GET',     r'/users/me',           views.get_me,           ANY_PERMISSION),
+#     (None,      r'/users',              views.UsersView,        {ROLE_ADMIN}),
+#     (None,      r'/users/{id:\d+}',     views.UserView,         {ROLE_ADMIN})
 # ]
 #
 
