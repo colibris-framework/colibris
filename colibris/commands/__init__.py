@@ -7,8 +7,13 @@ from colibris import conf
 from colibris import utils
 from colibris.conf import settings
 
-
 from .base import BaseCommand
+
+from . import makemigrations
+from . import migrate
+from . import runserver
+from . import runworker
+from . import shell
 
 
 def gather_all_commands():
@@ -46,10 +51,3 @@ def main():
     command_class = ALL_COMMANDS[sys.argv[1]]
     command = command_class(args[2:])
     command.run()
-
-
-from . import makemigrations
-from . import migrate
-from . import runserver
-from . import runworker
-from . import shell
