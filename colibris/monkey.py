@@ -15,14 +15,12 @@ except ImportError:
     marshmallow.compat = compat
     sys.modules['marshmallow.compat'] = compat
 
-
     def with_metaclass(meta, *bases):
         class MetaClass(meta):
             def __new__(cls, name, this_bases, d):
                 return meta(name, bases, d)
 
         return type.__new__(MetaClass, 'temporary_class', (), {})
-
 
     compat.with_metaclass = with_metaclass
     compat.PY2 = False

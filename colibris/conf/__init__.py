@@ -46,13 +46,13 @@ def _setup_project_package():
             m = re.search(r'from (\w+).manage import main', main_content)
             if m:
                 project_package_name = m.group(1)
-            
+
             else:
                 # pkg_resources kind wrapper
                 m = re.search(r"load_entry_point\('(\w+)==", main_content)
                 if m:
                     project_package_name = m.group(1)
-    
+
     if project_package_name is None:
         raise ImproperlyConfigured('could not identify project package name')
 

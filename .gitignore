@@ -1,6 +1,7 @@
 *.pyc
 .venv
 .idea
+.tox
 *.egg-info
 playground*
 dist
