@@ -1,4 +1,4 @@
-version: "3"
+version: "3.7"
 services:
 #  db:
 #    image: postgres:10.6
@@ -15,11 +15,13 @@ services:
 #    restart: always
 #    ports:
 #      - "6379:6379"
-  app:
-    image: __projectname__:latest
-    build: .
+
+  server:
+    image: __projectname__-server:latest
+    build:
+      context: .
+      target: server
 #    environment:
-#      - DATABASE_BACKEND=colibris.persist.PostgresqlDatabase
 #      - DATABASE_NAME=__packagename__
 #      - DATABASE_HOST=db
 #      - DATABASE_USERNAME=postgres
@@ -28,10 +30,30 @@ services:
 #    command: >
 #      bash -c "wait-for-it db:5432 -t 10 -s &&
 #               wait-for-it cache:6379 -t 10 -s &&
-#               __packagename__ migrate &&
 #               __packagename__ runserver"
     ports:
       - "8888:8888"
+#    depends_on:
+#      - db
+#      - cache
+
+#  worker:
+#    image: __projectname__-worker:latest
+#    build:
+#      context: .
+#      target: worker
+#    environment:
+#      - DATABASE_NAME=__packagename__
+#      - DATABASE_HOST=db
+#      - DATABASE_USERNAME=postgres
+#      - DATABASE_PASSWORD=postgres
+#      - CACHE_HOST=cache
+#    command: >
+#      bash -c "wait-for-it db:5432 -t 10 -s &&
+#               wait-for-it cache:6379 -t 10 -s &&
+#               __packagename__ runworker"
+#    ports:
+#      - "8888:8888"
 #    depends_on:
 #      - db
 #      - cache
