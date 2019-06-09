@@ -39,6 +39,7 @@ def _setup_project_package():
     if main_script.endswith('manage.py'):  # Using manage.py
         main_script = os.path.realpath(main_script)
         project_package_name = os.path.basename(os.path.dirname(main_script))
+        sys.path.insert(0, os.path.dirname(os.path.dirname(main_script)))
 
     else:  # Using a setuptools console script wrapper
         with open(main_script, 'rt') as main_module_file:
