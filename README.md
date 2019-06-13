@@ -32,7 +32,9 @@ You can use a different template repository for your project's skeleton:
     colibris-start-project ${PROJECT_NAME} --template git@gitlab.com:safefleet/microservice-template.git 
 
 Your project folder will contain a package derived from your project name as well as various other stuff. You'll find
-a `settings.py` module in the project package; you will want to edit it to adapt it to your project's needs.
+a `manage.py` module in the project package, which is in fact the main script of your project.
+
+You'll also find a `settings.py` module that you'll want to edit to adapt it to your project's needs.
 
 The commands in this document assume you're in your project folder and you have your virtual environment correctly
 sourced, unless otherwise specified.
@@ -187,24 +189,24 @@ In `${PACKAGE}/settings.py`, set:
 
 To create migrations for your model changes, use:
 
-    ./manage.py makemigrations
+    ./${PACKAGE}/manage.py makemigrations
 
 You can optionally specify a name for your migrations:
 
-    ./manage.py makemigrations somename
+    ./${PACKAGE}/manage.py makemigrations somename
 
 #### Apply Migrations
 
 To apply migrations on the currently configured database, use:
 
-    ./manage.py migrate
+    ./${PACKAGE}/manage.py migrate
 
 
 ## Web Server
 
 Start the web server by running:
 
-    ./manage.py runserver
+    ./${PACKAGE}/manage.py runserver
 
 Then you can test it by pointing your browser to:
 
@@ -421,7 +423,7 @@ In `${PACKAGE}/settings.py`, set:
 
 To actually execute the queued background tasks, you'll need to spawn at least one worker:
 
-    ./manage.py runworker
+    ./${PACKAGE}/manage.py runworker
 
 
 ## Health Status
@@ -479,9 +481,6 @@ from `${PACKAGE}/__init__.py`.
 
 The provided setup file will create a console script having your project's main package name, that will basically do
 exactly what `manage.py` does.
-
-One thing that is worth noting when using `setuptools` to deploy a project is that the `manage.py` file that used to be
-in your project's root folder will now live in the main package of your project.
 
 #### Building Docker Image
 
@@ -580,11 +579,11 @@ Then import it in `${PACKAGE}/settings.py` and simply call `load_from_env` at th
 
     settingsschemas.load_from_env(globals())
 
-Environment variables can be put together in a `.env` file that is located in the root folder of the project. This file
-should never be added to git.
+Environment variables can be put together in a `.env` file that is located in the directory where you run your project
+from (usually the root folder of your project). This file should never be added to git.
 
-If you want your variables to be part of your project's repository, you can add them to `.env.default`, which should be
-added to git.
+If you want your variables to be part of your project's repository, you can add them to `${PACKAGE}/.env.default`, which
+should be added to git.
 
 #### Available Settings
 
@@ -655,11 +654,11 @@ Controls the server TCP listening port. Defaults to `8888`.
 
 ###### `PROJECT_PACKAGE_DIR`
 
-Sets the path to the project directory. By default, it is automatically deduced. 
+Sets the path to the project directory. This setting is determined automatically and should not be changed.
 
 ###### `PROJECT_PACKAGE_NAME`
 
-Sets the main project package name. Defaults to `'${PROJECT_NAME}'`.
+Sets the main project package name. This setting is determined automatically and should not be changed.
 
 ###### `SECRET_KEY`
 
