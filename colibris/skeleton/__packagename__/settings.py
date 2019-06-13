@@ -8,6 +8,9 @@ from colibris.conf.schemas import fields, SettingsSchema
 #     PORT = fields.Integer()
 #     SECRET_KEY = fields.String()
 #
+#    class Meta:
+#        sensible_fields = ['SECRET_KEY']
+#
 #
 # class DatabaseSettingsSchema(SettingsSchema):
 #     NAME = fields.String()
@@ -18,6 +21,7 @@ from colibris.conf.schemas import fields, SettingsSchema
 #
 #     class Meta:
 #         prefix = 'DATABASE_'
+#         sensible_field = ['PASSWORD']
 #
 
 DEBUG = True
