@@ -535,7 +535,7 @@ When you're done, shut it down by hitting `Ctrl-C`; then you can remove the cont
 
     docker-compose down
 
-## Settings
+Settings
 
 #### The `settings` Module
 
@@ -559,7 +559,7 @@ settings, when added at the end of your `${PACKAGE}/settings.py`:
         LISTEN = fields.String()
         PORT = fields.Integer()
 
-    GeneralSettingsSchema.load_from_env(globals())
+    GeneralSettingsSchema().load_from_env(globals())
 
 The `globals()` argument ensures overriding values defined in your `${PACKAGE}/settings.py` module. 
 
@@ -599,8 +599,8 @@ If your project tends to have many such settings schemas, it is recommended that
     ...
 
     def load_from_env(target_settings):
-        GeneralSettingsSchema.load_from_env(target_settings)
-        DatabaseSettingsSchema.load_from_env(target_settings)
+        GeneralSettingsSchema().load_from_env(target_settings)
+        DatabaseSettingsSchema().load_from_env(target_settings)
 
 Then import it in `${PACKAGE}/settings.py` and simply call `load_from_env` at the end:
 
