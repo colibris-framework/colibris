@@ -5,7 +5,9 @@ The following variables are assumed:
 
  * `VENVS` - the folder where you keep your python virtual environments (e.g. `~/.local/share/virtualenvs`)
  * `PROJECT_NAME` - the name of your project (e.g. `my-project`) 
- * `PROJECTS_DIR` - the folder where you keep your projects (e.g. `~/Projects`) 
+ * `PROJECTS_DIR` - the folder where you keep your projects (e.g. `~/Projects`)
+ * `PACKAGE` - the name of your main project's package 
+ * `VERSION` - the version of your project
 
 Create a virtual environment for your new project:
 
@@ -29,7 +31,7 @@ Prepare the project:
 
 You can use a different template repository for your project's skeleton:
 
-    colibris-start-project ${PROJECT_NAME} --template git@gitlab.com:safefleet/microservice-template.git 
+    colibris-start-project ${PROJECT_NAME} --template git@github.com:myorganization/microservice-template.git 
 
 Your project folder will contain a package derived from your project name as well as various other stuff. You'll find
 a `manage.py` module in the project package, which is in fact the main script of your project.
@@ -482,28 +484,53 @@ from `${PACKAGE}/__init__.py`.
 The provided setup file will create a console script having your project's main package name, that will basically do
 exactly what `manage.py` does.
 
-#### Building Docker Image
+One thing that is worth noting when using `setuptools` to deploy a project is that the `manage.py` file that used to be
+in your project's root folder will now live in the main package of your project.
 
-Build your local docker image, optionally tagging it with your version:
 
-    docker build -t ${PROJECT_NAME}:${VERSION} .
+## Using Docker
 
-#### Manually Run Container
+If you want to deploy your service using Docker, you'll first need to edit `Dockerfile` and change it according to your
+needs:
 
-You can run your container locally as follows:
+    nano Dockerfile
 
-    docker run -it ${PPROJECT_NAME}:${VERSION} -p 8888:8888
-
-#### Using `docker-compose`
-
-Uncomment/add needed services to `docker-compose.yml`:
+If you plan on using Docker Compose, you'll probably want to edit the `docker-compose.yml` file as well:
 
     nano docker-compose.yml
 
-Start your suite of services using docker-compose:
+#### Building Docker Image
+
+You can manually build the image for your server like this:
+
+    docker build -t ${PROJECT_NAME}:${VERSION} .
+
+If your project has multiple services (e.g. "server" and "worker"), you'll want to build and tag them separately:
+
+    docker build -t ${PROJECT_NAME}-server:${VERSION} --target server .
+    docker build -t ${PROJECT_NAME}-worker:${VERSION} --target worker .
+
+#### Manually Run Container
+
+You can run your container locally:
+
+    docker run -it ${PPROJECT_NAME}:${VERSION} -p 8888:8888
+    
+or, if you have multiple services:
+
+    docker run -it ${PPROJECT_NAME}-server:${VERSION} -p 8888:8888
+    docker run -it ${PPROJECT_NAME}-worker:${VERSION} -p 8888:8888
+
+#### Using `docker-compose`
+
+You can use `docker-compose` to build your images, instead of building them manually:
+
+    docker-compose build 
+
+To start your services, use:
 
     docker-compose up
-    
+
 When you're done, shut it down by hitting `Ctrl-C`; then you can remove the containers:
 
     docker-compose down
