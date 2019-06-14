@@ -14,6 +14,7 @@ from . import migrate
 from . import runserver
 from . import runworker
 from . import shell
+from . import test
 
 
 def gather_all_commands():
