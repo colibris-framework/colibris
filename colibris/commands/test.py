@@ -8,6 +8,8 @@ from .base import BaseCommand
 
 logger = logging.getLogger(__name__)
 
+_PLUGINS = ['colibris.test']
+
 
 class TestCommand(BaseCommand):
     ADD_HELP = False
@@ -20,4 +22,4 @@ class TestCommand(BaseCommand):
         return None
 
     def execute(self, options):
-        pytest.main(self.args)
+        pytest.main(self.args, plugins=_PLUGINS)
