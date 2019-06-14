@@ -54,4 +54,5 @@ def setup():
 
     DatabaseBackend.configure(db_settings)
 
-    models.set_database(get_database())
+    if DatabaseBackend.is_enabled():
+        models.set_database(get_database())
