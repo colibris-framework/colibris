@@ -30,8 +30,10 @@ class SettingsSchemaOpts(MMSchemaOpts):
     def __init__(self, meta, **kwargs):
         super().__init__(meta, **kwargs)
 
-        self.unknown = getattr(meta, 'unknown', MM_EXCLUDE)  # Ignore other env variables, by default
+        self.unknown = getattr(meta, 'unknown', MM_EXCLUDE)  # Ignore other variables, by default
         self.prefix = getattr(meta, 'prefix', '')
+        self.sensible_fields = getattr(meta, 'sensible_fields', [])
+        self.sensible_fields = set(self.prefix + f for f in self.sensible_fields)
 
 
 class SettingsSchemaMeta(MMSchemaMeta):
@@ -88,11 +90,16 @@ class SettingsSchema(MMSchema, metaclass=SettingsSchemaMeta):
 
             raise ImproperlyConfigured('{}: {}'.format(field, message))
 
-        for name, value in loaded_settings.items():
+        for name, value in sorted(loaded_settings.items()):
             if value is None:
                 continue
 
-            logger.debug(log_format, name, value)
+            if name in self.opts.sensible_fields:
+                logger.debug(log_format, name, '*****')
+
+            else:
+                logger.debug(log_format, name, value)
+
             self._override_setting(target_settings, name, value)
 
     def load_from_env(self, target_settings=None):

@@ -5,7 +5,9 @@ The following variables are assumed:
 
  * `VENVS` - the folder where you keep your python virtual environments (e.g. `~/.local/share/virtualenvs`)
  * `PROJECT_NAME` - the name of your project (e.g. `my-project`) 
- * `PROJECTS_DIR` - the folder where you keep your projects (e.g. `~/Projects`) 
+ * `PROJECTS_DIR` - the folder where you keep your projects (e.g. `~/Projects`)
+ * `PACKAGE` - the name of your main project's package 
+ * `VERSION` - the version of your project
 
 Create a virtual environment for your new project:
 
@@ -29,10 +31,12 @@ Prepare the project:
 
 You can use a different template repository for your project's skeleton:
 
-    colibris-start-project ${PROJECT_NAME} --template git@gitlab.com:safefleet/microservice-template.git 
+    colibris-start-project ${PROJECT_NAME} --template git@github.com:myorganization/microservice-template.git 
 
 Your project folder will contain a package derived from your project name as well as various other stuff. You'll find
-a `settings.py` module in the project package; you will want to edit it to adapt it to your project's needs.
+a `manage.py` module in the project package, which is in fact the main script of your project.
+
+You'll also find a `settings.py` module that you'll want to edit to adapt it to your project's needs.
 
 The commands in this document assume you're in your project folder and you have your virtual environment correctly
 sourced, unless otherwise specified.
@@ -187,24 +191,24 @@ In `${PACKAGE}/settings.py`, set:
 
 To create migrations for your model changes, use:
 
-    ./manage.py makemigrations
+    ./${PACKAGE}/manage.py makemigrations
 
 You can optionally specify a name for your migrations:
 
-    ./manage.py makemigrations somename
+    ./${PACKAGE}/manage.py makemigrations somename
 
 #### Apply Migrations
 
 To apply migrations on the currently configured database, use:
 
-    ./manage.py migrate
+    ./${PACKAGE}/manage.py migrate
 
 
 ## Web Server
 
 Start the web server by running:
 
-    ./manage.py runserver
+    ./${PACKAGE}/manage.py runserver
 
 Then you can test it by pointing your browser to:
 
@@ -421,7 +425,7 @@ In `${PACKAGE}/settings.py`, set:
 
 To actually execute the queued background tasks, you'll need to spawn at least one worker:
 
-    ./manage.py runworker
+    ./${PACKAGE}/manage.py runworker
 
 
 ## Health Status
@@ -483,33 +487,55 @@ exactly what `manage.py` does.
 One thing that is worth noting when using `setuptools` to deploy a project is that the `manage.py` file that used to be
 in your project's root folder will now live in the main package of your project.
 
-#### Building Docker Image
 
-Build your local docker image, optionally tagging it with your version:
+## Using Docker
 
-    docker build -t ${PROJECT_NAME}:${VERSION} .
+If you want to deploy your service using Docker, you'll first need to edit `Dockerfile` and change it according to your
+needs:
 
-#### Manually Run Container
+    nano Dockerfile
 
-You can run your container locally as follows:
-
-    docker run -it ${PPROJECT_NAME}:${VERSION} -p 8888:8888
-
-#### Using `docker-compose`
-
-Uncomment/add needed services to `docker-compose.yml`:
+If you plan on using Docker Compose, you'll probably want to edit the `docker-compose.yml` file as well:
 
     nano docker-compose.yml
 
-Start your suite of services using docker-compose:
+#### Building Docker Image
+
+You can manually build the image for your server like this:
+
+    docker build -t ${PROJECT_NAME}:${VERSION} .
+
+If your project has multiple services (e.g. "server" and "worker"), you'll want to build and tag them separately:
+
+    docker build -t ${PROJECT_NAME}-server:${VERSION} --target server .
+    docker build -t ${PROJECT_NAME}-worker:${VERSION} --target worker .
+
+#### Manually Run Container
+
+You can run your container locally:
+
+    docker run -it ${PPROJECT_NAME}:${VERSION} -p 8888:8888
+    
+or, if you have multiple services:
+
+    docker run -it ${PPROJECT_NAME}-server:${VERSION} -p 8888:8888
+    docker run -it ${PPROJECT_NAME}-worker:${VERSION} -p 8888:8888
+
+#### Using `docker-compose`
+
+You can use `docker-compose` to build your images, instead of building them manually:
+
+    docker-compose build 
+
+To start your services, use:
 
     docker-compose up
-    
+
 When you're done, shut it down by hitting `Ctrl-C`; then you can remove the containers:
 
     docker-compose down
 
-## Settings
+Settings
 
 #### The `settings` Module
 
@@ -533,7 +559,7 @@ settings, when added at the end of your `${PACKAGE}/settings.py`:
         LISTEN = fields.String()
         PORT = fields.Integer()
 
-    GeneralSettingsSchema.load_from_env(globals())
+    GeneralSettingsSchema().load_from_env(globals())
 
 The `globals()` argument ensures overriding values defined in your `${PACKAGE}/settings.py` module. 
 
@@ -573,18 +599,18 @@ If your project tends to have many such settings schemas, it is recommended that
     ...
 
     def load_from_env(target_settings):
-        GeneralSettingsSchema.load_from_env(target_settings)
-        DatabaseSettingsSchema.load_from_env(target_settings)
+        GeneralSettingsSchema().load_from_env(target_settings)
+        DatabaseSettingsSchema().load_from_env(target_settings)
 
 Then import it in `${PACKAGE}/settings.py` and simply call `load_from_env` at the end:
 
     settingsschemas.load_from_env(globals())
 
-Environment variables can be put together in a `.env` file that is located in the root folder of the project. This file
-should never be added to git.
+Environment variables can be put together in a `.env` file that is located in the directory where you run your project
+from (usually the root folder of your project). This file should never be added to git.
 
-If you want your variables to be part of your project's repository, you can add them to `.env.default`, which should be
-added to git.
+If you want your variables to be part of your project's repository, you can add them to `${PACKAGE}/.env.default`, which
+should be added to git.
 
 #### Available Settings
 
@@ -655,11 +681,11 @@ Controls the server TCP listening port. Defaults to `8888`.
 
 ###### `PROJECT_PACKAGE_DIR`
 
-Sets the path to the project directory. By default, it is automatically deduced. 
+Sets the path to the project directory. This setting is determined automatically and should not be changed.
 
 ###### `PROJECT_PACKAGE_NAME`
 
-Sets the main project package name. Defaults to `'${PROJECT_NAME}'`.
+Sets the main project package name. This setting is determined automatically and should not be changed.
 
 ###### `SECRET_KEY`
 
