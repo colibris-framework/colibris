@@ -8,7 +8,10 @@ from .base import BaseCommand
 
 logger = logging.getLogger(__name__)
 
-_PLUGINS = ['colibris.test']
+_PLUGINS = [
+    'aiohttp.pytest_plugin',
+    'colibris.test'
+]
 
 
 class TestCommand(BaseCommand):
