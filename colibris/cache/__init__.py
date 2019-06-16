@@ -43,3 +43,7 @@ def setup():
 
 def is_enabled():
     return CacheBackend.is_enabled()
+
+
+def is_created():
+    return CacheBackend.is_created()

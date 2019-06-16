@@ -26,3 +26,7 @@ def setup():
 
 def is_enabled():
     return EmailBackend.is_enabled()
+
+
+def is_created():
+    return EmailBackend.is_created()

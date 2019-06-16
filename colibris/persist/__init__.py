@@ -70,3 +70,7 @@ def setup():
 
 def is_enabled():
     return DatabaseBackend.is_enabled()
+
+
+def is_created():
+    return DatabaseBackend.is_created()

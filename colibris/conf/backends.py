@@ -49,5 +49,9 @@ class BackendMixin:
     def is_enabled(cls):
         return cls._class is not None
 
+    @classmethod
+    def is_created(cls):
+        return cls._instance is not None
+
     def on_create(self):
         pass

@@ -37,3 +37,7 @@ def setup():
 
 def is_enabled():
     return TaskQueueBackend.is_enabled()
+
+
+def is_created():
+    return TaskQueueBackend.is_created()

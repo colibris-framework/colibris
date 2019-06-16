@@ -35,3 +35,7 @@ def setup():
 
 def is_enabled():
     return TemplateBackend.is_enabled()
+
+
+def is_created():
+    return TemplateBackend.is_created()
