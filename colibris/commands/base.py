@@ -14,12 +14,12 @@ class BaseCommand:
         self.args = args
         self.parser = self.make_argument_parser()
         self.add_arguments(self.parser)
+        self.initialize()
 
     def initialize(self):
         pass
 
     def run(self):
-        self.initialize()
         options = self.parse_arguments(self.parser, self.args)
         self.execute(options)
 

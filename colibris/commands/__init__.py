@@ -47,8 +47,8 @@ def main():
         show_commands_usage()
         sys.exit(1)
 
-    colibris.setup()
-
     command_class = ALL_COMMANDS[sys.argv[1]]
     command = command_class(args[2:])
+
+    colibris.setup()
     command.run()
