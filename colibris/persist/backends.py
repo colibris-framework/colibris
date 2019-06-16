@@ -1,29 +1,71 @@
 
-from peewee import PostgresqlDatabase, MySQLDatabase, SqliteDatabase
+import os
+
+from peewee import PostgresqlDatabase, MySQLDatabase, SqliteDatabase, mysql
 
 from colibris.conf.backends import BackendMixin
 
 
 class DatabaseBackend(BackendMixin):
-    def connect(self):
-        pass
+    def create(self):
+        self._create(self.database)
 
-    def on_create(self):
-        from . import logger  # colibris.persist logger
+    def drop(self):
+        self._drop(self.database)
 
-        # Connect to DB as soon as the backend is instantiated
-        self.connect()
+    def _create(self, name):
+        raise NotImplementedError
 
-        logger.debug('db connection initialized')
+    def _drop(self, name):
+        raise NotImplementedError
 
 
 class PostgreSQLBackend(PostgresqlDatabase, DatabaseBackend):
-    pass
+    def _one_shot_sql(self, sql):
+        import psycopg2
+        from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT
+
+        conn = psycopg2.connect(dbname='postgres',
+                                host=self.connect_params['host'],
+                                port=self.connect_params.get('port'),
+                                user=self.connect_params['user'],
+                                password=self.connect_params['password'])
+
+        conn.set_isolation_level(ISOLATION_LEVEL_AUTOCOMMIT)
+
+        cur = conn.cursor()
+        cur.execute(sql)
+
+        conn.close()
+
+    def _create(self, name):
+        self._one_shot_sql('CREATE DATABASE {name}'.format(name=name))
+
+    def _drop(self, name):
+        self._one_shot_sql('DROP DATABASE {name}'.format(name=name))
 
 
 class MySQLBackend(MySQLDatabase, DatabaseBackend):
-    pass
+    def _one_shot_sql(self, sql):
+        conn = mysql.connect(host=self.connect_params['host'],
+                             port=self.connect_params.get('port'),
+                             user=self.connect_params['user'],
+                             passwd=self.connect_params['password'])
+        cur = conn.cursor()
+        cur.execute(sql)
+
+        conn.close()
+
+    def _create(self, name):
+        self._one_shot_sql('CREATE DATABASE {name}'.format(name=name))
+
+    def _drop(self, name):
+        self._one_shot_sql('DROP DATABASE {name}'.format(name=name))
 
 
 class SQLiteBackend(SqliteDatabase, DatabaseBackend):
-    pass
+    def _create(self, name):
+        pass  # SQLite automatically creates the DB file when opened
+
+    def _drop(self, name):
+        os.remove(name)

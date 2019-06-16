@@ -47,6 +47,8 @@ def setup():
     db_settings = dict(settings.DATABASE)
     db_settings.setdefault('autorollback', True)
 
+    create = db_settings.pop('create', False)
+
     # Translate settings into whatever peewee prefers
     for param, pparam in _PEEWEE_DB_PARAMS_MAPPING.items():
         if param in db_settings:
@@ -55,4 +57,12 @@ def setup():
     DatabaseBackend.configure(db_settings)
 
     if DatabaseBackend.is_enabled():
+        database = get_database()
+        if create:
+            logger.debug('creating db')
+            database.create()
+
+        database.connect()
+        logger.debug('db connection initialized')
+
         models.set_database(get_database())
