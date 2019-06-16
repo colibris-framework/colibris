@@ -39,3 +39,7 @@ def setup():
     _default_lifetime = cache_settings.pop('default_lifetime', DEFAULT_LIFETIME)
 
     CacheBackend.configure(cache_settings)
+
+
+def is_enabled():
+    return CacheBackend.is_enabled()

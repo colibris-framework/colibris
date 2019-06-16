@@ -33,3 +33,7 @@ def run_worker(options):
 
 def setup():
     TaskQueueBackend.configure(settings.TASK_QUEUE)
+
+
+def is_enabled():
+    return TaskQueueBackend.is_enabled()

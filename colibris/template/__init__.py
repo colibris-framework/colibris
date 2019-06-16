@@ -31,3 +31,7 @@ def setup():
     template_settings['paths'] = [package_template_path] + list(template_settings.get('paths', []))
 
     TemplateBackend.configure(template_settings)
+
+
+def is_enabled():
+    return TemplateBackend.is_enabled()

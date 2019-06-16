@@ -66,3 +66,7 @@ def setup():
         logger.debug('db connection initialized')
 
         models.set_database(get_database())
+
+
+def is_enabled():
+    return DatabaseBackend.is_enabled()
