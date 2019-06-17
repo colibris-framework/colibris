@@ -5,7 +5,9 @@ The following variables are assumed:
 
  * `VENVS` - the folder where you keep your python virtual environments (e.g. `~/.local/share/virtualenvs`)
  * `PROJECT_NAME` - the name of your project (e.g. `my-project`) 
- * `PROJECTS_DIR` - the folder where you keep your projects (e.g. `~/Projects`) 
+ * `PROJECTS_DIR` - the folder where you keep your projects (e.g. `~/Projects`)
+ * `PACKAGE` - the name of your main project's package 
+ * `VERSION` - the version of your project
 
 Create a virtual environment for your new project:
 
@@ -29,9 +31,12 @@ Prepare the project:
 
 You can use a different template repository for your project's skeleton:
 
-    colibris-start-project ${PROJECT_NAME} --template git@gitlab.com:safefleet/microservice-template.git 
+    colibris-start-project ${PROJECT_NAME} --template git@github.com:myorganization/microservice-template.git 
 
-Your project folder will contain a package derived from your project name as well as various other stuff.
+Your project folder will contain a package derived from your project name as well as various other stuff. You'll find
+a `manage.py` module in the project package, which is in fact the main script of your project.
+
+You'll also find a `settings.py` module that you'll want to edit to adapt it to your project's needs.
 
 The commands in this document assume you're in your project folder and you have your virtual environment correctly
 sourced, unless otherwise specified.
@@ -39,12 +44,12 @@ sourced, unless otherwise specified.
 
 ## Database
 
-Choose a backend for the database, by setting the `DATABASE` variable in `settings.py`. By default, no database is
-enabled and the persistence layer is disabled.
+Choose a backend for the database, by setting the `DATABASE` variable in `${PACKAGE}/settings.py`. By default, no
+database is enabled and the persistence layer is disabled.
 
 #### SQLite Backend
 
-In `settings.py`, set:
+In `${PACKAGE}/settings.py`, set:
 
     DATABASE = {
         'backend': 'colibris.persist.SQLiteBackend',
@@ -55,7 +60,7 @@ In `settings.py`, set:
 
 Make sure to have the `mysqldb` or `pymysql` python package installed.
 
-In `settings.py`, set:
+In `${PACKAGE}/settings.py`, set:
 
     DATABASE = {
         'backend': 'colibris.persist.MySQLBackend',
@@ -70,7 +75,7 @@ In `settings.py`, set:
 
 Make sure to have the `psycopg2-binary` python package installed.
 
-In `settings.py`, set:
+In `${PACKAGE}/settings.py`, set:
 
     DATABASE = {
         'backend': 'colibris.persist.PostgreSQLBackend',
@@ -109,20 +114,20 @@ Associate URL paths to views by editing the `routes.py` file:
 
     nano ${PACKAGE}/routes.py
     
-If you need routes for static files (recommended only for development), add your static prefix/path associations to
+If you need routes for static files (not recommended for production), add your static prefix/path associations to
 `STATIC_ROUTES`.
 
 
 ## Authentication
 
-Choose a backend for the authentication by setting the `AUTHENTICATION` variable in `settings.py`. By default, it is set
-to `{}`, associating each request with a dummy identity.
+Choose a backend for the authentication by setting the `AUTHENTICATION` variable in `${PACKAGE}/settings.py`. By
+default, a null backend is used which associates each request with a dummy account.
 
 #### JWT Backend
 
 Make sure to have the `pyjwt` python package installed. 
 
-In `settings.py`, set:
+In `${PACKAGE}/settings.py`, set:
 
     AUTHENTICATION = {
         'backend': 'colibris.authentication.jwt.JWTBackend',
@@ -144,7 +149,7 @@ The `validity_seconds` property is optional and configures the given validity fo
 
 #### API Key Backend
 
-In `settings.py`, set:
+In `${PACKAGE}/settings.py`, set:
 
     AUTHENTICATION = {
         'backend': 'colibris.authentication.apikey.APIKeyBackend',
@@ -155,12 +160,12 @@ In `settings.py`, set:
 
 ## Authorization
 
-Choose a backend for the authorization by setting the `AUTHORIZATION` variable in `settings.py`. By default, it is set
-to `{}`, allowing everybody to perform any request.
+Choose a backend for the authorization by setting the `AUTHORIZATION` variable in `${PACKAGE}/settings.py`. By default,
+a null backend is used, allowing everybody to perform any request.
 
 #### Role Backend
 
-In `settings.py`, set:
+In `${PACKAGE}/settings.py`, set:
 
     AUTHORIZATION = {
         'backend': 'colibris.authorization.role.RoleBackend',
@@ -169,7 +174,7 @@ In `settings.py`, set:
 
 #### Rights Backend
 
-In `settings.py`, set:
+In `${PACKAGE}/settings.py`, set:
 
     AUTHORIZATION = {
         'backend': 'colibris.authorization.rights.RightsBackend',
@@ -186,24 +191,24 @@ In `settings.py`, set:
 
 To create migrations for your model changes, use:
 
-    ./manage.py makemigrations
+    ./${PACKAGE}/manage.py makemigrations
 
 You can optionally specify a name for your migrations:
 
-    ./manage.py makemigrations somename
+    ./${PACKAGE}/manage.py makemigrations somename
 
 #### Apply Migrations
 
 To apply migrations on the currently configured database, use:
 
-    ./manage.py migrate
+    ./${PACKAGE}/manage.py migrate
 
 
 ## Web Server
 
 Start the web server by running:
 
-    ./manage.py runserver
+    ./${PACKAGE}/manage.py runserver
 
 Then you can test it by pointing your browser to:
 
@@ -219,8 +224,8 @@ You can add project-specific initialization code in the `init` function exposed 
 
 ## Cache
 
-The caching mechanism is configured via the `CACHE` variable in `settings.py`. It defaults to `{}`, in which case the
-local in-memory backend is used.
+The caching mechanism is configured via the `CACHE` variable in `${PACKAGE}/settings.py`. Caching is disabled by
+default.
 
 #### Usage
 
@@ -244,7 +249,7 @@ You can invalidate a key using `delete`:
 
 Make sure to have the `redis` python package installed.
 
-In `settings.py`, set:
+In `${PACKAGE}/settings.py`, set:
 
     CACHE = {
         'backend': 'colibris.cache.redis.RedisBackend',
@@ -257,8 +262,8 @@ In `settings.py`, set:
 
 ## Templates
 
-The templates mechanism is configured via the `TEMPLATE` variable in `settings.py`. It defaults to `{}`, in which case
-the templates are disabled.
+The templates mechanism is configured via the `TEMPLATE` variable in `${PACKAGE}/settings.py`. Templates are disabled by
+default.
 
 #### Search Paths
 
@@ -292,7 +297,7 @@ The following example will render an HTML template file from a view:
 
 Make sure to have the `jinja2` python package installed.
 
-In `settings.py`, set:
+In `${PACKAGE}/settings.py`, set:
 
     TEMPLATE = {
         'backend': 'colibris.template.jinja2.Jinja2Backend',
@@ -308,8 +313,8 @@ to a python object that implements the `gettext` functions (such as the standard
 
 ## Email Sending
 
-The email sending mechanism is controlled by the `EMAIL` variable in `settings.py`. By default, this function is
-disabled and, if you try to send an email, nothing more than a logging message will happen.
+The email sending mechanism is controlled by the `EMAIL` variable in `${PACKAGE}/settings.py`. Emails are disabled by
+default.
 
 #### Basic Usage
 
@@ -328,7 +333,7 @@ You can now send it:
 Sending is done using the "fire and forget" way; don't expect any result or exceptions from this call. Any errors that
 might occur will be logged, though.
 
-Make sure you configure your `default_from` value in your `EMAIL` setting, in `settings.py`:
+Make sure you configure your `default_from` value in your `EMAIL` setting, in `${PACKAGE}/settings.py`:
 
     EMAIL = {
         'default_from': 'myservice@example.com',
@@ -352,7 +357,7 @@ The HTML content acts as an alternative to the body and will be used by the mail
 
 #### Console Backend
 
-In `settings.py`, set:
+In `${PACKAGE}/settings.py`, set:
 
     EMAIL = {
         'backend': 'colibris.email.console.ConsoleBackend'
@@ -364,7 +369,7 @@ You'll see the email content printed at standard output.
 
 Make sure you have the `aiosmtplib` python package installed.
 
-In `settings.py`, set:
+In `${PACKAGE}/settings.py`, set:
 
     EMAIL = {
         'backend': 'colibris.email.smtp.SMTPBackend',
@@ -378,9 +383,9 @@ In `settings.py`, set:
 
 ## Background Tasks
 
-Running time-consuming tasks can be done by using the `taskqueue` functionality. The `TASK_QUEUE` variable in
-`settings.py` configures the background running task mechanism. It defaults to `{}`, in which case the background tasks
-are disabled.
+Running time-consuming, blocking tasks can be done by using the `taskqueue` functionality in separate workers. The
+`TASK_QUEUE` variable in `${PACKAGE}/settings.py` configures the background running task mechanism. Background tasks
+are disabled by default.
 
 #### Usage
 
@@ -405,7 +410,7 @@ Then run your time consuming task:
 
 Make sure to have the `rq` and `redis` python packages installed.
 
-In `settings.py`, set:
+In `${PACKAGE}/settings.py`, set:
 
     TASK_QUEUE = {
         'backend': 'colibris.taskqueue.rq.RQBackend',
@@ -420,7 +425,7 @@ In `settings.py`, set:
 
 To actually execute the queued background tasks, you'll need to spawn at least one worker:
 
-    ./manage.py runworker
+    ./${PACKAGE}/manage.py runworker
 
 
 ## Health Status
@@ -429,6 +434,12 @@ You can (and should) implement your project-specific health check function by ex
 `app.py`:
 
     nano ${PACKAGE}/app.py
+    
+    def get_health():
+        if not persist.connectivity_check():
+            raise app.HealthException('database connectivity check failed')
+    
+        return 'healthy'
 
 
 ## Deployment
@@ -460,86 +471,146 @@ Install all of your project's dependencies:
     
 #### Using `setuptools`
 
-The project's skeleton comes with a `setup.py` file, effectively allowing your project to be packaged with `setuptools`.
+The project's skeleton comes with a `${PACKAGE}/setup.py` file, effectively allowing your project to be packaged with
+`setuptools`.
 
 To create a package of your project, run:
 
     python setup.py sdist
     
 You'll then find your packaged project at `dist/${PROJECT_NAME}-${VERSION}.tar.gz`. The version is automatically read
-from your main package's `__init__.py`.
+from `${PACKAGE}/__init__.py`.
 
 The provided setup file will create a console script having your project's main package name, that will basically do
 exactly what `manage.py` does.
 
-One thing that is worth noting when using `setuptools` to deploy a project is that the `manage.py` and `settings.py`
-files that used to be in your project's root folder will now live in the main package of your project. 
+One thing that is worth noting when using `setuptools` to deploy a project is that the `manage.py` file that used to be
+in your project's root folder will now live in the main package of your project.
 
-#### Building Docker Image
 
-Build your local docker image, optionally tagging it with your version:
+## Using Docker
 
-    docker build -t ${PROJECT_NAME}:${VERSION} .
+If you want to deploy your service using Docker, you'll first need to edit `Dockerfile` and change it according to your
+needs:
 
-#### Manually Run Container
+    nano Dockerfile
 
-You can run your container locally as follows:
-
-    docker run -it ${PPROJECT_NAME}:${VERSION} -p 8888:8888
-
-#### Using `docker-compose`
-
-Uncomment/add needed services to `docker-compose.yml`:
+If you plan on using Docker Compose, you'll probably want to edit the `docker-compose.yml` file as well:
 
     nano docker-compose.yml
 
-Start your suite of services using docker-compose:
+#### Building Docker Image
+
+You can manually build the image for your server like this:
+
+    docker build -t ${PROJECT_NAME}:${VERSION} .
+
+If your project has multiple services (e.g. "server" and "worker"), you'll want to build and tag them separately:
+
+    docker build -t ${PROJECT_NAME}-server:${VERSION} --target server .
+    docker build -t ${PROJECT_NAME}-worker:${VERSION} --target worker .
+
+#### Manually Run Container
+
+You can run your container locally:
+
+    docker run -it ${PPROJECT_NAME}:${VERSION} -p 8888:8888
+    
+or, if you have multiple services:
+
+    docker run -it ${PPROJECT_NAME}-server:${VERSION} -p 8888:8888
+    docker run -it ${PPROJECT_NAME}-worker:${VERSION} -p 8888:8888
+
+#### Using `docker-compose`
+
+You can use `docker-compose` to build your images, instead of building them manually:
+
+    docker-compose build 
+
+To start your services, use:
 
     docker-compose up
-    
+
 When you're done, shut it down by hitting `Ctrl-C`; then you can remove the containers:
 
     docker-compose down
 
-## Settings
+Settings
 
 #### The `settings` Module
 
-Each project should have a `settings.py` file, specifying settings that are particular for the project.
-
-#### The `settingslocal` Module
-
-For local deployments or development environments, you can specify your particular settings in a `settingslocal.py`
-file. It has a higher precedence than the project's `settings` module.
-
-#### Environment Variables
-
-Settings can be overridden using environment variables. Environment variables have the highest precedence when it comes
-to specifying settings. This is the recommended way of particularizing setting values on specific deployments.
-
-For simple settings, such as `DEBUG`, the corresponding environment variable coincides with the setting.
-
-For complex settings, such as `DATABASE`, each setting parameter will have a separate corresponding environment
-variable. For example, `DATABASE_HOST` will set the `host` parameter of the `DATABASE` setting.
-
-Environment variables can be put together in a `.env` file that is located in the root folder of the project. This file
-should never be added to git.
-
-If you want your variables to be part of your project's repository, you can add them to `.env.default`, which should be
-added to git.
+Each project should have a `${PACKAGE}/settings.py` file, specifying settings that are particular for the project.
 
 #### Settings Schemas
 
-Environment variables are validated and transformed before assigned to settings. These validations are handled by 
-settings schemas. Settings schemas are predefined for all Colibris settings. For project-specific settings, you must
-define your own settings schemas in your `settings.py` and decorate them accordingly:
+Settings that need to be specified at runtime and depend on the running environment can be supplied via environment
+variables.
 
-    from colibris.conf.schemas import SettingsSchema, fields, register_settings_schema
+Settings schemas are used to validate and adapt environment variables before being used as settings. You have to define
+your settings schemas that will handle the settings your project wants to collect from the environment.
 
-    @register_settings_schema
-    class MySettingsSchema(SettingsSchema):
-        MY_INT_SETTING = fields.Integer()
-        MY_STR_SETTING = fields.String()
+The following example will use the `DEBUG`, `LISTEN` and `PORT` environment variables to configure the corresponding
+settings, when added at the end of your `${PACKAGE}/settings.py`:
+
+    from colibris.conf.schemas import SettingsSchema, fields
+
+    class GeneralSettingsSchema(SettingsSchema):
+        DEBUG = fields.Boolean()
+        LISTEN = fields.String()
+        PORT = fields.Integer()
+
+    GeneralSettingsSchema().load_from_env(globals())
+
+The `globals()` argument ensures overriding values defined in your `${PACKAGE}/settings.py` module. 
+
+Providing values for complex settings, such as `DATABASE` which is defined as a dictionary with parameters, can be done
+by specifying the name of the setting as variable prefix:
+
+    class DatabaseSettingsSchema(SettingsSchema):
+        NAME = fields.String()
+        HOST = fields.String()
+        PORT = fields.Integer()
+        USERNAME = fields.String()
+        PASSWORD = fields.String()
+    
+        class Meta:
+            prefix = 'DATABASE_'
+
+If your project tends to have many such settings schemas, it is recommended that you move them to an e.g.
+`${PACKAGE}/settingsshemas.py` module:
+
+    from colibris.conf.schemas import SettingsSchema, fields
+
+    class GeneralSettingsSchema(SettingsSchema):
+        DEBUG = fields.Boolean()
+        LISTEN = fields.String()
+        PORT = fields.Integer()
+
+    class DatabaseSettingsSchema(SettingsSchema):
+        NAME = fields.String()
+        HOST = fields.String()
+        PORT = fields.Integer()
+        USERNAME = fields.String()
+        PASSWORD = fields.String()
+    
+        class Meta:
+            prefix = 'DATABASE_'
+
+    ...
+
+    def load_from_env(target_settings):
+        GeneralSettingsSchema().load_from_env(target_settings)
+        DatabaseSettingsSchema().load_from_env(target_settings)
+
+Then import it in `${PACKAGE}/settings.py` and simply call `load_from_env` at the end:
+
+    settingsschemas.load_from_env(globals())
+
+Environment variables can be put together in a `.env` file that is located in the directory where you run your project
+from (usually the root folder of your project). This file should never be added to git.
+
+If you want your variables to be part of your project's repository, you can add them to `${PACKAGE}/.env.default`, which
+should be added to git.
 
 #### Available Settings
 
@@ -552,22 +623,15 @@ Controls the path where the API documentation is served. Defaults to `/api/docs`
 Configures the authentication backend. Should be defined as a dictionary with at least one entry, `backend`,
 representing the python path to the backend class. The rest of the entries are passed as arguments to the constructor.
 
-Defaults to `{}`, which effectively disables authentication.
-
 ###### `AUTHORIZATION`
 
 Configures the authorization backend. Should be defined as a dictionary with at least one entry, `backend`,
 representing the python path to the backend class. The rest of the entries are passed as arguments to the constructor.
 
-Defaults to `{}`, which effectively disables authorization, allowing access to all resources for any authenticated
-request.
-
 ###### `CACHE`
 
-Configures the cache backend. Should be defined as a dictionary with at least one entry, `backend`,
-representing the python path to the backend class. The rest of the entries are passed as arguments to the constructor.
-
-Defaults to `{}`, which configures the in-memory cache backend.
+Configures the cache backend. Should be defined as a dictionary with at least one entry, `backend`, representing the
+python path to the backend class. The rest of the entries are passed as arguments to the constructor.
 
 ###### `DATABASE`
 
@@ -575,11 +639,14 @@ Sets the project database.
 See [this](http://docs.peewee-orm.com/en/latest/peewee/database.html#connecting-using-a-database-url) for examples of
 database URLs.
 
-Defaults to `{}`, which disables the persistence mechanism.
-
 ###### `DEBUG`
 
 Enables or disables debugging. Defaults to `True`.
+
+###### `EMAIL`
+
+Configures the email backend. Should be defined as a dictionary with at least one entry, `backend`, representing the
+python path to the backend class. The rest of the entries are passed as arguments to the constructor.
 
 ###### `LISTEN`
 
@@ -614,12 +681,22 @@ Controls the server TCP listening port. Defaults to `8888`.
 
 ###### `PROJECT_PACKAGE_DIR`
 
-Sets the path to the project directory. By default, it is automatically deduced. 
+Sets the path to the project directory. This setting is determined automatically and should not be changed.
 
 ###### `PROJECT_PACKAGE_NAME`
 
-Sets the main project package name. Defaults to `'${PROJECT_NAME}'`.
+Sets the main project package name. This setting is determined automatically and should not be changed.
 
 ###### `SECRET_KEY`
 
 Sets the project secret key that is used to create various tokens. Defaults to `None` and must be set explicitly.
+
+###### `TEMPLATES`
+
+Configures the templates backend. Should be defined as a dictionary with at least one entry, `backend`, representing the
+python path to the backend class. The rest of the entries are passed as arguments to the constructor.
+
+###### `TASKQUEUE`
+
+Configures the background tasks backend. Should be defined as a dictionary with at least one entry, `backend`,
+representing the python path to the backend class. The rest of the entries are passed as arguments to the constructor.

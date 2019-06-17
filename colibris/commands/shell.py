@@ -1,10 +1,10 @@
 
 import code
 
-from colibris import settings
 from colibris import utils
+from colibris.conf import settings
 
-from . import BaseCommand
+from .base import BaseCommand
 
 
 class ShellCommand(BaseCommand):

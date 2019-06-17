@@ -2,5 +2,6 @@
 .venv
 .idea
 *.egg-info
+playground*
 dist
 Pipfile.lock

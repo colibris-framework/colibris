@@ -9,7 +9,7 @@ try:
 except ImportError:
     pass
 
-from colibris import settings
+from colibris.conf import settings
 
 from .backends import DatabaseBackend, PostgreSQLBackend, MySQLBackend, SQLiteBackend
 from .models import Model
@@ -54,4 +54,5 @@ def setup():
 
     DatabaseBackend.configure(db_settings)
 
-    models.set_database(get_database())
+    if DatabaseBackend.is_enabled():
+        models.set_database(get_database())

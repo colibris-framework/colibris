@@ -1,8 +1,28 @@
 
-# Patch marshmallow to provide marshmallow.compat.string_types,
-# so that marshmallow-peewee<=2.2.0 can be used.
-# This can be removed as soon as the following PR gets merged:
-# https://github.com/klen/marshmallow-peewee/pull/61/commits/462b78aea70ff818ab501be2d3d2cead420c274e
 
-import marshmallow.compat
-marshmallow.compat.string_types = (str,)
+# Patch marshmallow to provide marshmallow.compat which was removed in 3.0.0rc6.
+# Current latest version of marshmallow-peewee still uses marshmallow.compat.
+
+try:
+    from marshmallow import compat
+
+except ImportError:
+    import marshmallow
+    import sys
+    import types
+
+    compat = types.ModuleType('compat')
+    marshmallow.compat = compat
+    sys.modules['marshmallow.compat'] = compat
+
+
+    def with_metaclass(meta, *bases):
+        class MetaClass(meta):
+            def __new__(cls, name, this_bases, d):
+                return meta(name, bases, d)
+
+        return type.__new__(MetaClass, 'temporary_class', (), {})
+
+
+    compat.with_metaclass = with_metaclass
+    compat.PY2 = False

@@ -1,12 +1,15 @@
 
+import os
+
 from marshmallow import pre_dump, post_dump, pre_load, post_load, validates_schema
 from marshmallow import fields, validate
 from marshmallow import ValidationError
 from marshmallow import EXCLUDE as MM_EXCLUDE
 from marshmallow.schema import Schema as MMSchema, SchemaMeta as MMSchemaMeta, SchemaOpts as MMSchemaOpts
 
-
-_settings_schemas = []
+from . import ImproperlyConfigured
+from . import settings
+from . import logger
 
 
 class ColonSeparatedStringsField(fields.Field):
@@ -27,8 +30,10 @@ class SettingsSchemaOpts(MMSchemaOpts):
     def __init__(self, meta, **kwargs):
         super().__init__(meta, **kwargs)
 
-        self.unknown = getattr(meta, 'unknown', MM_EXCLUDE)  # Ignore other env variables, by default
+        self.unknown = getattr(meta, 'unknown', MM_EXCLUDE)  # Ignore other variables, by default
         self.prefix = getattr(meta, 'prefix', '')
+        self.sensible_fields = getattr(meta, 'sensible_fields', [])
+        self.sensible_fields = set(self.prefix + f for f in self.sensible_fields)
 
 
 class SettingsSchemaMeta(MMSchemaMeta):
@@ -43,187 +48,59 @@ class SettingsSchemaMeta(MMSchemaMeta):
 
 class SettingsSchema(MMSchema, metaclass=SettingsSchemaMeta):
     OPTIONS_CLASS = SettingsSchemaOpts
+    LOG_FORMAT = 'loading %s = "%s"'
 
+    def _override_setting_rec(self, setting_dict, name, value):
+        parts = name.split('_')
+        for i in range(len(parts) - 1):
+            root_name = '_'.join(parts[:i + 1])
+            d = setting_dict.get(root_name)
+            if not isinstance(d, dict):
+                continue
 
-class CommonSchema(SettingsSchema):
-    DEBUG = fields.Boolean()
-    LISTEN = fields.String()
-    PORT = fields.Integer()
-    MAX_REQUEST_BODY_SIZE = fields.Integer()
-    API_DOCS_PATH = fields.String()
-    SECRET_KEY = fields.String()
+            key = '_'.join(parts[i + 1:])
+            self._override_setting_rec(d, key.lower(), value)
 
+            break
 
-# authentication
+        else:
+            # Simply add the new setting to the setting dict
+            setting_dict[name] = value
 
-class ModelAuthenticationSchema(SettingsSchema):
-    MODEL = fields.String()
-    IDENTITY_FIELD = fields.String()
-    SECRET_FIELD = fields.String()
+    def _override_setting(self, settings_dict, name, value):
+        # Do we have the setting corresponding to the given name?
+        if name in settings_dict:
+            settings_dict[name] = value
+            return
 
+        # Recursively update dictionary with items
+        self._override_setting_rec(settings_dict, name, value)
 
-class CookieAuthenticationSchema(SettingsSchema):
-    COOKIE_NAME = fields.String()
-    COOKIE_DOMAIN = fields.String()
-    VALIDITY_SECONDS = fields.Number()
+    def load(self, data, target_settings=None, log_format=LOG_FORMAT):
+        if target_settings is None:
+            target_settings = settings.__dict__
 
+        try:
+            loaded_settings = super().load(data)
 
-class JWTAuthenticationSchema(ModelAuthenticationSchema, CookieAuthenticationSchema):
-    IDENTITY_CLAIM = fields.String()
+        except ValidationError as e:
+            # Pull the first erroneous field with its first error message to form an ImproperlyConfigured exception
+            field, messages = list(e.messages.items())[0]
+            message = messages[0]
 
+            raise ImproperlyConfigured('{}: {}'.format(field, message))
 
-class AllAuthenticationSchema(JWTAuthenticationSchema):
-    BACKEND = fields.String()
+        for name, value in sorted(loaded_settings.items()):
+            if value is None:
+                continue
 
-    class Meta:
-        prefix = 'AUTHENTICATION_'
+            if name in self.opts.sensible_fields:
+                logger.debug(log_format, name, '*****')
 
+            else:
+                logger.debug(log_format, name, value)
 
-# authorization
+            self._override_setting(target_settings, name, value)
 
-class RoleAuthorizationSchema(SettingsSchema):
-    ROLE_FIELD = fields.String()
-
-
-class ModelAuthorizationSchema(SettingsSchema):
-    MODEL = fields.String()
-    ACCOUNT_FIELD = fields.String()
-
-
-class RightsAuthorizationSchema(ModelAuthorizationSchema):
-    RESOURCE_FIELD = fields.String()
-    OPERATIONS_FIELD = fields.String()
-
-
-class AllAuthorizationSchema(RoleAuthorizationSchema,
-                             RightsAuthorizationSchema):
-
-    BACKEND = fields.String()
-
-    class Meta:
-        prefix = 'AUTHORIZATION_'
-
-
-# cache
-
-class LocMemCacheSchema(SettingsSchema):
-    MAX_ENTRIES = fields.Integer()
-
-
-class RedisCacheSchema(SettingsSchema):
-    HOST = fields.String()
-    PORT = fields.Integer()
-    DB = fields.Integer()
-    PASSWORD = fields.String()
-
-
-class AllCacheSchema(LocMemCacheSchema,
-                     RedisCacheSchema):
-
-    BACKEND = fields.String()
-
-    class Meta:
-        prefix = 'CACHE_'
-
-
-# database
-
-class SQLiteDatabaseSchema(SettingsSchema):
-    NAME = fields.String()
-
-
-class ServerDatabaseSchema(SettingsSchema):
-    NAME = fields.String()
-    HOST = fields.String()
-    PORT = fields.Integer()
-    USERNAME = fields.String()
-    PASSWORD = fields.String()
-
-
-class MySQLDatabaseSchema(ServerDatabaseSchema):
-    pass
-
-
-class PostgreSQLDatabaseSchema(ServerDatabaseSchema):
-    pass
-
-
-class AllDatabaseSchema(SQLiteDatabaseSchema,
-                        MySQLDatabaseSchema,
-                        PostgreSQLDatabaseSchema):
-
-    BACKEND = fields.String()
-
-    class Meta:
-        prefix = 'DATABASE_'
-
-
-# template
-
-class Jinja2TemplateSchema(SettingsSchema):
-    EXTENSIONS = ColonSeparatedStringsField()
-    TRANSLATIONS = fields.String()
-
-
-class AllTemplateSchema(Jinja2TemplateSchema):
-    BACKEND = fields.String()
-    PATHS = ColonSeparatedStringsField()
-
-    class Meta:
-        prefix = 'TEMPLATE_'
-
-
-# task queue
-
-class RQTaskQueueSchema(SettingsSchema):
-    HOST = fields.String()
-    PORT = fields.Integer()
-    DB = fields.Integer()
-    PASSWORD = fields.String()
-    POLL_RESULTS_INTERVAL = fields.Integer()
-
-
-class AllTaskQueueSchema(RQTaskQueueSchema):
-    BACKEND = fields.String()
-
-    class Meta:
-        prefix = 'TASK_QUEUE_'
-
-
-# email
-
-class SMTPEmailSchema(SettingsSchema):
-    HOST = fields.String()
-    PORT = fields.Integer()
-    USERNAME = fields.String()
-    PASSWORD = fields.String()
-    USE_TLS = fields.Boolean()
-    TIMEOUT = fields.Integer()
-
-
-class AllEmailSchema(SMTPEmailSchema):
-    BACKEND = fields.String()
-
-    class Meta:
-        prefix = 'EMAIL_'
-
-
-def register_settings_schema(schema):
-    _settings_schemas.append(schema)
-
-
-def get_all_settings_schema():
-    meta = type('Meta', (), {})
-    return type('AllSettingsSchema', tuple(_settings_schemas), {'Meta': meta})
-
-
-# put together known schemas
-
-register_settings_schema(CommonSchema)
-register_settings_schema(AllAuthenticationSchema)
-register_settings_schema(AllAuthorizationSchema)
-register_settings_schema(AllCacheSchema)
-register_settings_schema(AllDatabaseSchema)
-register_settings_schema(AllTemplateSchema)
-register_settings_schema(AllTaskQueueSchema)
-register_settings_schema(AllEmailSchema)
+    def load_from_env(self, target_settings=None):
+        self.load(os.environ, target_settings, log_format=self.LOG_FORMAT + ' from environment')

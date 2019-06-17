@@ -8,7 +8,7 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from email.utils import formatdate, make_msgid
 
-from colibris import settings
+from colibris.conf import settings
 
 
 _cached_domain = None

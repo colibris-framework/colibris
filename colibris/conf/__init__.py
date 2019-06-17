@@ -1,6 +1,8 @@
 
 import importlib
 import inspect
+import logging.config
+import logging.handlers
 import os
 import re
 import sys
@@ -9,16 +11,20 @@ from dotenv import load_dotenv
 
 from colibris import utils
 
-from . import defaultsettings
-from . import lazysettings
-from . import schemas as settings_schemas
+from . import settings
 
 
-_settings_store = {}
+ENV_DEFAULT = '.env.default'
+
+logger = logging.getLogger(__name__)
 
 
 class ImproperlyConfigured(Exception):
     pass
+
+
+_default_logging_dict = settings.LOGGING  # Remember original logging config to tell if changed
+_logging_memory_handler = None
 
 
 def _is_setting_name(name):
@@ -26,42 +32,14 @@ def _is_setting_name(name):
     return re.match('^[A-Z][A-Z0-9_]*$', name)
 
 
-def _override_setting_rec(setting_dict, name, value):
-    parts = name.split('_')
-    for i in range(len(parts) - 1):
-        root_name = '_'.join(parts[:i + 1])
-        d = setting_dict.get(root_name)
-        if not isinstance(d, dict):
-            continue
-
-        key = '_'.join(parts[i + 1:])
-        _override_setting_rec(d, key.lower(), value)
-
-        break
-
-    else:
-        # Simply add the new setting to the setting dict
-        setting_dict[name] = value
-
-
-def _override_setting(name, value):
-    # Do we have the setting corresponding to the given name?
-    if name in _settings_store:
-        _settings_store[name] = value
-        return
-
-    # Recursively update dictionary with items
-    _override_setting_rec(_settings_store, name, value)
-
-
 def _setup_project_package():
     # Autodetect project package from main script path
     main_script = sys.argv[0]
     project_package_name = None
-    if main_script.endswith('manage.py'):  # using manage.py
+    if main_script.endswith('manage.py'):  # Using manage.py
         main_script = os.path.realpath(main_script)
         project_package_name = os.path.basename(os.path.dirname(main_script))
-        project_package_name = re.sub('[^a-z0-9_]', '', project_package_name).lower()
+        sys.path.insert(0, os.path.dirname(os.path.dirname(main_script)))
 
     else:  # Using a setuptools console script wrapper
         with open(main_script, 'rt') as main_module_file:
@@ -78,86 +56,65 @@ def _setup_project_package():
                     project_package_name = m.group(1)
     
     if project_package_name is None:
-        raise Exception('could not identify project package name')  # TODO replace with dedicated conf exception
+        raise ImproperlyConfigured('could not identify project package name')
 
-    _settings_store['PROJECT_PACKAGE_NAME'] = project_package_name
+    settings.PROJECT_PACKAGE_NAME = project_package_name
 
     project_package = importlib.import_module(project_package_name)
-    _settings_store.setdefault('PROJECT_PACKAGE_DIR', os.path.dirname(project_package.__file__))
+    settings.PROJECT_PACKAGE_DIR = os.path.dirname(project_package.__file__)
 
 
-def _setup_default_settings():
-    for name, value in inspect.getmembers(defaultsettings):
-        if not _is_setting_name(name):
-            continue
+def _setup_env():
+    # Try to load a default env file from the project package
+    path = os.path.join(settings.PROJECT_PACKAGE_DIR, ENV_DEFAULT)
+    if os.path.exists(path):
+        load_dotenv(path)
 
-        _settings_store[name] = value
+    # Try to load an env file from the current directory
+    load_dotenv('.env', override=True)
 
 
-def _override_project_settings():
-    project_settings_module = utils.import_module_or_none('settings')
+def _setup_project_settings():
+    project_settings_path = '{}.settings'.format(settings.PROJECT_PACKAGE_NAME)
+    project_settings_module = utils.import_module_or_none(project_settings_path)
     if project_settings_module is None:
-        # Try settings module from project package
-        project_settings_path = '{}.settings'.format(_settings_store['PROJECT_PACKAGE_NAME'])
-        project_settings_module = utils.import_module_or_none(project_settings_path)
-        if project_settings_module is None:
-            return
+        return
 
     for name, value in inspect.getmembers(project_settings_module):
         if not _is_setting_name(name):
             continue
 
-        _override_setting(name, value)
+        setattr(settings, name, value)
 
 
-def _override_local_settings():
-    settings_local_module = utils.import_module_or_none('settingslocal')
-    if settings_local_module is None:
-        return
-
-    for name, value in inspect.getmembers(settings_local_module):
-        if not _is_setting_name(name):
-            continue
-
-        _override_setting(name, value)
-
-
-def _override_env_settings():
-    load_dotenv('.env.default')
-    load_dotenv('.env', override=True)
-
-    schema_class = settings_schemas.get_all_settings_schema()
-
-    try:
-        env_vars = schema_class().load(os.environ)
-
-    except settings_schemas.ValidationError as e:
-        # Pull the first erroneous field with its first error message to form an ImproperlyConfigured exception
-        field, messages = list(e.messages.items())[0]
-        message = messages[0]
-
-        raise ImproperlyConfigured('{}: {}'.format(field, message))
-
-    for name, value in env_vars.items():
-        if value is None:
-            continue
-
-        _override_setting(name, value)
-
-
-def _apply_tweaks():
+def _setup_logging():
     # Update default log level according to DEBUG flag
-    if _settings_store['LOGGING'] is defaultsettings.LOGGING and not _settings_store['DEBUG']:
-        _settings_store['LOGGING']['root']['level'] = 'INFO'
+    if settings.LOGGING is _default_logging_dict and not settings.DEBUG:
+        settings.LOGGING['root']['level'] = 'INFO'
+
+    logging_config = dict(settings.LOGGING)
+    logging_config['disable_existing_loggers'] = False
+    utils.dict_update_rec(logging_config, settings.LOGGING_OVERRIDES)
+
+    logging.config.dictConfig(logging_config)
+
+    # Handle logs emitted before logging setup
+    if _logging_memory_handler:
+        _logging_memory_handler.setTarget(logging.getLogger())
+        _logging_memory_handler.flush()
 
 
-def _initialize():
-    _setup_default_settings()
+def get_logging_memory_handler():
+    global _logging_memory_handler
+
+    if _logging_memory_handler is None:
+        _logging_memory_handler = logging.handlers.MemoryHandler(capacity=1e6, flushLevel=logging.CRITICAL)
+
+    return _logging_memory_handler
+
+
+def setup():
     _setup_project_package()
-    _override_project_settings()
-    _override_local_settings()
-    _override_env_settings()
-    _apply_tweaks()
-
-
-settings = lazysettings.LazySettings(_settings_store, _initialize)
+    _setup_env()
+    _setup_project_settings()
+    _setup_logging()
