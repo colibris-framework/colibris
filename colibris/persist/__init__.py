@@ -60,7 +60,11 @@ def setup():
         database = get_database()
         if create:
             logger.debug('creating db')
-            database.create()
+            try:
+                database.create()
+
+            except Exception as e:
+                logger.error('db creation failed: %s', e, exc_info=True)
 
         database.connect()
         logger.debug('db connection initialized')
