@@ -11,6 +11,9 @@ class DatabaseBackend(BackendMixin):
         self._create(self.database)
 
     def drop(self):
+        if not self.is_closed():
+            self.close()
+
         self._drop(self.database)
 
     def _create(self, name):
