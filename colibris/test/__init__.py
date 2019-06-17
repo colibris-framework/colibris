@@ -12,5 +12,5 @@ def pytest_runtest_setup():
 
 
 def pytest_runtest_teardown():
-    if persist.is_created():
+    if persist.is_created() and not persist.get_database().is_dropped():
         persist.get_database().drop()

@@ -7,14 +7,21 @@ from colibris.conf.backends import BackendMixin
 
 
 class DatabaseBackend(BackendMixin):
+    _dropped = False
+
     def create(self):
         self._create(self.database)
+        self._dropped = False
 
     def drop(self):
         if not self.is_closed():
             self.close()
 
         self._drop(self.database)
+        self._dropped = True
+
+    def is_dropped(self):
+        return self._dropped
 
     def _create(self, name):
         raise NotImplementedError
