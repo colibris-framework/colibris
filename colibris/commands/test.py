@@ -1,5 +1,6 @@
 
 import logging
+import os
 import pytest
 import _pytest.config.argparsing
 
@@ -14,6 +15,8 @@ _PLUGINS = [
     'aiohttp.pytest_plugin',
     'colibris.test'
 ]
+
+_TESTS_DIR = 'tests'
 
 
 class TestCommand(BaseCommand):
@@ -35,4 +38,7 @@ class TestCommand(BaseCommand):
         return None
 
     def execute(self, options):
+        tests_dir = os.path.join(settings.PROJECT_PACKAGE_DIR, '..', _TESTS_DIR)
+        os.chdir(tests_dir)
+
         pytest.main(self.args, plugins=_PLUGINS)
