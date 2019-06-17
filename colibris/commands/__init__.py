@@ -1,8 +1,6 @@
 
 import sys
 
-import colibris
-
 from colibris import conf
 from colibris import utils
 from colibris.conf import settings
@@ -49,6 +47,4 @@ def main():
 
     command_class = ALL_COMMANDS[sys.argv[1]]
     command = command_class(args[2:])
-
-    colibris.setup()
     command.run()

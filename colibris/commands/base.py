@@ -2,6 +2,8 @@
 import argparse
 import sys
 
+import colibris
+
 
 class BaseCommand:
     PROG = None
@@ -17,7 +19,7 @@ class BaseCommand:
         self.initialize()
 
     def initialize(self):
-        pass
+        colibris.setup()
 
     def run(self):
         options = self.parse_arguments(self.parser, self.args)
