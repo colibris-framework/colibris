@@ -38,7 +38,7 @@ class TestCommand(BaseCommand):
         return None
 
     def execute(self, options):
-        tests_dir = os.path.join(settings.PROJECT_PACKAGE_DIR, '..', _TESTS_DIR)
+        tests_dir = os.path.join(settings.PROJECT_PACKAGE_DIR, _TESTS_DIR)
         os.chdir(tests_dir)
 
         pytest.main(self.args, plugins=_PLUGINS)
