@@ -38,7 +38,12 @@ class TestCommand(BaseCommand):
         return None
 
     def execute(self, options):
+        # Run tests from the project's tests subpackage
         tests_dir = os.path.join(settings.PROJECT_PACKAGE_DIR, _TESTS_DIR)
         os.chdir(tests_dir)
 
-        pytest.main(self.args, plugins=_PLUGINS)
+        plugins = list(_PLUGINS)
+        # Use project's fixtures as a plugin so that project-specific fixtures are loaded
+        plugins.append('{}.tests.fixtures'.format(settings.PROJECT_PACKAGE_NAME))
+
+        pytest.main(self.args, plugins=plugins)
