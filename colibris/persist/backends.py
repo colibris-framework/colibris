@@ -1,7 +1,9 @@
 
 import os
 
-from peewee import PostgresqlDatabase, MySQLDatabase, SqliteDatabase, mysql
+from peewee import PostgresqlDatabase, MySQLDatabase, SqliteDatabase, DatabaseError, mysql
+
+import colibris
 
 from colibris.conf.backends import BackendMixin
 
@@ -10,10 +12,16 @@ class DatabaseBackend(BackendMixin):
     _dropped = False
 
     def create(self):
+        if not colibris.is_test_mode():
+            raise DatabaseError('refusing to create database in non-testing mode')
+
         self._create(self.database)
         self._dropped = False
 
     def drop(self):
+        if not colibris.is_test_mode():
+            raise DatabaseError('refusing to drop database in non-testing mode')
+
         if not self.is_closed():
             self.close()
 
