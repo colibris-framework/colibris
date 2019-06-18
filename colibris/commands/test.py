@@ -38,9 +38,12 @@ class TestCommand(BaseCommand):
         return None
 
     def execute(self, options):
-        # Run tests from the project's tests subpackage
-        tests_dir = os.path.join(settings.PROJECT_PACKAGE_DIR, _TESTS_DIR)
-        os.chdir(tests_dir)
+        has_file_or_dir = any(True for arg in self.args if not arg.startswith('-'))
+
+        # Run tests from the project's tests subpackage unless a file or directory is given as argument
+        if not has_file_or_dir:
+            tests_dir = os.path.join(settings.PROJECT_PACKAGE_DIR, _TESTS_DIR)
+            os.chdir(tests_dir)
 
         plugins = list(_PLUGINS)
         # Use project's fixtures as a plugin so that project-specific fixtures are loaded
