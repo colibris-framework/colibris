@@ -22,3 +22,11 @@ def send_many(email_messages):
 
 def setup():
     EmailBackend.configure(settings.EMAIL)
+
+
+def is_enabled():
+    return EmailBackend.is_enabled()
+
+
+def is_created():
+    return EmailBackend.is_created()

@@ -18,10 +18,10 @@ class ModelBackend(AuthenticationBackend):
         query = (field == value)
 
         if self.active_field:
-            query = query & (self.get_active_field() == True)
+            query = query & (self.get_active_field() == True)  # noqa: E712
 
         if self.inactive_field:
-            query = query & (self.get_inactive_field() == False)
+            query = query & (self.get_inactive_field() == False)  # noqa: E712
 
         try:
             return self.model.select().where(query).get()

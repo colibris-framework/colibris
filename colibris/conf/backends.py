@@ -17,6 +17,7 @@ class BackendMixin:
     @classmethod
     def configure(cls, settings):
         cls._settings = settings
+        cls._instance = None
 
         try:
             backend_path = settings.pop('backend')
@@ -48,6 +49,10 @@ class BackendMixin:
     @classmethod
     def is_enabled(cls):
         return cls._class is not None
+
+    @classmethod
+    def is_created(cls):
+        return cls._instance is not None
 
     def on_create(self):
         pass

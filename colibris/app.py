@@ -24,7 +24,7 @@ _start_time = time.time()
 
 # web app & middleware
 
-def _init_web_app():
+def _make_web_app():
     for path in settings.MIDDLEWARE:
         middleware.append(utils.import_member(path))
 
@@ -128,11 +128,11 @@ def _init_swagger(web_app):
     web_app.on_startup.append(init_wrapper)
 
 
-def get_web_app():
+def get_web_app(force_create=False):
     global _web_app
 
-    if _web_app is None:
-        _web_app = _init_web_app()
+    if _web_app is None or force_create:
+        _web_app = _make_web_app()
 
         _init_project_routes(_web_app)
         _init_default_routes(_web_app)

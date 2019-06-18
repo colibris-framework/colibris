@@ -18,7 +18,7 @@ from __packagename__ import schemas
 # @docs(tags=['Users'],
 #       summary='Reveal details about the current user')
 # @response_schema(schemas.UserSchema())
-# def get_me(request):
+# async def get_me(request):
 #     user = authentication.get_account(request)
 #     result = schemas.UserSchema().dump(user)
 #
