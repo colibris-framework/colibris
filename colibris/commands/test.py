@@ -27,9 +27,12 @@ class TestCommand(BaseCommand):
         _pytest.config.argparsing.Parser.prog = self.make_prog()
 
         # Prepare database settings for testing
-        if 'name' in settings.DATABASE:
-            settings.DATABASE['name'] = 'test_' + settings.DATABASE['name']
-            settings.DATABASE['create'] = True
+        if 'name' in settings.DATABASE or 'name' in settings.TEST_DATABASE:
+            settings.DATABASE.update(settings.TEST_DATABASE)
+            if 'name' not in settings.TEST_DATABASE:
+                settings.DATABASE['name'] = 'test_' + settings.DATABASE['name']
+
+            settings.DATABASE['create'] = True  # We want dbs to be created when running tests
 
         # colibris.setup() will be called at the setup phase of each test
 

@@ -691,12 +691,17 @@ Sets the main project package name. This setting is determined automatically and
 
 Sets the project secret key that is used to create various tokens. Defaults to `None` and must be set explicitly.
 
+###### `TASKQUEUE`
+
+Configures the background tasks backend. Should be defined as a dictionary with at least one entry, `backend`,
+representing the python path to the backend class. The rest of the entries are passed as arguments to the constructor.
+
 ###### `TEMPLATES`
 
 Configures the templates backend. Should be defined as a dictionary with at least one entry, `backend`, representing the
 python path to the backend class. The rest of the entries are passed as arguments to the constructor.
 
-###### `TASKQUEUE`
+###### `TEST_DATABASE`
 
-Configures the background tasks backend. Should be defined as a dictionary with at least one entry, `backend`,
-representing the python path to the backend class. The rest of the entries are passed as arguments to the constructor.
+Similar to `DATABASE` but used when running tests. Missing fields are used from `DATABASE`. If `name` is not specified,
+`DATABASE['name']` with a `test_` prefix will be used. 
