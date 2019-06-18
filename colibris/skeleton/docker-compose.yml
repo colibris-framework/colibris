@@ -17,7 +17,7 @@ services:
 #      - "6379:6379"
 
   server:
-    image: __projectname__-server:latest
+    image: __projectname__:latest
     build:
       context: .
       target: server
@@ -38,7 +38,7 @@ services:
 #      - cache
 
 #  worker:
-#    image: __projectname__-worker:latest
+#    image: __projectname__:worker-latest
 #    build:
 #      context: .
 #      target: worker

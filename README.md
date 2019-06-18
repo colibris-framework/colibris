@@ -457,13 +457,13 @@ For example, if you're using PostgreSQL, you may want to add:
     psycopg2-binary = "*"
     ...
 
-#### Lock Down Versions
+###### Lock Down Versions
 
 Lock your dependencies with their versions in `Pipfile.lock`:
 
     pipenv lock
 
-#### Install Dependencies
+###### Install Dependencies
 
 Install all of your project's dependencies:
 
@@ -487,8 +487,7 @@ exactly what `manage.py` does.
 One thing that is worth noting when using `setuptools` to deploy a project is that the `manage.py` file that used to be
 in your project's root folder will now live in the main package of your project.
 
-
-## Using Docker
+#### Using Docker
 
 If you want to deploy your service using Docker, you'll first need to edit `Dockerfile` and change it according to your
 needs:
@@ -499,7 +498,7 @@ If you plan on using Docker Compose, you'll probably want to edit the `docker-co
 
     nano docker-compose.yml
 
-#### Building Docker Image
+###### Building Docker Image
 
 You can manually build the image for your server like this:
 
@@ -507,10 +506,10 @@ You can manually build the image for your server like this:
 
 If your project has multiple services (e.g. "server" and "worker"), you'll want to build and tag them separately:
 
-    docker build -t ${PROJECT_NAME}-server:${VERSION} --target server .
-    docker build -t ${PROJECT_NAME}-worker:${VERSION} --target worker .
+    docker build -t ${PROJECT_NAME}:server-${VERSION} --target server .
+    docker build -t ${PROJECT_NAME}:worker-${VERSION} --target worker .
 
-#### Manually Run Container
+###### Manually Run Container
 
 You can run your container locally:
 
@@ -518,10 +517,10 @@ You can run your container locally:
     
 or, if you have multiple services:
 
-    docker run -it ${PPROJECT_NAME}-server:${VERSION} -p 8888:8888
-    docker run -it ${PPROJECT_NAME}-worker:${VERSION} -p 8888:8888
+    docker run -it ${PPROJECT_NAME}:server-${VERSION} -p 8888:8888
+    docker run -it ${PPROJECT_NAME}:worker-${VERSION}
 
-#### Using `docker-compose`
+###### Using `docker-compose`
 
 You can use `docker-compose` to build your images, instead of building them manually:
 
@@ -535,7 +534,8 @@ When you're done, shut it down by hitting `Ctrl-C`; then you can remove the cont
 
     docker-compose down
 
-Settings
+
+## Settings
 
 #### The `settings` Module
 
