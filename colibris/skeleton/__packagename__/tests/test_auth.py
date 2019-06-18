@@ -1,5 +1,5 @@
 
-from . import constants as test_constants
+from . import fixtures
 
 #
 # async def test_unauthenticated(web_app_client):
@@ -11,7 +11,7 @@ from . import constants as test_constants
 #
 #
 # async def test_authenticated(web_app_client, test_user, write_right):
-#     token = test_constants.TEST_USER_JWT
+#     token = fixtures.TEST_USER_JWT
 #     resp = await web_app_client.get('/api/users/me', headers={'Authorization': 'Bearer {}'.format(token)})
 #     assert resp.status == 200
 #
