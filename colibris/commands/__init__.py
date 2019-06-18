@@ -15,6 +15,9 @@ from . import shell
 from . import test
 
 
+_command = None  # Currently running command
+
+
 def gather_all_commands():
     global ALL_COMMANDS
 
@@ -35,7 +38,13 @@ def show_commands_usage():
     print(usage)
 
 
+def get_command():
+    return _command
+
+
 def main():
+    global _command
+
     conf.setup()
 
     gather_all_commands()
@@ -46,5 +55,5 @@ def main():
         sys.exit(1)
 
     command_class = ALL_COMMANDS[sys.argv[1]]
-    command = command_class(args[2:])
-    command.run()
+    _command = command_class(args[2:])
+    _command.run()
