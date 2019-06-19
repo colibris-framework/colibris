@@ -29,7 +29,7 @@ DEBUG = True
 LISTEN = '0.0.0.0'
 PORT = 8888
 
-SECRET_KEY = 'replace-me-with-random-ascii-string'
+SECRET_KEY = 'replace-me-with-random-ascii-string-or-supply-via-environment'
 
 # DATABASE = {
 #     'backend': 'colibris.persist.PostgreSQLBackend',

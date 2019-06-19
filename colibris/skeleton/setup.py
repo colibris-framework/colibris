@@ -42,7 +42,7 @@ setup(
     ],
     url='',
     license='',
-    description='Project description.',
+    description='Project description',
     packages=find_packages(include=PROJECT_PACKAGE_NAME + '/*'),
     package_data={
         PROJECT_PACKAGE_NAME: (package_data_rec(PROJECT_PACKAGE_NAME, 'templates') +

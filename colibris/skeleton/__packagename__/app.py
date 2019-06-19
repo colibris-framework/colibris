@@ -3,7 +3,7 @@ from colibris import app
 from colibris import persist
 
 #
-# def init(webapp, loop):
+# def init(web_app, loop):
 #     pass  # add your coroutines to the loop here
 #
 #
