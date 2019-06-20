@@ -1,0 +1,7 @@
+# Build with:
+#    docker build -t colibris/ci-builder -f Dockerfile.ci-builder .
+
+FROM docker:latest
+
+RUN apk add --no-cache py-pip python-dev libffi-dev openssl-dev gcc libc-dev make git && \
+    pip install docker-compose
