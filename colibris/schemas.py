@@ -36,7 +36,7 @@ class ModelSchema(marshmallow_peewee.ModelSchema):
             return envelope.wrap_one(data)
 
     @post_load
-    def make_instance(self, data):
+    def make_instance(self, data, many):
         if not self.opts.load_instance:
             return data
 

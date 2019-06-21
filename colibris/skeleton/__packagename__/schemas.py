@@ -13,7 +13,7 @@ from __packagename__ import models
 #                                     validate.Length(max=128)])
 #
 #     @pre_load
-#     def process_input(self, data):
+#     def process_input(self, data, many):
 #         data['email'] = data['email'].lower().strip()
 #
 #         return data
