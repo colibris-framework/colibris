@@ -24,3 +24,7 @@ except ImportError:
 
     compat.with_metaclass = with_metaclass
     compat.PY2 = False
+
+# Filter apispec multiple schemas resolved to same name warning.
+import warnings
+warnings.filterwarnings('ignore', category=UserWarning, message=r'Multiple schemas resolved to the name.*')
