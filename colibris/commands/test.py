@@ -52,4 +52,4 @@ class TestCommand(BaseCommand):
         # Use project's fixtures as a plugin so that project-specific fixtures are loaded
         plugins.append('{}.tests.fixtures'.format(settings.PROJECT_PACKAGE_NAME))
 
-        pytest.main(self.args, plugins=plugins)
+        return pytest.main(self.args, plugins=plugins)

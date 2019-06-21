@@ -56,4 +56,6 @@ def main():
 
     command_class = ALL_COMMANDS[sys.argv[1]]
     _command = command_class(args[2:])
-    _command.run()
+    exit_code = _command.run() or 0
+
+    sys.exit(exit_code)

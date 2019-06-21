@@ -23,7 +23,7 @@ class BaseCommand:
 
     def run(self):
         options = self.parse_arguments(self.parser, self.args)
-        self.execute(options)
+        return self.execute(options)
 
     def make_argument_parser(self):
         return argparse.ArgumentParser(prog=self.PROG or self.make_prog(),
