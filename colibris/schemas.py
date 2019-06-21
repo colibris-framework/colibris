@@ -28,7 +28,7 @@ class ModelSchema(marshmallow_peewee.ModelSchema):
     OPTIONS_CLASS = ModelSchemaOpts
 
     @post_dump(pass_many=True)
-    def wrap(self, data, many):
+    def wrap(self, data, many, **kwargs):
         if many:
             return envelope.wrap_many(data)
 
@@ -36,7 +36,7 @@ class ModelSchema(marshmallow_peewee.ModelSchema):
             return envelope.wrap_one(data)
 
     @post_load
-    def make_instance(self, data, many):
+    def make_instance(self, data, **kwargs):
         if not self.opts.load_instance:
             return data
 
