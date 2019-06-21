@@ -30,7 +30,7 @@ services:
 #    command: >
 #      bash -c "wait-for-it db:5432 -t 10 -s &&
 #               wait-for-it cache:6379 -t 10 -s &&
-#               __packagename__ runserver"
+#               __projectname__ runserver"
     ports:
       - "8888:8888"
 #    depends_on:
@@ -51,7 +51,7 @@ services:
 #    command: >
 #      bash -c "wait-for-it db:5432 -t 10 -s &&
 #               wait-for-it cache:6379 -t 10 -s &&
-#               __packagename__ runworker"
+#               __projectname__ runworker"
 #    ports:
 #      - "8888:8888"
 #    depends_on:
