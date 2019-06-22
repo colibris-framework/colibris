@@ -38,7 +38,7 @@ setup(
         'python-dotenv',
         'webargs'
     ],
-    url='',
+    url='https://github.com/colibris-framework/colibris',
     license='BSD',
     description='A collection of libraries glued together to make writing RESTful microservices easier.',
     long_description=open('README.md').read(),
