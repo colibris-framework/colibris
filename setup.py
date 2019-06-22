@@ -41,6 +41,8 @@ setup(
     url='',
     license='BSD',
     description='A collection of libraries glued together to make writing RESTful microservices easier.',
+    long_description=open('README.md').read(),
+    author='The Colibris Team',
     packages=find_packages(include='colibris/*'),
     package_data={
         'colibris': package_data_rec('colibris', 'skeleton')
