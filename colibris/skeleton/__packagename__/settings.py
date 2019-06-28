@@ -8,8 +8,8 @@ from colibris.conf.schemas import fields, SettingsSchema
 #     PORT = fields.Integer()
 #     SECRET_KEY = fields.String()
 #
-#    class Meta:
-#        sensible_fields = ['SECRET_KEY']
+#     class Meta:
+#         sensible_fields = ['SECRET_KEY']
 #
 #
 # class DatabaseSettingsSchema(SettingsSchema):
@@ -54,6 +54,6 @@ SECRET_KEY = 'replace-me-with-random-ascii-string-or-supply-via-environment'
 # }
 
 #
-# GeneralSettingsSchema().load_from_env(globals())
-# DatabaseSettingsSchema().load_from_env(globals())
+# GeneralSettingsSchema().load_from_env(target_settings=globals())
+# DatabaseSettingsSchema().load_from_env(target_settings=globals())
 #
