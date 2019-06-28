@@ -44,6 +44,9 @@ class ColibrisEnv:
     def chdir_projects(self):
         os.chdir(self.projects_dir)
 
+    def ensure_req(self, req):
+        self.run_cmd('pip install {}'.format(req))
+
     def run_cmd(self, cmd):
         subprocess.check_call('. {}/bin/activate && {}'.format(self.venv_dir, cmd), shell=True)
 
@@ -63,9 +66,16 @@ def colibris_env():
 def test_project(colibris_env):
     initial_dir = os.getcwd()
     colibris_env.chdir_projects()
-    colibris_env.run_cmd('colibris-start-project test-project')
+
+    colibris_env.ensure_req('pyjwt')
+    colibris_env.ensure_req('pytest')
+
+    colibris_env.run_cmd('colibris-start-project --template {}/tests/functional/dummy-skeleton test-project '
+                         .format(colibris_env.colibris_dir))
     os.chdir('test-project')
+
     yield colibris_env
+
     colibris_env.chdir_projects()
     colibris_env.run_cmd('rm -rf {} test-project')
     os.chdir(initial_dir)
