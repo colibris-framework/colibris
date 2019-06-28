@@ -50,6 +50,9 @@ class ColibrisEnv:
     def run_cmd(self, cmd):
         subprocess.check_call('. {}/bin/activate && {}'.format(self.venv_dir, cmd), shell=True)
 
+    def run_popen(self, cmd, **kwargs):
+        return subprocess.Popen('. {}/bin/activate && {}'.format(self.venv_dir, cmd), shell=True, **kwargs)
+
 
 @pytest.fixture
 def colibris_env():
