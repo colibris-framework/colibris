@@ -1,40 +1,68 @@
+
 import argparse
+import atexit
 import os
 import re
 import shutil
+import subprocess
+import tempfile
 
-TMP_TEMPLATE_PATH = '/tmp/colibris-template-repo'
-MAIN_PACKAGE_NAME = '__packagename__'
+
+PACKAGE_NAME_PLACEHOLDER = '__packagename__'
+PROJECT_NAME_PLACEHOLDER = '__projectname__'
+IGNORE_PATTERNS = ['.git']
+
+tmp_dir = None
+
+
+def cleanup():
+    if tmp_dir:
+        tmp_dir.cleanup()
+
+
+def get_template_dir(template):
+    global tmp_dir
+
+    if template is None:  # Use default template skeleton
+        return os.path.join(os.path.dirname(__file__), 'skeleton')
+
+    elif template.startswith('git@') or template.startswith('http:') or template.startswith('https:'):
+        tmp_dir = tempfile.TemporaryDirectory()
+        cmd = ['git', 'clone', template, tmp_dir.name]
+
+        subprocess.check_call(cmd)
+
+        return tmp_dir.name
+
+    else:  # Assuming local directory
+        return template
 
 
 def start_project():
+    atexit.register(cleanup)
+
     parser = argparse.ArgumentParser()
-    parser.add_argument('name', help='The project name', type=str)
-    parser.add_argument('--template', help='The template repo', type=str, required=False)
+    parser.add_argument('name', help='The project name (e.g. my-project)', type=str)
+    parser.add_argument('--template', help='An optional template (can be a local dir or a git repo)',
+                        type=str, required=False)
+
     args = parser.parse_args()
 
     project_name = args.name
     package_name = re.sub('[^a-z0-9_]', '', project_name).lower()
 
-    if args.template is None:
-        skeleton_dir = os.path.join(os.path.dirname(__file__), 'skeleton')
-    else:
-        if os.path.exists(TMP_TEMPLATE_PATH):
-            shutil.rmtree(TMP_TEMPLATE_PATH)
+    template_dir = get_template_dir(args.template)
 
-        os.system("git clone {} {}".format(args.template, TMP_TEMPLATE_PATH))
-        skeleton_dir = TMP_TEMPLATE_PATH
+    shutil.copytree(template_dir, project_name, ignore=shutil.ignore_patterns(*IGNORE_PATTERNS))
 
-    shutil.copytree(skeleton_dir, project_name, ignore=shutil.ignore_patterns('.git'))
-
-    old_package_name = '{}/{}'.format(project_name, MAIN_PACKAGE_NAME)
+    old_package_name = '{}/{}'.format(project_name, PACKAGE_NAME_PLACEHOLDER)
     new_package_name = '{}/{}'.format(project_name, package_name)
 
     shutil.move(old_package_name, new_package_name)
 
     rename_command = 'find {} -type f | xargs sed -i "s/{}/{}/g"'
 
-    os.system(rename_command.format(project_name, '__packagename__', package_name))
-    os.system(rename_command.format(project_name, '__projectname__', project_name))
+    os.system(rename_command.format(project_name, PACKAGE_NAME_PLACEHOLDER, package_name))
+    os.system(rename_command.format(project_name, PROJECT_NAME_PLACEHOLDER, project_name))
 
     print('project {} is ready'.format(project_name))
