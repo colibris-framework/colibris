@@ -5,7 +5,7 @@ from aiohttp_apispec import docs, request_schema, response_schema
 
 from colibris import api
 from colibris import authentication
-from colibris.schemas import many_envelope
+from colibris.api.envelope import many_envelope
 from colibris.shortcuts import get_object_or_404
 
 from __packagename__ import models
