@@ -44,6 +44,7 @@ setup(
     license='BSD',
     description='A lightweight framework for RESTful microservices',
     long_description=open('README.md').read(),
+    long_description_content_type='text/markdown',
     author='The Colibris Team',
     packages=find_packages(include='colibris/*'),
     package_data={
