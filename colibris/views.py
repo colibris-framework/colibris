@@ -1,3 +1,6 @@
+import abc
+import traceback
+
 from aiohttp import web
 from aiohttp_apispec import docs
 from aiohttp_apispec import response_schema, request_schema
@@ -5,7 +8,6 @@ from marshmallow import Schema, ValidationError
 from peewee import IntegrityError
 
 from colibris import app, api
-from colibris.api.envelope import many_envelope
 from colibris.conf import settings
 
 
@@ -21,26 +23,41 @@ async def health(request):
     return web.json_response(h)
 
 
-class ListMixin:
+class _GenericMixinMeta(abc.ABCMeta):
+    def __init__(cls, name, bases, attrs):
+        if hasattr(cls, 'get'):
+            cls.get = response_schema(cls.schema_class)(cls.get)
+
+        if hasattr(cls, 'post'):
+            cls.post = request_schema(cls.schema_class)(response_schema(cls.schema_class)(cls.post))
+
+        if hasattr(cls, 'put'):
+            cls.put = request_schema(cls.schema_class)(response_schema(cls.schema_class)(cls.put))
+
+        if hasattr(cls, 'patch'):
+            cls.patch = request_schema(cls.schema_class)(response_schema(cls.schema_class)(cls.patch))
+
+        super().__init__(name, bases, attrs)
+
+
+class ListMixin(metaclass=_GenericMixinMeta):
     request = None
     schema_class = Schema
 
-    @response_schema(many_envelope(schema_class))
     async def get(self):
         items = self.get_query()
-        result = self.schema_class(many=True, context={'request': self.request}).dump(list(items))
+        schema = self.get_schema(many=True)
+        result = schema.dump(list(items))
 
         return web.json_response(result)
 
 
-class CreateMixin:
+class CreateMixin(metaclass=_GenericMixinMeta):
     request = None
     schema_class = Schema
 
-    @request_schema(schema_class)
-    @response_schema(schema_class)
     async def post(self):
-        schema = self.schema_class(context={'request': self.request})
+        schema = self.get_schema()
         json_payload = await self.request.json()
 
         try:
@@ -51,20 +68,20 @@ class CreateMixin:
         try:
             item = self.model.create(**data)
         except IntegrityError as err:
-            raise api.InvalidRequest(code='invalid_request', message=str(err))
+            traceback.print_exc()
+            raise api.ServerError(code='server_error', message=str(err))
 
         result = schema.dump(item)
 
         return web.json_response(result, status=201)
 
 
-class RetrieveMixin:
+class RetrieveMixin(metaclass=_GenericMixinMeta):
     request = None
     schema_class = Schema
 
-    @response_schema(many_envelope(schema_class))
     async def get(self):
-        schema = self.schema_class(context={'request': self.request})
+        schema = self.get_schema()
 
         instance = self.get_object()
         result = schema.dump(instance)
@@ -72,14 +89,12 @@ class RetrieveMixin:
         return web.json_response(result)
 
 
-class UpdateMixin:
+class UpdateMixin(metaclass=_GenericMixinMeta):
     request = None
     schema_class = Schema
 
-    @request_schema(schema_class)
-    @response_schema(schema_class)
     async def patch(self):
-        schema = self.schema_class(partial=True, context={'request': self.request})
+        schema = self.get_schema(partial=True)
         json_payload = await self.request.json()
 
         instance = self.get_object()
@@ -94,16 +109,15 @@ class UpdateMixin:
         try:
             instance.save(only=data.keys())
         except IntegrityError as err:
-            raise api.InvalidRequest(code='invalid_request', message=str(err))
+            traceback.print_exc()
+            raise api.ServerError(code='server_error', message=str(err))
 
         result = schema.dump(instance)
 
         return web.json_response(result)
 
-    @request_schema(schema_class)
-    @response_schema(schema_class)
     async def put(self):
-        schema = self.schema_class(context={'request': self.request})
+        schema = self.get_schema()
         json_payload = await self.request.json()
 
         instance = self.get_object()
@@ -118,7 +132,8 @@ class UpdateMixin:
         try:
             instance.save()
         except IntegrityError as err:
-            raise api.InvalidRequest(code='invalid_request', message=str(err))
+            traceback.print_exc()
+            raise api.ServerError(code='server_error', message=str(err))
 
         result = schema.dump(instance)
 
@@ -133,12 +148,22 @@ class DestroyMixin:
         return web.json_response(status=204)
 
 
-class BaseView(web.View):
+class BaseModelView(web.View):
     model = None
+    schema_class = None
     lookup_field = 'id'
 
     def get_query(self):
         return self.model.select().order_by(self.model.id.desc())
+
+    def get_schema(self, *args, **kwargs):
+        kwargs.update({
+            'context': {'request': self.request}
+        })
+
+        schema = self.schema_class(*args, **kwargs)
+
+        return schema
 
     def get_object(self):
         object_identifier = self.request.match_info[self.lookup_field]
@@ -151,9 +176,9 @@ class BaseView(web.View):
         return instance
 
 
-class ListCreateModelView(BaseView, ListMixin, CreateMixin):
+class ListCreateModelView(BaseModelView, ListMixin, CreateMixin):
     pass
 
 
-class RetrieveUpdateDeleteModelView(BaseView, RetrieveMixin, UpdateMixin, DestroyMixin):
+class RetrieveUpdateDeleteModelView(BaseModelView, RetrieveMixin, UpdateMixin, DestroyMixin):
     pass

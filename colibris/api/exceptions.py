@@ -19,6 +19,11 @@ class InvalidRequest(BaseJSONException):
         super().__init__(code, message, status=400)
 
 
+class ServerError(BaseJSONException):
+    def __init__(self, code, message):
+        super().__init__(code, message, status=500)
+
+
 class UnauthenticatedException(BaseJSONException):
     def __init__(self):
         super().__init__(code='unauthenticated', message='The request cannot be associated to an account.', status=401)
