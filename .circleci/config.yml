@@ -1,0 +1,25 @@
+version: 2
+jobs:
+  release-pypi:
+    docker:
+      - image: circleci/python:3.7
+    steps:
+      - checkout
+      - run: |
+          virtualenv project
+          source project/bin/activate
+          pip install -U twine virtualenv
+          python setup.py sdist
+          twine upload dist/*
+
+workflows:
+  version: 2
+  release:
+    jobs:
+      - release-pypi:
+          context: colibris-global
+          filters:
+            tags:
+              only: /^version-.*$/
+            branches:
+              ignore: /.*/
