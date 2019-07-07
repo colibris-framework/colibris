@@ -5,6 +5,8 @@ from json import JSONDecodeError
 from aiohttp import web
 from aiohttp_apispec import docs
 from aiohttp_apispec import response_schema, request_schema
+
+from colibris.persist import Model
 from colibris.schemas import ModelSchema
 from marshmallow import ValidationError
 from peewee import IntegrityError
@@ -28,7 +30,9 @@ async def health(request):
 class _GenericMixinMeta(abc.ABCMeta):
     def __init__(cls, name, bases, attrs):
         assert cls.schema_class
+        assert cls.model
         assert issubclass(cls.schema_class, ModelSchema)
+        assert issubclass(cls.model, Model)
 
         if hasattr(cls, 'get'):
             cls.get = response_schema(cls.schema_class)(cls.get)
@@ -46,7 +50,7 @@ class _GenericMixinMeta(abc.ABCMeta):
 
 
 class ListMixin(metaclass=_GenericMixinMeta):
-    request = None
+    model = Model
     schema_class = ModelSchema
 
     async def get(self):
@@ -58,17 +62,12 @@ class ListMixin(metaclass=_GenericMixinMeta):
 
 
 class CreateMixin(metaclass=_GenericMixinMeta):
-    request = None
+    model = Model
     schema_class = ModelSchema
 
     async def post(self):
         schema = self.get_schema()
-        json_payload = await self.get_request_payload()
-
-        try:
-            data = schema.load(json_payload)
-        except ValidationError as err:
-            raise api.InvalidRequest(code='invalid_request', message=err.messages)
+        data = await self.get_validated_data(schema)
 
         try:
             item = self.model.create(**data)
@@ -82,33 +81,27 @@ class CreateMixin(metaclass=_GenericMixinMeta):
 
 
 class RetrieveMixin(metaclass=_GenericMixinMeta):
-    request = None
+    model = Model
     schema_class = ModelSchema
 
     async def get(self):
         schema = self.get_schema()
-
         instance = self.get_object()
+
         result = schema.dump(instance)
 
         return web.json_response(result)
 
 
 class UpdateMixin(metaclass=_GenericMixinMeta):
-    request = None
+    model = Model
     schema_class = ModelSchema
 
     async def patch(self):
         schema = self.get_schema(partial=True)
-        json_payload = await self.get_request_payload()
+        data = await self.get_validated_data(schema)
 
         instance = self.get_object()
-
-        try:
-            data: dict = schema.load(json_payload)
-        except ValidationError as err:
-            raise api.InvalidRequest(code='invalid_request', message=err.messages)
-
         instance.update_fields(data)
 
         try:
@@ -123,15 +116,9 @@ class UpdateMixin(metaclass=_GenericMixinMeta):
 
     async def put(self):
         schema = self.get_schema()
-        json_payload = await self.get_request_payload()
+        data = await self.get_validated_data(schema)
 
         instance = self.get_object()
-
-        try:
-            data: dict = schema.load(json_payload)
-        except ValidationError as err:
-            raise api.InvalidRequest(code='invalid_request', message=err.messages)
-
         instance.update_fields(data)
 
         try:
@@ -154,12 +141,23 @@ class DestroyMixin:
 
 
 class BaseModelView(web.View):
-    model = None
+    model = Model
     schema_class = ModelSchema
+    url_identifier = 'id'
     lookup_field = 'id'
 
     def get_query(self):
         return self.model.select().order_by(self.model.id.desc())
+
+    def get_object(self):
+        identifier_value = self.request.match_info[self.url_identifier]
+
+        try:
+            instance = self.get_query().where(getattr(self.model, self.lookup_field) == identifier_value).get()
+        except self.model.DoesNotExist:
+            raise api.ModelNotFoundException(self.model)
+
+        return instance
 
     def get_schema(self, *args, **kwargs):
         kwargs.update({
@@ -170,15 +168,15 @@ class BaseModelView(web.View):
 
         return schema
 
-    def get_object(self):
-        object_identifier = self.request.match_info[self.lookup_field]
+    async def get_validated_data(self, schema):
+        json_payload = await self.get_request_payload()
 
         try:
-            instance = self.get_query().where(getattr(self.model, self.lookup_field) == object_identifier).get()
-        except self.model.DoesNotExist:
-            raise api.ModelNotFoundException(self.model)
+            data: dict = schema.load(json_payload)
+        except ValidationError as err:
+            raise api.InvalidRequest(code='invalid_request', message=err.messages)
 
-        return instance
+        return data
 
     async def get_request_payload(self):
         try:
