@@ -1,10 +1,12 @@
 import abc
 import traceback
+from json import JSONDecodeError
 
 from aiohttp import web
 from aiohttp_apispec import docs
 from aiohttp_apispec import response_schema, request_schema
-from marshmallow import Schema, ValidationError
+from colibris.schemas import ModelSchema
+from marshmallow import ValidationError
 from peewee import IntegrityError
 
 from colibris import app, api
@@ -25,6 +27,9 @@ async def health(request):
 
 class _GenericMixinMeta(abc.ABCMeta):
     def __init__(cls, name, bases, attrs):
+        assert cls.schema_class
+        assert issubclass(cls.schema_class, ModelSchema)
+
         if hasattr(cls, 'get'):
             cls.get = response_schema(cls.schema_class)(cls.get)
 
@@ -42,7 +47,7 @@ class _GenericMixinMeta(abc.ABCMeta):
 
 class ListMixin(metaclass=_GenericMixinMeta):
     request = None
-    schema_class = Schema
+    schema_class = ModelSchema
 
     async def get(self):
         items = self.get_query()
@@ -54,11 +59,11 @@ class ListMixin(metaclass=_GenericMixinMeta):
 
 class CreateMixin(metaclass=_GenericMixinMeta):
     request = None
-    schema_class = Schema
+    schema_class = ModelSchema
 
     async def post(self):
         schema = self.get_schema()
-        json_payload = await self.request.json()
+        json_payload = await self.get_request_payload()
 
         try:
             data = schema.load(json_payload)
@@ -78,7 +83,7 @@ class CreateMixin(metaclass=_GenericMixinMeta):
 
 class RetrieveMixin(metaclass=_GenericMixinMeta):
     request = None
-    schema_class = Schema
+    schema_class = ModelSchema
 
     async def get(self):
         schema = self.get_schema()
@@ -91,11 +96,11 @@ class RetrieveMixin(metaclass=_GenericMixinMeta):
 
 class UpdateMixin(metaclass=_GenericMixinMeta):
     request = None
-    schema_class = Schema
+    schema_class = ModelSchema
 
     async def patch(self):
         schema = self.get_schema(partial=True)
-        json_payload = await self.request.json()
+        json_payload = await self.get_request_payload()
 
         instance = self.get_object()
 
@@ -118,7 +123,7 @@ class UpdateMixin(metaclass=_GenericMixinMeta):
 
     async def put(self):
         schema = self.get_schema()
-        json_payload = await self.request.json()
+        json_payload = await self.get_request_payload()
 
         instance = self.get_object()
 
@@ -150,7 +155,7 @@ class DestroyMixin:
 
 class BaseModelView(web.View):
     model = None
-    schema_class = None
+    schema_class = ModelSchema
     lookup_field = 'id'
 
     def get_query(self):
@@ -174,6 +179,14 @@ class BaseModelView(web.View):
             raise api.ModelNotFoundException(self.model)
 
         return instance
+
+    async def get_request_payload(self):
+        try:
+            json_payload = await self.request.json()
+        except JSONDecodeError:
+            json_payload = {}
+
+        return json_payload
 
 
 class ListCreateModelView(BaseModelView, ListMixin, CreateMixin):

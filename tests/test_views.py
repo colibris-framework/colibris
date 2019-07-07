@@ -1,7 +1,8 @@
 import pytest
-from aiohttp import web
+from aiohttp import web, hdrs
 from peewee import SqliteDatabase
 
+from colibris.middleware.errors import handle_errors_json
 from colibris.schemas import ModelSchema
 
 from colibris import persist
@@ -12,6 +13,7 @@ db = SqliteDatabase(':memory:')
 
 class Item(persist.Model):
     name = persist.CharField()
+    info = persist.CharField()
 
 
 class ItemSchema(ModelSchema):
@@ -34,7 +36,11 @@ MODELS = [Item]
 
 @pytest.fixture
 def http_client(loop, aiohttp_client):
-    app = web.Application()
+    middlewares = [
+        handle_errors_json
+    ]
+
+    app = web.Application(middlewares=middlewares)
     app.router.add_route('*', '/items', ItemsView)
     app.router.add_route('*', '/items/{id}', ItemView)
     return loop.run_until_complete(aiohttp_client(app))
@@ -48,45 +54,71 @@ def setup_module(module):
 
 
 async def test_get_items(http_client):
-    resp = await http_client.request("GET", "/items")
-    assert resp.status == 200
+    response = await http_client.request(hdrs.METH_GET, "/items")
+    assert response.status == 200
 
 
 async def test_create_item(http_client):
     item_name = 'Some Good Name'
+    item_info = 'Cras Lorem Purus Etiam Venenatis'
 
-    resp = await http_client.request("POST", "/items", json={'name': 'Some Good Name'})
+    response = await http_client.request(hdrs.METH_POST, "/items", json={'name': item_name, 'info': item_info})
 
-    assert resp.status == 201
+    assert response.status == 201
 
     item = Item.select().where(Item.name == item_name).get()
 
     assert item.name == item_name
 
 
+async def test_create_item_validation(http_client):
+    response = await http_client.request(hdrs.METH_POST, "/items")
+
+    assert response.status == 400
+    data = await response.json()
+    assert 'name' in data['message']
+    assert 'info' in data['message']
+
+
 async def test_update_item(http_client):
     item_initial_name = 'Some Initial Name'
     item_updated_name = 'Some Updated Name'
+    item_info = 'Ridiculus Fermentum Quam Porta'
 
-    item = Item.create(name=item_initial_name)
+    item = Item.create(name=item_initial_name, info=item_info)
 
-    resp = await http_client.request("PATCH", f"/items/{item.id}", json={'name': item_updated_name})
+    response = await http_client.request(hdrs.METH_PATCH, f"/items/{item.id}", json={'name': item_updated_name})
 
-    assert resp.status == 200
+    assert response.status == 200
 
     updated_item = Item.select().where(Item.name == item_updated_name).get()
 
     assert item.id == updated_item.id
 
 
+async def test_update_item_validation(http_client):
+    item_initial_name = 'Some Initial Name'
+    item_info = 'Ridiculus Fermentum Quam Porta'
+
+    item = Item.create(name=item_initial_name, info=item_info)
+
+    response = await http_client.request(hdrs.METH_PATCH, f"/items/{item.id}", json={'name': None})
+
+    assert response.status == 400
+
+    data = await response.json()
+    assert 'name' in data['message']
+
+
 async def test_delete_item(http_client):
     item_name = 'Item to delete'
+    item_info = 'Ridiculus Fermentum Quam Porta'
 
-    item = Item.create(name=item_name)
+    item = Item.create(name=item_name, info=item_info)
 
-    resp = await http_client.request("DELETE", f"/items/{item.id}")
+    response = await http_client.request(hdrs.METH_DELETE, f"/items/{item.id}")
 
-    assert resp.status == 204
+    assert response.status == 204
 
     items = Item.select().where(Item.name == item_name)
     assert items.count() == 0

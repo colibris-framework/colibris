@@ -1,10 +1,7 @@
-
 import logging
 
 from aiohttp import web
-from aiohttp_apispec import validation_middleware
 from webargs import aiohttpparser
-
 
 logger = logging.getLogger(__name__)
 
@@ -14,11 +11,6 @@ class HTTPSchemaValidationError(web.HTTPUnprocessableEntity):
         super().__init__(**kwargs)
 
         self.details = schema_error.messages
-
-
-@web.middleware
-async def handle_schema_validation(request, handler):
-    return await validation_middleware(request, handler)
 
 
 @aiohttpparser.parser.error_handler
