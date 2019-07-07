@@ -1,8 +1,6 @@
 
 import logging
 import os
-import pytest
-import _pytest.config.argparsing
 
 from colibris.conf import settings
 
@@ -23,6 +21,8 @@ class TestCommand(BaseCommand):
     ADD_HELP = False
 
     def initialize(self):
+        import _pytest.config.argparsing
+
         # Adjust main program invocation (should be "manage.py test")
         _pytest.config.argparsing.Parser.prog = self.make_prog()
 
@@ -41,6 +41,8 @@ class TestCommand(BaseCommand):
         return None
 
     def execute(self, options):
+        import pytest
+
         has_file_or_dir = any(True for arg in self.args if not arg.startswith('-'))
 
         # Run tests from the project's tests subpackage unless a file or directory is given as argument

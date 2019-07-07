@@ -27,20 +27,25 @@ setup(
     name='colibris',
     version=find_version(),
     install_requires=[
-        'aiohttp',
-        'aiohttp-apispec',
-        'aiohttp-swagger',
+        'aiohttp>=3.5.0,<=3.5.4',
+        'aiohttp-apispec>=1.0,<=1.3',
+        # aiohttp-swagger is currently in a bad, unmaintained state, so we need to use a specific
+        # commit of eLvErDe's aiohttp-swagger github repo.
+        'aiohttp-swagger @ git+https://github.com/eLvErDe/aiohttp-swagger.git@39687734',
         'async-timeout',
-        'marshmallow>=3.0.0b19',
-        'marshmallow_peewee',
-        'peewee',
-        'peewee-migrate',
+        'marshmallow>=3.0.0b19,<=3.0.0rc7',
+        'marshmallow_peewee==2.3.0',
+        'peewee>=3.9',
+        'peewee-migrate==1.1.6',
         'python-dotenv',
-        'webargs'
+        'webargs>=5.2.0,<=5.3.2'
     ],
-    url='',
+    url='https://github.com/colibris-framework/colibris',
     license='BSD',
-    description='A collection of libraries glued together to make writing RESTful microservices easier.',
+    description='A lightweight framework for RESTful microservices',
+    long_description=open('README.md').read(),
+    long_description_content_type='text/markdown',
+    author='The Colibris Team',
     packages=find_packages(include='colibris/*'),
     package_data={
         'colibris': package_data_rec('colibris', 'skeleton')
