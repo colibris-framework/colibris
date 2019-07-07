@@ -59,7 +59,7 @@ async def test_get_items(http_client):
 
 
 async def test_create_item(http_client):
-    item_name = 'Some Good Name'
+    item_name = 'Commodo Nibh'
     item_info = 'Cras Lorem Purus Etiam Venenatis'
 
     response = await http_client.request(hdrs.METH_POST, "/items", json={'name': item_name, 'info': item_info})
@@ -81,8 +81,8 @@ async def test_create_item_validation(http_client):
 
 
 async def test_update_item(http_client):
-    item_initial_name = 'Some Initial Name'
-    item_updated_name = 'Some Updated Name'
+    item_initial_name = 'Ligula Egestas Fermentum'
+    item_updated_name = 'Cursus Inceptos'
     item_info = 'Ridiculus Fermentum Quam Porta'
 
     item = Item.create(name=item_initial_name, info=item_info)
@@ -97,7 +97,7 @@ async def test_update_item(http_client):
 
 
 async def test_update_item_validation(http_client):
-    item_initial_name = 'Some Initial Name'
+    item_initial_name = 'Nibh Lorem Amet Aenean'
     item_info = 'Ridiculus Fermentum Quam Porta'
 
     item = Item.create(name=item_initial_name, info=item_info)
@@ -110,8 +110,14 @@ async def test_update_item_validation(http_client):
     assert 'name' in data['message']
 
 
+async def test_update_item_not_found(http_client):
+    response = await http_client.request(hdrs.METH_PATCH, f"/items/11011", json={'name': 'Egestas Fringilla'})
+
+    assert response.status == 404
+
+
 async def test_delete_item(http_client):
-    item_name = 'Item to delete'
+    item_name = 'Sit Lorem'
     item_info = 'Ridiculus Fermentum Quam Porta'
 
     item = Item.create(name=item_name, info=item_info)
@@ -122,3 +128,9 @@ async def test_delete_item(http_client):
 
     items = Item.select().where(Item.name == item_name)
     assert items.count() == 0
+
+
+async def test_delete_item_not_found(http_client):
+    response = await http_client.request(hdrs.METH_DELETE, f"/items/111111")
+
+    assert response.status == 404
