@@ -172,7 +172,7 @@ class BaseModelView(web.View):
         json_payload = await self.get_request_payload()
 
         try:
-            data: dict = schema.load(json_payload)
+            data = schema.load(json_payload)
         except ValidationError as err:
             raise api.InvalidRequest(code='invalid_request', message=err.messages)
 
@@ -182,7 +182,7 @@ class BaseModelView(web.View):
         try:
             json_payload = await self.request.json()
         except JSONDecodeError:
-            json_payload = {}
+            raise api.JSONParseError()
 
         return json_payload
 

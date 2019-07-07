@@ -1,4 +1,3 @@
-
 class APIException(Exception):
     pass
 
@@ -17,6 +16,11 @@ class BaseJSONException(APIException):
 class InvalidRequest(BaseJSONException):
     def __init__(self, code, message):
         super().__init__(code, message, status=400)
+
+
+class JSONParseError(BaseJSONException):
+    def __init__(self):
+        super().__init__(code='parse_error', message='JSON parse error', status=400)
 
 
 class ServerError(BaseJSONException):
