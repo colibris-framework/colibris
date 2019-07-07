@@ -29,10 +29,10 @@ async def health(request):
 
 class _GenericMixinMeta(abc.ABCMeta):
     def __init__(cls, name, bases, attrs):
-        assert cls.schema_class
-        assert cls.model
-        assert issubclass(cls.schema_class, ModelSchema)
-        assert issubclass(cls.model, Model)
+        assert cls.schema_class, f'The "schema_class" field is required for {cls}.'
+        assert cls.model, f'The "model" field is required {cls}.'
+        assert issubclass(cls.model, Model), f'The "model" should be a subclass of {Model}.'
+        assert issubclass(cls.schema_class, ModelSchema), f'The "schema_class" should be a subclass of {ModelSchema}.'
 
         if hasattr(cls, 'get'):
             cls.get = response_schema(cls.schema_class)(cls.get)
