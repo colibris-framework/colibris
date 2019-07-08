@@ -20,8 +20,7 @@ class ItemsView(APIView):
         return web.json_response({})
 
     async def post(self):
-        schema = self.get_schema()
-        data = await self.get_validated_data(schema)
+        data = await self.get_validated_data()
 
         return web.json_response(data)
 

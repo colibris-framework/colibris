@@ -155,7 +155,10 @@ class APIView(web.View):
 
         return schema
 
-    async def get_validated_data(self, schema):
+    async def get_validated_data(self, schema=None):
+        if schema is None:
+            schema = self.get_schema()
+
         json_payload = await self.get_request_payload()
 
         try:
