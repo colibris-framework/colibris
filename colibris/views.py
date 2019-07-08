@@ -8,7 +8,7 @@ from aiohttp_apispec import response_schema, request_schema
 
 from colibris.persist import Model
 from colibris.schemas import ModelSchema
-from marshmallow import ValidationError
+from marshmallow import ValidationError, Schema
 from peewee import IntegrityError
 
 from colibris import app, api
@@ -143,24 +143,8 @@ class DestroyMixin:
         return web.json_response(status=204)
 
 
-class BaseModelView(web.View):
-    model = Model
-    schema_class = ModelSchema
-    url_identifier = 'id'
-    lookup_field = 'id'
-
-    def get_query(self):
-        return self.model.select().order_by(self.model.id.desc())
-
-    def get_object(self):
-        identifier_value = self.request.match_info[self.url_identifier]
-
-        try:
-            instance = self.get_query().where(getattr(self.model, self.lookup_field) == identifier_value).get()
-        except self.model.DoesNotExist:
-            raise api.ModelNotFoundException(self.model)
-
-        return instance
+class APIView(web.View):
+    schema_class = Schema
 
     def get_schema(self, *args, **kwargs):
         kwargs.update({
@@ -182,6 +166,9 @@ class BaseModelView(web.View):
         return data
 
     async def get_request_payload(self):
+        if not self.request.can_read_body:
+            return {}
+
         try:
             json_payload = await self.request.json()
         except JSONDecodeError:
@@ -190,9 +177,29 @@ class BaseModelView(web.View):
         return json_payload
 
 
-class ListCreateModelView(BaseModelView, ListMixin, CreateMixin):
+class ModelView(APIView):
+    model = Model
+    schema_class = ModelSchema
+    url_identifier = 'id'
+    lookup_field = 'id'
+
+    def get_query(self):
+        return self.model.select().order_by(self.model.id.desc())
+
+    def get_object(self):
+        identifier_value = self.request.match_info[self.url_identifier]
+
+        try:
+            instance = self.get_query().where(getattr(self.model, self.lookup_field) == identifier_value).get()
+        except self.model.DoesNotExist:
+            raise api.ModelNotFoundException(self.model)
+
+        return instance
+
+
+class ListCreateModelView(ModelView, ListMixin, CreateMixin):
     pass
 
 
-class RetrieveUpdateDeleteModelView(BaseModelView, RetrieveMixin, UpdateMixin, DestroyMixin):
+class RetrieveUpdateDeleteModelView(ModelView, RetrieveMixin, UpdateMixin, DestroyMixin):
     pass
