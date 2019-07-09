@@ -18,9 +18,9 @@ class InvalidRequest(BaseJSONException):
         super().__init__(code, message, status=400)
 
 
-class JSONParseError(BaseJSONException):
+class JSONParseError(InvalidRequest):
     def __init__(self):
-        super().__init__(code='parse_error', message='JSON parse error', status=400)
+        super().__init__(code='parse_error', message='JSON parse error')
 
 
 class ServerError(BaseJSONException):
