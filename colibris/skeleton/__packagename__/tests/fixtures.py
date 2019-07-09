@@ -1,8 +1,9 @@
 
-import pytest
-
-from __packagename__ import models
-
+#
+# import pytest
+#
+# from __packagename__ import models
+#
 #
 # TEST_USER_JWT = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.' \
 #                 'eyJzdWIiOiJ0ZXN0X3VzZXIifQ.' \
