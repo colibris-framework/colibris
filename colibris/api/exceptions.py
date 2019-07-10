@@ -18,6 +18,16 @@ class InvalidRequest(BaseJSONException):
         super().__init__(code, message, status=400)
 
 
+class SchemaError(BaseJSONException):
+    def __init__(self, details):
+        super().__init__(
+            status=400,
+            code='schema_error',
+            message='Some of the supplied fields are invalid.',
+            details=details
+        )
+
+
 class JSONParseError(InvalidRequest):
     def __init__(self):
         super().__init__(code='parse_error', message='JSON parse error')

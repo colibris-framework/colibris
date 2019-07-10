@@ -164,7 +164,7 @@ class APIView(web.View):
         try:
             data = schema.load(json_payload)
         except ValidationError as err:
-            raise api.InvalidRequest(code='invalid_request', message=err.messages)
+            raise api.SchemaError(details=err.messages)
 
         return data
 

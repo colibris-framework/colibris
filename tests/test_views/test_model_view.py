@@ -76,8 +76,8 @@ async def test_create_item_validation(http_client):
 
     assert response.status == 400
     data = await response.json()
-    assert 'name' in data['message']
-    assert 'info' in data['message']
+    assert 'name' in data['details']
+    assert 'info' in data['details']
 
 
 async def test_update_item(http_client):
@@ -107,7 +107,7 @@ async def test_update_item_validation(http_client):
     assert response.status == 400
 
     data = await response.json()
-    assert 'name' in data['message']
+    assert 'name' in data['details']
 
 
 async def test_update_item_not_found(http_client):
