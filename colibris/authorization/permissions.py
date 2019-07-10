@@ -3,6 +3,9 @@ from .exceptions import PermissionNotMet
 
 
 def _require_permissions(_and=None, _or=None):
+    _and = _and or []
+    _or = _or or []
+
     def decorator(obj):
         required_permissions = getattr(obj, '__required_permissions', None)
         obj.__required_permissions = combine_permissions(required_permissions, (_and, _or))
@@ -14,6 +17,10 @@ def _require_permissions(_and=None, _or=None):
 
 def require_permission(permission):
     return _require_permissions(_and=[permission])
+
+
+def require_any_permission():
+    return _require_permissions()
 
 
 def require_one_permission(permissions):
@@ -49,6 +56,9 @@ def verify_permissions(actual_permissions, required_permissions):
             raise PermissionNotMet(p)
 
     # Verify permissions in _or
+    if not _or:
+        return
+
     permissions = _or & actual_permissions
     if len(permissions) == 0:
         raise PermissionNotMet(permissions.pop())
