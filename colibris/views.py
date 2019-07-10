@@ -6,6 +6,10 @@ from colibris import app
 from colibris.conf import settings
 
 
+class View(web.View):
+    pass
+
+
 async def home(request):
     raise web.HTTPFound(settings.API_DOCS_PATH)
 

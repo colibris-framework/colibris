@@ -33,7 +33,10 @@ async def handle_auth(request, handler):
         except authentication.AuthenticationException:
             raise api.UnauthenticatedException()
 
-        if not authorization.authorize(account, method, path, required_permissions):
+        try:
+            authorization.authorize(account, method, path, required_permissions)
+
+        except authorization.AuthorizationException:
             raise api.ForbiddenException()
 
     response = await handler(request)

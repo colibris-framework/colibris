@@ -4,6 +4,7 @@ import logging
 from colibris.conf import settings
 
 from .base import AuthorizationBackend
+from .exceptions import *
 from .permissions import require_permission, require_one_permission, require_all_permissions
 
 
