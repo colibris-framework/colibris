@@ -1,6 +1,8 @@
 
 from colibris.conf.schemas import fields, SettingsSchema
 
+from . import constants
+
 #
 # class GeneralSettingsSchema(SettingsSchema):
 #     DEBUG = fields.Boolean()
@@ -51,6 +53,7 @@ SECRET_KEY = 'replace-me-with-random-ascii-string-or-supply-via-environment'
 # AUTHORIZATION = {
 #     'backend': 'colibris.authorization.role.RoleBackend',
 #     'role_field': 'role'
+#     'order': constants.ROLES
 # }
 
 #
