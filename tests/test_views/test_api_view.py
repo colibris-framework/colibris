@@ -22,14 +22,15 @@ class ItemsView(APIView):
     query_schema_class = QuerySchema
 
     async def get(self):
-        args = await self.get_validated_query()
+        query = await self.get_validated_query()
 
-        return web.json_response(args)
+        return web.json_response({'query': query})
 
     async def post(self):
-        data = await self.get_validated_body()
+        query = await self.get_validated_query()
+        body = await self.get_validated_body()
 
-        return web.json_response(data)
+        return web.json_response({'query': query, 'body': body})
 
 
 @pytest.fixture
@@ -56,12 +57,13 @@ async def test_get(http_client):
 
     assert response.status == 200
 
-    actual_data = await response.json()
+    data = await response.json()
+    query = data['query']
 
-    assert expected_args == actual_data
+    assert expected_args == query
 
 
-async def test_post(http_client):
+async def test_post_body(http_client):
     sent_data = {
         'name': 'Risus Fusce',
         'info': 'Egestas Lorem Sit Fringilla',
@@ -77,6 +79,25 @@ async def test_post(http_client):
 
     assert response.status == 200
 
-    actual_data = await response.json()
+    data = await response.json()
+    body = data['body']
 
-    assert expected_data == actual_data
+    assert expected_data == body
+
+
+async def test_post_query(http_client):
+    sent_data = {
+        'count': '22',
+    }
+    expected_data = {
+        'count': 22,
+    }
+
+    response = await http_client.request(hdrs.METH_POST, "/items", params=sent_data)
+
+    assert response.status == 200
+
+    data = await response.json()
+    query = data['query']
+
+    assert expected_data == query

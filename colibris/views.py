@@ -45,12 +45,13 @@ class _GenericMixinMeta(abc.ABCMeta):
         if hasattr(cls, 'patch'):
             cls.patch = request_schema(cls.body_schema_class)(response_schema(cls.body_schema_class)(cls.patch))
 
-        for http_method in hdrs.METH_ALL:
-            method_name = http_method.lower()
+        if getattr(cls, 'query_schema_class', None) is not None:
+            for http_method in hdrs.METH_ALL:
+                method_name = http_method.lower()
 
-            if hasattr(cls, method_name) and getattr(cls, 'query_schema_class', None) is not None:
-                handler = getattr(cls, method_name)
-                setattr(cls, method_name, request_schema(cls.query_schema_class, location='query')(handler))
+                if hasattr(cls, method_name):
+                    handler = getattr(cls, method_name)
+                    setattr(cls, method_name, request_schema(cls.query_schema_class, location='query')(handler))
 
         super().__init__(name, bases, attrs)
 
