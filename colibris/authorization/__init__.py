@@ -11,8 +11,8 @@ from .permissions import require_permission, require_one_permission, require_all
 logger = logging.getLogger(__name__)
 
 
-def authorize(account, method, path, permissions):
-    return AuthorizationBackend.get_instance().authorize(account, method, path, permissions)
+def authorize(account, method, path, handler, permissions):
+    return AuthorizationBackend.get_instance().authorize(account, method, path, handler, permissions)
 
 
 def setup():

@@ -31,8 +31,8 @@ def require_all_permissions(permissions):
     return _require_permissions(_and=permissions)
 
 
-def get_required_permissions(obj):
-    return getattr(obj, '__required_permissions', None)
+def get_required_permissions(handler):
+    return getattr(handler, '__required_permissions', None)
 
 
 def combine_permissions(perms1, perms2):
