@@ -22,12 +22,12 @@ class ItemSchema(ModelSchema):
 
 
 class ItemsView(ListCreateModelView):
-    schema_class = ItemSchema
+    body_schema_class = ItemSchema
     model = Item
 
 
 class ItemView(RetrieveUpdateDeleteModelView):
-    schema_class = ItemSchema
+    body_schema_class = ItemSchema
     model = Item
 
 

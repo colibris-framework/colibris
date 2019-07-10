@@ -13,14 +13,21 @@ class ItemSchema(Schema):
     count = fields.Integer()
 
 
+class QuerySchema(Schema):
+    count = fields.Integer()
+
+
 class ItemsView(APIView):
-    schema_class = ItemSchema
+    body_schema_class = ItemSchema
+    query_schema_class = QuerySchema
 
     async def get(self):
-        return web.json_response({})
+        args = await self.get_validated_query()
+
+        return web.json_response(args)
 
     async def post(self):
-        data = await self.get_validated_data()
+        data = await self.get_validated_body()
 
         return web.json_response(data)
 
@@ -38,8 +45,20 @@ def http_client(loop, aiohttp_client):
 
 
 async def test_get(http_client):
-    response = await http_client.request(hdrs.METH_GET, "/items")
+    sent_args = {
+        'count': '222'
+    }
+    expected_args = {
+        'count': 222
+    }
+
+    response = await http_client.request(hdrs.METH_GET, "/items", params=sent_args)
+
     assert response.status == 200
+
+    actual_data = await response.json()
+
+    assert expected_args == actual_data
 
 
 async def test_post(http_client):
@@ -55,8 +74,7 @@ async def test_post(http_client):
     }
 
     response = await http_client.request(hdrs.METH_POST, "/items", json=sent_data)
-    text = await response.text()
-    print(text)
+
     assert response.status == 200
 
     actual_data = await response.json()
