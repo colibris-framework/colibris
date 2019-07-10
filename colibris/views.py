@@ -29,13 +29,9 @@ async def health(request):
 
 class _GenericMixinMeta(abc.ABCMeta):
     def __init__(cls, name, bases, attrs):
-        assert cls.body_schema_class, 'The "body_schema_class" field is required for {}.'.format(cls)
         assert cls.model, 'The "model" field is required for {}.'.format(cls)
 
-        correct_model = issubclass(cls.model, Model)
-        correct_schema = issubclass(cls.body_schema_class, ModelSchema)
-        assert correct_model is True, 'The "model" should be a subclass of {}.'.format(Model)
-        assert correct_schema is True, 'The "body_schema_class" should be a subclass of {}.'.format(ModelSchema)
+        assert issubclass(cls.model, Model) is True, 'The "model" should be a subclass of {}.'.format(Model)
 
         if hasattr(cls, 'get'):
             cls.get = response_schema(cls.body_schema_class)(cls.get)
@@ -78,7 +74,7 @@ class CreateMixin(metaclass=_GenericMixinMeta):
     async def post(self):
         schema = self.get_body_schema_class()
         data = await self.get_validated_body(schema)
-
+        print(data)
         try:
             item = self.model.create(**data)
         except IntegrityError as err:
@@ -205,10 +201,10 @@ class APIView(web.View):
 
         assert schema is not None, 'The attribute "query_schema_class" is required for {}'.format(self)
 
-        json_payload = await self.get_request_query()
+        query = await self.get_request_query()
 
         try:
-            data = schema.load(json_payload)
+            data = schema.load(query)
         except ValidationError as err:
             raise api.SchemaError(details=err.messages)
 
