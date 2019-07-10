@@ -6,11 +6,11 @@ def _require_permissions(_and=None, _or=None):
     _and = _and or []
     _or = _or or []
 
-    def decorator(obj):
-        required_permissions = getattr(obj, '__required_permissions', None)
-        obj.__required_permissions = combine_permissions(required_permissions, (_and, _or))
+    def decorator(handler):
+        required_permissions = getattr(handler, 'required_permissions', None)
+        handler.required_permissions = combine_permissions(required_permissions, (_and, _or))
 
-        return obj
+        return handler
 
     return decorator
 
@@ -32,7 +32,7 @@ def require_all_permissions(permissions):
 
 
 def get_required_permissions(handler):
-    return getattr(handler, '__required_permissions', None)
+    return getattr(handler, 'required_permissions', None)
 
 
 def combine_permissions(perms1, perms2):
