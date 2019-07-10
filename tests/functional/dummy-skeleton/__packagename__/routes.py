@@ -9,9 +9,9 @@ from __packagename__.constants import ROLE_ADMIN, ROLE_REGULAR
 
 
 ROUTES = [
-    ('GET',     r'/users/me',           views.get_me,           ANY_PERMISSION),
-    (None,      r'/users',              views.UsersView,        {ROLE_ADMIN}),
-    (None,      r'/users/{id:\d+}',     views.UserView,         {ROLE_ADMIN})
+    (r'/users/me',           views.get_me,           ANY_PERMISSION),
+    (r'/users',              views.UsersView,        {ROLE_ADMIN}),
+    (r'/users/{id:\d+}',     views.UserView,         {ROLE_ADMIN})
 ]
 
 if settings.DEBUG:
