@@ -1,5 +1,4 @@
 
-from . import ANY_PERMISSION
 from .base import AuthorizationBackend
 
 
@@ -13,7 +12,4 @@ class RoleBackend(AuthorizationBackend):
         return getattr(account, self.role_field)
 
     def authorize(self, account, method, path, required_permissions):
-        if required_permissions == ANY_PERMISSION:
-            return True  # anyone authenticated is authorized
-
         return self.get_role(account) in required_permissions
