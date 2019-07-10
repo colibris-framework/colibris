@@ -7,9 +7,8 @@ from .model import ModelBackend
 #  * resource
 #  * operation
 #
-#
 # A permission is defined as the right to perform an operation on a resource.
-# The format used is "{resource}:{operation}", e.g. "users:r".
+# The format used is "{resource}:{operation}", e.g. "users:update".
 
 class RightsBackend(ModelBackend):
     def __init__(self, resource_field, operation_field, **kwargs):
@@ -18,24 +17,14 @@ class RightsBackend(ModelBackend):
 
         super().__init__(**kwargs)
 
-    def get_resource_field(self):
-        return getattr(self.model, self.resource_field)
+    def get_resource(self, right):
+        return getattr(right, self.resource_field)
 
     def get_operation(self, right):
         return getattr(right, self.operation_field)
 
-    def authorize(self, account, method, path, required_permissions):
-        resource, required_operations = required_permissions.split(':', 1)
+    def get_actual_permissions(self, account, method, path):
+        # Gather all rights from all entries for the given account
+        rights = self.model.select().where(self.get_account_field() == account)
 
-        query = (self.get_account_field() == account and
-                 self.get_resource_field() == resource)
-
-        # Gather all rights from all entries for the given account and resource;
-        allowed_operations = set()
-        rights = self.model.select().where(query)
-        for right in rights:
-            allowed_operations |= set(self.get_operation(right))
-
-        # Consider the request authorized if all required operations are included in allowed operations
-        required_operations = set(required_operations)
-        return len(required_operations - allowed_operations) == 0
+        return ['{}:{}'.format(self.get_resource(r), self.get_operation(r)) for r in rights]
