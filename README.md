@@ -133,13 +133,22 @@ schemas.
 
 For a model based view, there is `colibris.views.ModelView` which has to be used together with at least one of:
 `ListMixin`, `CreateMixin`, `RetrieveMixin`, `UpdateMixin`, `DestroyMixin`. Here is an example of a model view 
-which will supports `GET` and `POST` methods:
+which supports `GET` and `POST` methods:
 
     class ItemsView(ModelView, ListMixin, CreateMixin):
         model = Model 
         body_schema_class = ItemSchema
         query_schema_class = QuerySchema
+
+For a basic RESTful resource there are predefined base views that can be sed like this:
+
+    class ItemsView(ListCreateModelView):
+        model = Model 
+        body_schema_class = ItemSchema
         
+    class ItemsDetailView(RetrieveUpdateDeleteModelView):
+        model = Model 
+        body_schema_class = ItemSchema
 
 ## Routes
 
