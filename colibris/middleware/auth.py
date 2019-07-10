@@ -2,32 +2,38 @@
 from aiohttp import web
 
 from colibris import api
-from colibris import app
 from colibris import authentication
 from colibris import authorization
+from colibris import views
+from colibris.authorization.permissions import get_required_permissions, combine_permissions
 
 
 @web.middleware
 async def handle_auth(request, handler):
+    # Bail out with exception if we haven't gotten proper match_info
     if request.match_info.http_exception is not None:
         raise request.match_info.http_exception
 
-    authorization_info = app.route_auth_mapping.get(request.match_info.route)
+    request = authentication.process_request(request)
+
     method = request.method
     path = request.match_info.route.resource.canonical
 
-    request = authentication.process_request(request)
+    required_permissions = get_required_permissions(handler)
+    if isinstance(handler, views.View):
+        method = getattr(handler, method, None)
+        if method:
+            required_permissions = combine_permissions(required_permissions, get_required_permissions(method))
 
-    # Only go through authentication if route specifies permissions;
-    # otherwise route is considered public.
-    if authorization_info is not None:
+    # Only go through authentication if permissions are specified; otherwise view is considered public.
+    if required_permissions is not None:
         try:
             account = authentication.authenticate(request)
 
         except authentication.AuthenticationException:
             raise api.UnauthenticatedException()
 
-        if not authorization.authorize(account, method, path, authorization_info):
+        if not authorization.authorize(account, method, path, required_permissions):
             raise api.ForbiddenException()
 
     response = await handler(request)
