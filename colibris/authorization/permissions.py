@@ -2,13 +2,13 @@
 from .exceptions import PermissionNotMet
 
 
-class PermissionsPair:
+class Permissions:
     def __init__(self, and_set=None, or_set=None):
         self.and_set = set(and_set or ())
         self.or_set = set(or_set or ())
 
-    def combine(self, pair):
-        return PermissionsPair(self.and_set | pair.and_set, self.or_set | pair.or_set)
+    def combine(self, permissions):
+        return Permissions(self.and_set | permissions.and_set, self.or_set | permissions.or_set)
 
     def verify(self, actual_permissions):
         actual_permissions = set(actual_permissions)
@@ -26,16 +26,31 @@ class PermissionsPair:
         if len(permissions) == 0:
             raise PermissionNotMet(permissions.pop())
 
+    def __str__(self):
+        s = ''
+        if self.and_set:
+            s = ' & '.join(self.and_set)
+
+        if self.or_set:
+            or_set_str = ' | '.join(self.or_set)
+            if s:
+                s += ' & (' + or_set_str + ')'
+
+            else:
+                s = or_set_str
+
+        return s or '*'
+
 
 def _require_permissions(and_set=None, or_set=None):
     and_set = and_set or set()
     or_set = or_set or set()
 
-    new_permissions = PermissionsPair(and_set, or_set)
+    new_permissions = Permissions(and_set, or_set)
 
     def decorator(handler):
         # Combine any existing permissions with the new ones
-        required_permissions = get_required_permissions(handler)
+        required_permissions = get_required_permissions(handler) or Permissions()
         handler.required_permissions = required_permissions.combine(new_permissions)
 
         return handler
@@ -61,17 +76,19 @@ def require_all_permissions(permissions):
 
 def get_required_permissions(handler):
     permissions = getattr(handler, 'required_permissions', None)
+    if permissions is None:
+        return
 
     # Permissions can be stored as:
     #  * one single permission
     #  * a set of permissions
-    #  * a PermissionsPair instance
+    #  * a Permissions instance
 
-    # Normalize any possible way of storing permissions to PermissionsPair
-    if not isinstance(permissions, PermissionsPair):
-        if not isinstance(permissions, set):
-            permissions = set(permissions)
+    # Normalize any possible way of storing permissions to Permissions
+    if not isinstance(permissions, Permissions):
+        if not isinstance(permissions, (set, list, tuple)):
+            permissions = {permissions}
 
-        permissions = PermissionsPair(and_set=permissions)
+        permissions = Permissions(and_set=permissions)
 
     return permissions

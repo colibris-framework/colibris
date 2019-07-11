@@ -1,4 +1,6 @@
 
+import inspect
+
 from aiohttp import web
 
 from colibris import api
@@ -19,11 +21,21 @@ async def handle_auth(request, handler):
     method = request.method
     path = request.match_info.route.resource.canonical
 
-    required_permissions = get_required_permissions(handler)
-    if isinstance(handler, views.View):
-        method = getattr(handler, method, None)
-        if method:
-            required_permissions = required_permissions.combine(get_required_permissions(method))
+    original_handler = request.match_info.handler
+
+    # First look for required permissions in the view handler itself (class or function)
+    required_permissions = get_required_permissions(original_handler)
+
+    # Then, if we've got a class-based view, look for required permissions in method function
+    if inspect.isclass(original_handler) and issubclass(original_handler, views.View):
+        method_func = getattr(original_handler, method.lower(), None)
+        if method_func:
+            method_func_required_permissions = get_required_permissions(method_func)
+            if method_func_required_permissions and required_permissions:
+                required_permissions = required_permissions.combine(method_func_required_permissions)
+
+            else:
+                required_permissions = required_permissions or method_func_required_permissions
 
     # Only go through authentication if permissions are specified; otherwise view is considered public.
     if required_permissions is not None:
@@ -34,7 +46,7 @@ async def handle_auth(request, handler):
             raise api.UnauthenticatedException()
 
         try:
-            authorization.authorize(account, method, path, handler, required_permissions)
+            authorization.authorize(account, method, path, original_handler, required_permissions)
 
         except authorization.AuthorizationException:
             raise api.ForbiddenException()
