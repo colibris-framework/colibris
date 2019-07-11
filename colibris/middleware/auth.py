@@ -5,7 +5,7 @@ from colibris import api
 from colibris import authentication
 from colibris import authorization
 from colibris import views
-from colibris.authorization.permissions import get_required_permissions, combine_permissions
+from colibris.authorization.permissions import get_required_permissions
 
 
 @web.middleware
@@ -23,7 +23,7 @@ async def handle_auth(request, handler):
     if isinstance(handler, views.View):
         method = getattr(handler, method, None)
         if method:
-            required_permissions = combine_permissions(required_permissions, get_required_permissions(method))
+            required_permissions = required_permissions.combine(get_required_permissions(method))
 
     # Only go through authentication if permissions are specified; otherwise view is considered public.
     if required_permissions is not None:

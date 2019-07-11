@@ -2,13 +2,41 @@
 from .exceptions import PermissionNotMet
 
 
-def _require_permissions(_and=None, _or=None):
-    _and = _and or []
-    _or = _or or []
+class PermissionsPair:
+    def __init__(self, and_set=None, or_set=None):
+        self.and_set = set(and_set or ())
+        self.or_set = set(or_set or ())
+
+    def combine(self, pair):
+        return PermissionsPair(self.and_set | pair.and_set, self.or_set | pair.or_set)
+
+    def verify(self, actual_permissions):
+        actual_permissions = set(actual_permissions)
+
+        # Verify permissions in and set
+        for p in self.and_set:
+            if p not in actual_permissions:
+                raise PermissionNotMet(p)
+
+        # Verify permissions in or set
+        if not self.or_set:
+            return
+
+        permissions = self.or_set & actual_permissions
+        if len(permissions) == 0:
+            raise PermissionNotMet(permissions.pop())
+
+
+def _require_permissions(and_set=None, or_set=None):
+    and_set = and_set or set()
+    or_set = or_set or set()
+
+    new_permissions = PermissionsPair(and_set, or_set)
 
     def decorator(handler):
-        required_permissions = getattr(handler, 'required_permissions', None)
-        handler.required_permissions = combine_permissions(required_permissions, (_and, _or))
+        # Combine any existing permissions with the new ones
+        required_permissions = get_required_permissions(handler)
+        handler.required_permissions = required_permissions.combine(new_permissions)
 
         return handler
 
@@ -16,7 +44,7 @@ def _require_permissions(_and=None, _or=None):
 
 
 def require_permission(permission):
-    return _require_permissions(_and=[permission])
+    return _require_permissions(and_set=[permission])
 
 
 def require_any_permission():
@@ -24,41 +52,26 @@ def require_any_permission():
 
 
 def require_one_permission(permissions):
-    return _require_permissions(_or=permissions)
+    return _require_permissions(or_set=permissions)
 
 
 def require_all_permissions(permissions):
-    return _require_permissions(_and=permissions)
+    return _require_permissions(and_set=permissions)
 
 
 def get_required_permissions(handler):
-    return getattr(handler, 'required_permissions', None)
+    permissions = getattr(handler, 'required_permissions', None)
 
+    # Permissions can be stored as:
+    #  * one single permission
+    #  * a set of permissions
+    #  * a PermissionsPair instance
 
-def combine_permissions(perms1, perms2):
-    # If either perms1 or perms2 is None, return the other one.
-    # If both are None, return None.
-    if None in (perms1, perms2):
-        return perms1 or perms2
+    # Normalize any possible way of storing permissions to PermissionsPair
+    if not isinstance(permissions, PermissionsPair):
+        if not isinstance(permissions, set):
+            permissions = set(permissions)
 
-    return perms1[0] + perms2[0], perms1[1] + perms2[1]
+        permissions = PermissionsPair(and_set=permissions)
 
-
-def verify_permissions(actual_permissions, required_permissions):
-    _and, _or = required_permissions
-
-    _or = set(_or)
-    actual_permissions = set(actual_permissions)
-
-    # Verify permissions in _and
-    for p in _and:
-        if p not in actual_permissions:
-            raise PermissionNotMet(p)
-
-    # Verify permissions in _or
-    if not _or:
-        return
-
-    permissions = _or & actual_permissions
-    if len(permissions) == 0:
-        raise PermissionNotMet(permissions.pop())
+    return permissions

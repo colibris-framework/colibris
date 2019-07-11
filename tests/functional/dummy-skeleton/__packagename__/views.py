@@ -26,8 +26,9 @@ async def get_me(request):
     return web.json_response(result)
 
 
-@require_permission(constants.ROLE_ADMIN)
 class UsersView(views.View):
+    require_permissions = constants.ROLE_ADMIN
+
     @docs(tags=['Users'],
           summary='List all users')
     @response_schema(many_envelope(schemas.UserSchema))
@@ -53,8 +54,9 @@ class UsersView(views.View):
         return web.json_response(result, status=201)
 
 
-@require_permission(constants.ROLE_ADMIN)
 class UserView(views.View):
+    require_permissions = constants.ROLE_ADMIN
+
     @docs(tags=['Users'],
           summary='Reveal details about a specific user')
     @response_schema(schemas.UserSchema())
