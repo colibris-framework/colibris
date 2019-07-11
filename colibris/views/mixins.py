@@ -1,30 +1,13 @@
 import abc
 import traceback
-from json import JSONDecodeError
 
-from aiohttp import web, hdrs
-from aiohttp_apispec import docs
+from aiohttp import hdrs, web
 from aiohttp_apispec import response_schema, request_schema
-
-from colibris.persist import Model
-from colibris.schemas import ModelSchema
-from marshmallow import ValidationError
 from peewee import IntegrityError
 
-from colibris import app, api
-from colibris.conf import settings
-
-
-async def home(request):
-    raise web.HTTPFound(settings.API_DOCS_PATH)
-
-
-# TODO: I would suggest to move it into some template.
-@docs(tags=['Service'],
-      summary='The health-check endpoint')
-async def health(request):
-    h = await app.get_health()
-    return web.json_response(h)
+from colibris import api
+from colibris.persist import Model
+from colibris.schemas import ModelSchema
 
 
 class _GenericMixinMeta(abc.ABCMeta):
@@ -88,19 +71,6 @@ class CreateMixin(metaclass=_GenericMixinMeta):
         return web.json_response(result, status=201)
 
 
-class RetrieveMixin(metaclass=_GenericMixinMeta):
-    model = Model
-    body_schema_class = ModelSchema
-
-    async def get(self):
-        schema = self.get_body_schema_class()
-        instance = self.get_object()
-
-        result = schema.dump(instance)
-
-        return web.json_response(result)
-
-
 class UpdateMixin(metaclass=_GenericMixinMeta):
     model = Model
     body_schema_class = ModelSchema
@@ -148,101 +118,14 @@ class DestroyMixin:
         return web.json_response(status=204)
 
 
-class APIView(web.View):
-    body_schema_class = None
-    query_schema_class = None
+class RetrieveMixin(metaclass=_GenericMixinMeta):
+    model = Model
+    body_schema_class = ModelSchema
 
-    def get_body_schema_class(self, *args, **kwargs):
-        assert self.body_schema_class is not None, 'The attribute "body_schema_class" is required for {}'.format(self)
+    async def get(self):
+        schema = self.get_body_schema_class()
+        instance = self.get_object()
 
-        kwargs.update({
-            'context': {'request': self.request}
-        })
+        result = schema.dump(instance)
 
-        schema = self.body_schema_class(*args, **kwargs)
-
-        return schema
-
-    def get_query_schema_class(self, *args, **kwargs):
-        assert self.query_schema_class is not None, 'The attribute "query_schema_class" is required for {}'.format(self)
-
-        kwargs.update({
-            'context': {'request': self.request}
-        })
-
-        schema = self.query_schema_class(*args, **kwargs)
-
-        return schema
-
-    async def get_validated_body(self, schema=None):
-        if schema is None:
-            schema = self.get_body_schema_class()
-
-        json_payload = await self.get_request_payload()
-
-        try:
-            data = schema.load(json_payload)
-        except ValidationError as err:
-            raise api.SchemaError(details=err.messages)
-
-        return data
-
-    async def get_request_payload(self):
-        if not self.request.can_read_body:
-            return {}
-
-        try:
-            json_payload = await self.request.json()
-        except JSONDecodeError:
-            raise api.JSONParseError()
-
-        return json_payload
-
-    async def get_validated_query(self, schema=None):
-        if schema is None:
-            schema = self.get_query_schema_class()
-
-        query = await self.get_request_query()
-
-        try:
-            data = schema.load(query)
-        except ValidationError as err:
-            raise api.SchemaError(details=err.messages)
-
-        return data
-
-    async def get_request_query(self):
-        return self.request.query
-
-
-class ModelView(APIView):
-    model = None
-    body_schema_class = None
-    url_identifier = 'id'
-    lookup_field = 'id'
-
-    def get_query(self):
-        assert self.model is not None, 'The attribute "model" is required for {}'.format(self)
-
-        return self.model.select().order_by(self.model.id.desc())
-
-    def get_object(self):
-        identifier_value = self.request.match_info[self.url_identifier]
-        query = self.get_query()
-        model = query.model
-
-        try:
-
-            instance = query.where(getattr(model, self.lookup_field) == identifier_value).get()
-        except query.model.DoesNotExist:
-            raise api.ModelNotFoundException(model)
-
-        return instance
-
-
-class ListCreateModelView(ModelView, ListMixin, CreateMixin):
-    pass
-
-
-class RetrieveUpdateDeleteModelView(ModelView, RetrieveMixin, UpdateMixin, DestroyMixin):
-    pass
+        return web.json_response(result)

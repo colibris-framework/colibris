@@ -1,10 +1,8 @@
-
-from colibris import views
-
+from colibris.views.generic import home, health
 
 ROUTES = [
-    ('GET', '/', views.home),
-    ('GET', '/health', views.health),
+    ('GET', '/', home),
+    ('GET', '/health', health),
 ]
 
 STATIC_ROUTES = []

@@ -6,7 +6,7 @@ from colibris.middleware.errors import handle_errors_json
 from colibris.schemas import ModelSchema
 
 from colibris import persist
-from colibris.views import ListCreateModelView, RetrieveUpdateDeleteModelView
+from colibris.views.generic import ListCreateModelView, RetrieveUpdateDeleteModelView
 
 db = SqliteDatabase(':memory:')
 
