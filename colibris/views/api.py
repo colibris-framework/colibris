@@ -1,6 +1,5 @@
-from json import JSONDecodeError
-
 from aiohttp import web
+from json import JSONDecodeError
 from marshmallow import ValidationError
 
 from colibris import api
