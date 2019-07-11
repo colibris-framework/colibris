@@ -6,7 +6,7 @@ class NullBackend(AuthorizationBackend):
     def __init__(self, **kwargs):
         pass
 
-    def authorize(self, account, method, path, required_permissions):
+    def authorize(self, account, method, path, handler, required_permissions):
         # Consider any authenticated request authorized
 
         return True

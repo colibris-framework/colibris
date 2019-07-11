@@ -1,8 +1,8 @@
 
-ROLE_ADMIN = 'admin'
 ROLE_REGULAR = 'regular'
+ROLE_ADMIN = 'admin'
 
 ROLES = [
-    ROLE_ADMIN,
-    ROLE_REGULAR
+    ROLE_REGULAR,
+    ROLE_ADMIN
 ]

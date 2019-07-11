@@ -4,10 +4,13 @@ from aiohttp import web
 from aiohttp_apispec import docs, request_schema, response_schema
 
 from colibris import api
-from colibris import authentication
+from colibris import views
+from colibris.authentication import get_account
+from colibris.authorization import require_permission, require_any_permission
 from colibris.schemas import many_envelope
 from colibris.shortcuts import get_object_or_404
 
+from __packagename__ import constants
 from __packagename__ import models
 from __packagename__ import schemas
 
@@ -18,14 +21,17 @@ from __packagename__ import schemas
 # @docs(tags=['Users'],
 #       summary='Reveal details about the current user')
 # @response_schema(schemas.UserSchema())
+# @require_any_permission()
 # async def get_me(request):
-#     user = authentication.get_account(request)
+#     user = get_account(request)
 #     result = schemas.UserSchema().dump(user)
 #
 #     return web.json_response(result)
 #
 #
-# class UsersView(web.View):
+# class UsersView(views.View):
+#     require_permissions = constants.ROLE_ADMIN
+#
 #     @docs(tags=['Users'],
 #           summary='List all users')
 #     @response_schema(many_envelope(schemas.UserSchema))
@@ -51,7 +57,10 @@ from __packagename__ import schemas
 #         return web.json_response(result, status=201)
 #
 #
-# class UserView(web.View):
+# @require_permission(constants.ROLE_ADMIN)
+# class UserView(views.View):
+#     require_permissions = constants.ROLE_ADMIN
+#
 #     @docs(tags=['Users'],
 #           summary='Reveal details about a specific user')
 #     @response_schema(schemas.UserSchema())
