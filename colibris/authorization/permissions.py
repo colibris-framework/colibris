@@ -2,6 +2,9 @@
 from .exceptions import PermissionNotMet
 
 
+ANY_PERMISSION = ()
+
+
 class Permissions:
     def __init__(self, and_set=None, or_set=None):
         self.and_set = set(and_set or ())
@@ -84,7 +87,7 @@ def get_required_permissions(handler):
     #  * a set of permissions
     #  * a Permissions instance
 
-    # Normalize any possible way of storing permissions to Permissions
+    # Normalize any possible way of storing permissions
     if not isinstance(permissions, Permissions):
         if not isinstance(permissions, (set, list, tuple)):
             permissions = {permissions}
