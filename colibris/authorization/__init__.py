@@ -1,18 +1,13 @@
 
-import logging
-
 from colibris.conf import settings
 
 from .base import AuthorizationBackend
+from .exceptions import *
+from .permissions import *
 
 
-ANY_PERMISSION = '*'
-
-logger = logging.getLogger(__name__)
-
-
-def authorize(account, method, path, authorization_info):
-    return AuthorizationBackend.get_instance().authorize(account, method, path, authorization_info)
+def authorize(account, method, path, handler, permissions):
+    return AuthorizationBackend.get_instance().authorize(account, method, path, handler, permissions)
 
 
 def setup():

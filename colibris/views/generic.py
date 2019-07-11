@@ -7,6 +7,10 @@ from colibris.views.mixins import ListMixin, CreateMixin, RetrieveMixin, UpdateM
 from colibris.views.model import ModelView
 
 
+class View(web.View):
+    pass
+
+
 async def home(request):
     raise web.HTTPFound(settings.API_DOCS_PATH)
 

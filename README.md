@@ -223,7 +223,7 @@ In `${PACKAGE}/settings.py`, set:
         'model': 'yourproject.models.Right',
         'account_field': 'user',
         'resource_field': 'resource',
-        'operations_field': 'operations'
+        'operation_field': 'operation'
     }
 
 

@@ -1,6 +1,8 @@
 
 from colibris.conf.schemas import fields, SettingsSchema
 
+from . import constants
+
 
 class GeneralSettingsSchema(SettingsSchema):
     DEBUG = fields.Boolean()
@@ -46,7 +48,8 @@ AUTHENTICATION = {
 
 AUTHORIZATION = {
     'backend': 'colibris.authorization.role.RoleBackend',
-    'role_field': 'role'
+    'role_field': 'role',
+    'order': constants.ROLES
 }
 
 
