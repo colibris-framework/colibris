@@ -72,13 +72,10 @@ async def _initial_health_check(app):
 # routes
 
 def _add_route_tuple(web_app, route):
-    while len(route) < 4:
+    while len(route) < 3:
         route = route + (None,)
 
-    method, path, handler, authorize = route
-
-    if inspect.isclass(handler):  # class-based view
-        method = hdrs.METH_ANY
+    path, handler, authorize = route
 
     # aiohttp reuses the last resource if and only if two successive routes are the same,
     # which is kind of random.
@@ -87,7 +84,7 @@ def _add_route_tuple(web_app, route):
     # since we want to prevent reusing the last resource.
 
     resource = web_app.router.add_resource(path)
-    resource_route = resource.add_route(method, handler)
+    resource_route = resource.add_route(hdrs.METH_ANY, handler)
 
     route_auth_mapping[resource_route] = authorize
 
