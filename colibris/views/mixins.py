@@ -7,7 +7,6 @@ from peewee import IntegrityError
 
 from colibris import api
 from colibris.persist import Model
-from colibris.schemas import ModelSchema
 
 
 class _GenericMixinMeta(abc.ABCMeta):
