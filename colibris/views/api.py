@@ -1,11 +1,11 @@
-from aiohttp import web
 from json import JSONDecodeError
 from marshmallow import ValidationError
 
 from colibris import api
+from colibris.views.base import View
 
 
-class APIView(web.View):
+class APIView(View):
     body_schema_class = None
     query_schema_class = None
 
