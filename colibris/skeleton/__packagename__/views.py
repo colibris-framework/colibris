@@ -1,6 +1,7 @@
 from aiohttp import web
 from aiohttp_apispec import docs, response_schema
 
+from colibris import app
 from colibris import views
 from colibris.conf import settings
 from colibris.authentication import get_account
@@ -15,8 +16,17 @@ from __packagename__ import schemas
 # Here are some examples of views. Just remove what you don't need.
 
 class HomeView(views.View):
+    # Show the API docs when visiting the index of the service
     async def get(self):
         raise web.HTTPFound(settings.API_DOCS_PATH)
+
+
+class HealthView(views.View):
+    @docs(tags=['Service'],
+          summary='The health check endpoint')
+    async def get(self):
+        h = await app.get_health()
+        return web.json_response(h)
 
 
 class MeView(views.View):

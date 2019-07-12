@@ -8,7 +8,6 @@ from aiohttp import web, hdrs
 from aiohttp_apispec import setup_aiohttp_apispec
 from aiohttp_swagger import setup_swagger
 
-from colibris import routes as default_routes
 from colibris import utils
 from colibris.conf import settings
 
@@ -21,19 +20,17 @@ _project_app = None
 _start_time = time.time()
 
 
-# web app & middleware
+class HealthException(Exception):
+    pass
+
+
+# Web App & Middleware
 
 def _make_web_app():
     for path in settings.MIDDLEWARE:
         middleware.append(utils.import_member(path))
 
     return web.Application(middlewares=middleware, client_max_size=settings.MAX_REQUEST_BODY_SIZE)
-
-
-# app
-
-class HealthException(Exception):
-    pass
 
 
 async def _init_app(app):
@@ -45,6 +42,8 @@ async def _init_app(app):
         if init:
             init(app, asyncio.get_event_loop())
 
+
+# Health
 
 async def get_health():
     if hasattr(_project_app, 'get_health'):
@@ -68,7 +67,7 @@ async def _initial_health_check(app):
         raise
 
 
-# routes
+# Routes
 
 def _add_route_tuple(web_app, route):
     path, handler = route
@@ -80,7 +79,7 @@ def _add_route_tuple(web_app, route):
     # since we want to prevent reusing the last resource.
 
     resource = web_app.router.add_resource(path)
-    resource_route = resource.add_route(hdrs.METH_ANY, handler)
+    resource.add_route(hdrs.METH_ANY, handler)
 
 
 def _add_static_route_tuple(web_app, route):
@@ -89,27 +88,19 @@ def _add_static_route_tuple(web_app, route):
     web_app.router.add_static(prefix, fs_path)
 
 
-def _init_default_routes(web_app):
-    for route in default_routes.ROUTES:
+def _init_routes(web_app):
+    routes = utils.import_module_or_none('{}.routes'.format(settings.PROJECT_PACKAGE_NAME))
+    if routes is None:
+        return
+
+    for route in getattr(routes, 'ROUTES', []):
         _add_route_tuple(web_app, route)
 
-    for route in default_routes.STATIC_ROUTES:
+    for route in getattr(routes, 'STATIC_ROUTES', []):
         _add_static_route_tuple(web_app, route)
 
 
-def _init_project_routes(web_app):
-    project_routes = utils.import_module_or_none('{}.routes'.format(settings.PROJECT_PACKAGE_NAME))
-    if project_routes is None:
-        return
-
-    for _route in getattr(project_routes, 'ROUTES', []):
-        _add_route_tuple(web_app, _route)
-
-    for _route in getattr(project_routes, 'STATIC_ROUTES', []):
-        _add_static_route_tuple(web_app, _route)
-
-
-# apispec/swagger support
+# APISpec/Swagger support
 
 def _init_swagger(web_app):
     async def init_wrapper(app):
@@ -125,8 +116,7 @@ def get_web_app(force_create=False):
     if _web_app is None or force_create:
         _web_app = _make_web_app()
 
-        _init_project_routes(_web_app)
-        _init_default_routes(_web_app)
+        _init_routes(_web_app)
         _init_swagger(_web_app)
 
         _web_app.on_startup.append(_init_app)
