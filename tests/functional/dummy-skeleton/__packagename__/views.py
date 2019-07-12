@@ -27,7 +27,7 @@ async def get_me(request):
 
 
 class UsersView(views.View):
-    require_permissions = constants.ROLE_ADMIN
+    required_permissions = constants.ROLE_ADMIN
 
     @docs(tags=['Users'],
           summary='List all users')
@@ -55,7 +55,7 @@ class UsersView(views.View):
 
 
 class UserView(views.View):
-    require_permissions = constants.ROLE_ADMIN
+    required_permissions = constants.ROLE_ADMIN
 
     @docs(tags=['Users'],
           summary='Reveal details about a specific user')

@@ -8,7 +8,7 @@ from __packagename__ import views
 # Here are some examples of routes. Just remove what you don't need.
 
 ROUTES = [
-    (r'/users/me',           views.get_me),
+    (r'/users/me',           views.MeView),
     (r'/users',              views.UsersView),
     (r'/users/{id:\d+}',     views.UserView)
 ]
