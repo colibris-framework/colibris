@@ -1,7 +1,6 @@
-from colibris.views.generic import home, health
+from colibris.views.generic import health
 
 ROUTES = [
-    ('/', home),
     ('/health', health),
 ]
 

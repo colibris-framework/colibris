@@ -2,6 +2,7 @@ from aiohttp import web
 from aiohttp_apispec import docs, response_schema
 
 from colibris import views
+from colibris.conf import settings
 from colibris.authentication import get_account
 from colibris.authorization import require_any_permission, ANY_PERMISSION
 from colibris.views.generic import RetrieveUpdateDeleteModelView, ListCreateModelView
@@ -12,6 +13,11 @@ from __packagename__ import schemas
 
 
 # Here are some examples of views. Just remove what you don't need.
+
+class HomeView(views.View):
+    async def get(self):
+        raise web.HTTPFound(settings.API_DOCS_PATH)
+
 
 class MeView(views.View):
     required_permissions = ANY_PERMISSION
