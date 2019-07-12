@@ -19,8 +19,8 @@ class ModelView(APIView):
         model = query.model
 
         try:
-
             instance = query.where(getattr(model, self.lookup_field) == identifier_value).get()
+
         except query.model.DoesNotExist:
             raise api.ModelNotFoundException(model)
 
