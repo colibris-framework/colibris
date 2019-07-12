@@ -6,5 +6,5 @@ class ListCreateModelView(ModelView, ListMixin, CreateMixin):
     pass
 
 
-class RetrieveUpdateDeleteModelView(ModelView, RetrieveMixin, UpdateMixin, DestroyMixin):
+class RetrieveUpdateDestroyModelView(ModelView, RetrieveMixin, UpdateMixin, DestroyMixin):
     pass

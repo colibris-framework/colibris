@@ -146,7 +146,7 @@ For a basic RESTful resource there are predefined base views that can be sed lik
         model = Model 
         body_schema_class = ItemSchema
         
-    class ItemsDetailView(RetrieveUpdateDeleteModelView):
+    class ItemsDetailView(RetrieveUpdateDestroyModelView):
         model = Model 
         body_schema_class = ItemSchema
 

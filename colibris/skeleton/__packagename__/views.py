@@ -5,8 +5,8 @@ from colibris import app
 from colibris import views
 from colibris.conf import settings
 from colibris.authentication import get_account
-from colibris.authorization import require_any_permission, ANY_PERMISSION
-from colibris.views.generic import RetrieveUpdateDeleteModelView, ListCreateModelView
+from colibris.authorization import ANY_PERMISSION
+from colibris.views.generic import RetrieveUpdateDestroyModelView, ListCreateModelView
 
 from __packagename__ import constants
 from __packagename__ import models
@@ -55,7 +55,7 @@ class UsersView(ListCreateModelView):
         return await super().post()
 
 
-class UserView(RetrieveUpdateDeleteModelView):
+class UserView(RetrieveUpdateDestroyModelView):
     required_permissions = constants.ROLE_ADMIN
     body_schema_class = schemas.UserSchema
     model = models.User
