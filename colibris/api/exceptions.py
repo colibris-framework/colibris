@@ -33,11 +33,6 @@ class JSONParseError(InvalidRequest):
         super().__init__(code='parse_error', message='JSON parse error')
 
 
-class ServerError(BaseJSONException):
-    def __init__(self, code, message):
-        super().__init__(code, message, status=500)
-
-
 class UnauthenticatedException(BaseJSONException):
     def __init__(self):
         super().__init__(code='unauthenticated', message='The request cannot be associated to an account.', status=401)

@@ -2,6 +2,7 @@
 import json
 import logging
 import re
+import traceback
 
 from aiohttp import web
 
@@ -69,8 +70,6 @@ async def handle_errors_json(request, handler):
         logger.error('%sinternal server error: %s', _extract_request_logging_info(request), e, exc_info=True)
 
         if settings.DEBUG:
-            import traceback
-
             details = traceback.format_exc()
 
         return web.json_response(envelope.wrap_error(code, message, details), status=500)

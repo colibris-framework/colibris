@@ -34,7 +34,6 @@ class MeView(views.View):
 
     @docs(tags=['Users'], summary='Reveal details about the current user')
     @response_schema(schemas.UserSchema())
-    @require_any_permission()
     async def get(self):
         user = get_account(self.request)
         result = schemas.UserSchema().dump(user)
