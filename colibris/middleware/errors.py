@@ -2,6 +2,7 @@
 import json
 import logging
 import re
+import traceback
 
 from aiohttp import web
 
@@ -10,8 +11,6 @@ from colibris import authentication
 from colibris import utils
 from colibris.api import BaseJSONException, envelope
 from colibris.conf import settings
-
-from .schema import HTTPSchemaValidationError
 
 
 logger = logging.getLogger(__name__)
@@ -37,13 +36,6 @@ async def handle_errors_json(request, handler):
         logger.warning('%s%s', _extract_request_logging_info(request), e)
 
         return web.json_response(envelope.wrap_error(e.code, e.message, e.details), status=e.status)
-
-    except HTTPSchemaValidationError as e:
-        code = 'invalid_fields'
-        message = 'Some of the supplied fields are invalid.'
-        logger.warning('%sschema validation error: %s', _extract_request_logging_info(request), e.details)
-
-        return web.json_response(envelope.wrap_error(code, message, e.details), status=e.status)
 
     except web.HTTPRedirection as e:
         return e
@@ -78,8 +70,6 @@ async def handle_errors_json(request, handler):
         logger.error('%sinternal server error: %s', _extract_request_logging_info(request), e, exc_info=True)
 
         if settings.DEBUG:
-            import traceback
-
             details = traceback.format_exc()
 
         return web.json_response(envelope.wrap_error(code, message, details), status=500)

@@ -13,8 +13,7 @@ SECRET_KEY = None
 
 MIDDLEWARE = [
     'colibris.middleware.errors.handle_errors_json',
-    'colibris.middleware.auth.handle_auth',
-    'colibris.middleware.schema.handle_schema_validation',
+    'colibris.middleware.auth.handle_auth'
 ]
 
 AUTHENTICATION = {

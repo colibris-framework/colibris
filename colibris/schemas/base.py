@@ -1,12 +1,8 @@
-
 import marshmallow_peewee.schema
-
-from marshmallow import *
-from marshmallow import validate
+from marshmallow import post_dump, post_load
 
 from colibris.api import envelope
 from colibris.utils import camelcase_to_underscore
-
 
 DEFAULT_DATETIME_FORMAT = '%Y-%m-%dT%H:%M:%S'
 
@@ -41,14 +37,3 @@ class ModelSchema(marshmallow_peewee.ModelSchema):
             return data
 
         return super().make_instance(data)
-
-
-def many_envelope(schema_class):
-    class SchemaWrapper(Schema):
-        results = fields.Nested(schema_class, many=True)
-        count = fields.Integer()
-        pages = fields.Integer()
-        page = fields.Integer()
-        page_size = fields.Integer()
-
-    return SchemaWrapper()

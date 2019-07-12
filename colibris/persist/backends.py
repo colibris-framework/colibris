@@ -57,10 +57,10 @@ class PostgreSQLBackend(PostgresqlDatabase, DatabaseBackend):
         conn.close()
 
     def _create(self, name):
-        self._one_shot_sql('CREATE DATABASE {name}'.format(name=name))
+        self._one_shot_sql('CREATE DATABASE "{name}"'.format(name=name))
 
     def _drop(self, name):
-        self._one_shot_sql('DROP DATABASE {name}'.format(name=name))
+        self._one_shot_sql('DROP DATABASE "{name}"'.format(name=name))
 
 
 class MySQLBackend(MySQLDatabase, DatabaseBackend):

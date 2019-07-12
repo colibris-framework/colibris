@@ -1,3 +1,5 @@
+from marshmallow import Schema, fields
+
 
 def wrap_one(obj):
     return obj
@@ -25,3 +27,14 @@ def wrap_error(code, message, details=None):
         'message': message,
         'details': details
     }
+
+
+def many_envelope(schema_class):
+    class SchemaWrapper(Schema):
+        results = fields.Nested(schema_class, many=True)
+        count = fields.Integer()
+        pages = fields.Integer()
+        page = fields.Integer()
+        page_size = fields.Integer()
+
+    return SchemaWrapper()
