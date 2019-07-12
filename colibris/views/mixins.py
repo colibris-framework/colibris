@@ -1,11 +1,8 @@
 import abc
-import traceback
 
 from aiohttp import hdrs, web
 from aiohttp_apispec import response_schema, request_schema
-from peewee import IntegrityError
 
-from colibris import api
 from colibris.persist import Model
 
 
@@ -53,47 +50,28 @@ class CreateMixin(metaclass=_GenericMixinMeta):
         schema = self.get_body_schema_class()
         data = await self.get_validated_body(schema)
 
-        try:
-            item = query.model.create(**data)
-        except IntegrityError as err:
-            traceback.print_exc()
-            raise api.ServerError(code='server_error', message=str(err))
+        instance = query.model.create(**data)
 
-        result = schema.dump(item)
+        result = schema.dump(instance)
 
         return web.json_response(result, status=201)
 
 
 class UpdateMixin(metaclass=_GenericMixinMeta):
     async def patch(self):
-        schema = self.get_body_schema_class(partial=True)
-        data = await self.get_validated_body(schema)
-
-        instance = self.get_object()
-        instance.update_fields(data)
-
-        try:
-            instance.save(only=data.keys())
-        except IntegrityError as err:
-            traceback.print_exc()
-            raise api.ServerError(code='server_error', message=str(err))
-
-        result = schema.dump(instance)
-
-        return web.json_response(result)
+        return await self._update(partial=True)
 
     async def put(self):
-        schema = self.get_body_schema_class()
+        return await self._update(partial=False)
+
+    async def _update(self, partial):
+        instance = self.get_object()
+
+        schema = self.get_body_schema_class(partial=partial, instance=instance)
         data = await self.get_validated_body(schema)
 
-        instance = self.get_object()
         instance.update_fields(data)
-
-        try:
-            instance.save()
-        except IntegrityError as err:
-            traceback.print_exc()
-            raise api.ServerError(code='server_error', message=str(err))
+        instance.save(only=data.keys())
 
         result = schema.dump(instance)
 
