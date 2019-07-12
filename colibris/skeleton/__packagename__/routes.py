@@ -5,9 +5,8 @@ from colibris.conf import settings
 
 from __packagename__ import views
 
-#
-# Routes example:
-#
+# Here are some examples of routes. Just remove what you don't need.
+
 ROUTES = [
     (r'/users/me',           views.get_me),
     (r'/users',              views.UsersView),
@@ -15,11 +14,9 @@ ROUTES = [
 ]
 
 
-#
 # Add static routes, for development purposes
-#
-# if settings.DEBUG:
-#     STATIC_ROUTES = [
-#         (os.path.join(settings.PROJECT_PACKAGE_DIR, 'static'), '/static'),
-#     ]
-#
+
+if settings.DEBUG:
+    STATIC_ROUTES = [
+        (os.path.join(settings.PROJECT_PACKAGE_DIR, 'static'), '/static'),
+    ]

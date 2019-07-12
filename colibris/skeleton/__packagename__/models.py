@@ -1,9 +1,8 @@
 from colibris import persist
 
 
-#
-# Model example:
-#
+# Here are some examples of models. Just remove what you don't need.
+
 class User(persist.Model):
     id = persist.AutoField()
     username = persist.CharField(max_length=128, index=True, unique=True)
@@ -13,9 +12,6 @@ class User(persist.Model):
     email = persist.CharField(max_length=128, null=True)
 
 
-#
-# Another model example:
-#
 class Right(persist.Model):
     id = persist.AutoField()
     user = persist.ForeignKeyField(User)

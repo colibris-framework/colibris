@@ -1,6 +1,3 @@
-from __packagename__ import constants
-from __packagename__ import models
-from __packagename__ import schemas
 from aiohttp import web
 from aiohttp_apispec import docs, response_schema
 
@@ -8,9 +5,13 @@ from colibris.authentication import get_account
 from colibris.authorization import require_any_permission
 from colibris.views.generic import RetrieveUpdateDeleteModelView, ListCreateModelView
 
-#
-# View examples:
-#
+from __packagename__ import constants
+from __packagename__ import models
+from __packagename__ import schemas
+
+
+# Here are some examples of views. Just remove what you don't need.
+
 @docs(tags=['Users'], summary='Reveal details about the current user')
 @response_schema(schemas.UserSchema())
 @require_any_permission()

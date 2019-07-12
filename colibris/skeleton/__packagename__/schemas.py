@@ -4,9 +4,8 @@ from colibris.schemas import fields, validate, pre_load
 from __packagename__ import models
 
 
-#
-# Schema example:
-#
+# Here is a schema example. Just remove it if you don't need it.
+
 class UserSchema(ModelSchema):
     email = fields.String(validate=[validate.Email(error='Invalid email address.'),
                                     validate.Length(max=128)])
