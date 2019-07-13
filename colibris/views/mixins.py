@@ -47,7 +47,7 @@ class ListMixin(metaclass=_GenericMixinMeta):
 class CreateMixin(metaclass=_GenericMixinMeta):
     async def post(self):
         query = self.get_query()
-        schema = self.get_body_schema_class()
+        schema = self.get_body_schema()
         data = await self.get_validated_body(schema)
 
         instance = query.model.create(**data)
@@ -67,7 +67,7 @@ class UpdateMixin(metaclass=_GenericMixinMeta):
     async def _update(self, partial):
         instance = self.get_object()
 
-        schema = self.get_body_schema_class(partial=partial, instance=instance)
+        schema = self.get_body_schema(partial=partial, instance=instance)
         data = await self.get_validated_body(schema)
 
         instance.update_fields(data)
@@ -88,7 +88,7 @@ class DestroyMixin:
 
 class RetrieveMixin(metaclass=_GenericMixinMeta):
     async def get(self):
-        schema = self.get_body_schema_class()
+        schema = self.get_body_schema()
         instance = self.get_object()
 
         result = schema.dump(instance)
