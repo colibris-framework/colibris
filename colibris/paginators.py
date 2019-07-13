@@ -1,5 +1,6 @@
 import math
 
+from colibris.api.envelope import wrap_many
 from marshmallow.validate import Range
 
 from colibris import api
@@ -33,14 +34,14 @@ class PageNumberPaginator:
     def paginate_query(self):
         return self.query.paginate(self.page, self.page_size)
 
-    def get_paginated_response(self, data):
+    def get_enveloped_data(self, data):
         count = self.query.count()
         pages = math.ceil(count / self.page_size)
 
-        return {
-            'results': data,
-            'count': count,
-            'pages': pages,
-            'page': self.page,
-            'page_size': self.page_size
-        }
+        return wrap_many(
+            objs=data,
+            count=count,
+            page=self.page,
+            pages=pages,
+            page_size=self.page_size
+        )
