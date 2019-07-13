@@ -43,7 +43,7 @@ class ListMixin(metaclass=_GenericMixinMeta):
         if self.paginator_class is not None:
             paginator = self.paginator_class(query, self.request)
 
-            paged_query = paginator.paginate_query(query)
+            paged_query = paginator.paginate_query()
             result = schema.dump(list(paged_query))
             paginated_result = paginator.get_paginated_response(result)
 

@@ -30,8 +30,8 @@ class PageNumberPaginator:
         self.page = query_params[self.PAGE_QUERY_PARAM]
         self.page_size = query_params[self.PAGE_SIZE_QUERY_PARAM]
 
-    def paginate_query(self, query):
-        return query.paginate(self.page, self.page_size)
+    def paginate_query(self):
+        return self.query.paginate(self.page, self.page_size)
 
     def get_paginated_response(self, data):
         count = self.query.count()
