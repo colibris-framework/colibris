@@ -15,5 +15,5 @@ async def swagger_view(request):
     )
 
 
-async def api_spec_view(request):
+async def apispec_view(request):
     return json_response(request.app["swagger_dict"])
