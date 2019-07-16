@@ -1,4 +1,3 @@
-import json
 from os.path import join
 
 from aiohttp.web_response import Response, json_response
@@ -17,4 +16,4 @@ async def swagger_view(request):
 
 
 async def api_spec_view(request):
-    return json_response(text=json.dumps(request.app["swagger_dict"]))
+    return json_response(request.app["swagger_dict"])
