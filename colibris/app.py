@@ -102,11 +102,8 @@ def _init_routes(web_app):
 # APISpec/Swagger support
 
 def _init_swagger(web_app):
-    async def init_wrapper(app):
-        setup_swagger(app=app)
-
+    setup_swagger(app=web_app)
     setup_aiohttp_apispec(app=web_app, title='API Documentation')
-    web_app.on_startup.append(init_wrapper)
 
 
 def get_web_app(force_create=False):
