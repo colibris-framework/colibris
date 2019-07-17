@@ -1,4 +1,5 @@
 import pytest
+
 from aiohttp import web, hdrs
 from peewee import SqliteDatabase
 
@@ -7,6 +8,7 @@ from colibris.schemas import ModelSchema
 
 from colibris import persist
 from colibris.views.generic import ListCreateModelView, RetrieveUpdateDestroyModelView
+
 
 db = SqliteDatabase(':memory:')
 
@@ -54,7 +56,7 @@ def setup_module(module):
 
 
 async def test_get_items(http_client):
-    response = await http_client.request(hdrs.METH_GET, "/items")
+    response = await http_client.request(hdrs.METH_GET, '/items')
     assert response.status == 200
 
 
@@ -62,7 +64,7 @@ async def test_create_item(http_client):
     item_name = 'Commodo Nibh'
     item_info = 'Cras Lorem Purus Etiam Venenatis'
 
-    response = await http_client.request(hdrs.METH_POST, "/items", json={'name': item_name, 'info': item_info})
+    response = await http_client.request(hdrs.METH_POST, '/items', json={'name': item_name, 'info': item_info})
 
     assert response.status == 201
 
@@ -72,7 +74,7 @@ async def test_create_item(http_client):
 
 
 async def test_create_item_validation(http_client):
-    response = await http_client.request(hdrs.METH_POST, "/items")
+    response = await http_client.request(hdrs.METH_POST, '/items')
 
     assert response.status == 400
     data = await response.json()
@@ -87,7 +89,8 @@ async def test_update_item(http_client):
 
     item = Item.create(name=item_initial_name, info=item_info)
 
-    response = await http_client.request(hdrs.METH_PATCH, f"/items/{item.id}", json={'name': item_updated_name})
+    response = await http_client.request(hdrs.METH_PATCH, '/items/{id}'.format(id=item.id),
+                                         json={'name': item_updated_name})
 
     assert response.status == 200
 
@@ -102,7 +105,8 @@ async def test_update_item_validation(http_client):
 
     item = Item.create(name=item_initial_name, info=item_info)
 
-    response = await http_client.request(hdrs.METH_PATCH, f"/items/{item.id}", json={'name': None})
+    response = await http_client.request(hdrs.METH_PATCH, '/items/{id}'.format(id=item.id),
+                                         json={'name': None})
 
     assert response.status == 400
 
@@ -111,7 +115,7 @@ async def test_update_item_validation(http_client):
 
 
 async def test_update_item_not_found(http_client):
-    response = await http_client.request(hdrs.METH_PATCH, f"/items/11011", json={'name': 'Egestas Fringilla'})
+    response = await http_client.request(hdrs.METH_PATCH, '/items/11011', json={'name': 'Egestas Fringilla'})
 
     assert response.status == 404
 
@@ -122,7 +126,7 @@ async def test_delete_item(http_client):
 
     item = Item.create(name=item_name, info=item_info)
 
-    response = await http_client.request(hdrs.METH_DELETE, f"/items/{item.id}")
+    response = await http_client.request(hdrs.METH_DELETE, '/items/{id}'.format(id=item.id))
 
     assert response.status == 204
 
@@ -131,6 +135,6 @@ async def test_delete_item(http_client):
 
 
 async def test_delete_item_not_found(http_client):
-    response = await http_client.request(hdrs.METH_DELETE, f"/items/111111")
+    response = await http_client.request(hdrs.METH_DELETE, '/items/111111')
 
     assert response.status == 404
