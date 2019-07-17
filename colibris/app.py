@@ -99,7 +99,10 @@ def _init_routes(web_app):
 
 # APISpec/Swagger support
 
-def _init_apispec_ui(web_app):
+def _init_swagger(web_app):
+    from colibris.docs.openapi.setup import setup_openapi_ui
+
+    setup_openapi_ui(app=web_app)
     setup_aiohttp_apispec(app=web_app, title='API Documentation')
 
 
@@ -110,7 +113,7 @@ def get_web_app(force_create=False):
         _web_app = _make_web_app()
 
         _init_routes(_web_app)
-        _init_apispec_ui(_web_app)
+        _init_swagger(_web_app)
 
         _web_app.on_startup.append(_init_app)
         _web_app.on_startup.append(_initial_health_check)

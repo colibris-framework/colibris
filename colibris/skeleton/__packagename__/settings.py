@@ -51,10 +51,5 @@ AUTHORIZATION = {
     'order': constants.ROLES
 }
 
-API_DOCS_URL = '/api/docs'
-APISPEC_URL = '{}/apispec'.format(API_DOCS_URL)
-DOCS_STATIC_URL = '{}/static'.format(API_DOCS_URL)
-
-
 GeneralSettingsSchema().load_from_env(target_settings=globals())
 DatabaseSettingsSchema().load_from_env(target_settings=globals())

@@ -734,7 +734,7 @@ should be added to git.
 
 #### Available Settings
 
-###### `API_DOCS_URL`
+###### `API_DOCS_PATH`
 
 Controls the path where the API documentation is served. Defaults to `/api/docs`.
 

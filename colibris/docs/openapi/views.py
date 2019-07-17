@@ -2,16 +2,15 @@ from os.path import join
 
 from aiohttp.web_response import Response, json_response
 
-from colibris.conf import settings
-from colibris.docs.openapi import DOCS_STATIC_PATH
+from colibris.docs.openapi import STATIC_PATH, APISPEC_URL, STATIC_URL
 
 
-async def apispec_ui_view(request):
-    with open(join(DOCS_STATIC_PATH, "index.html")) as f:
+async def ui_view(request):
+    with open(join(STATIC_PATH, "index.html")) as f:
         content = f.read()
 
-    content = content.replace("##API_SPEC_URL##", settings.APISPEC_URL)
-    content = content.replace("##STATIC_BASE_URL##", settings.DOCS_STATIC_URL)
+    content = content.replace("##API_SPEC_URL##", APISPEC_URL)
+    content = content.replace("##STATIC_BASE_URL##", STATIC_URL)
 
     return Response(text=content, content_type="text/html")
 
