@@ -43,7 +43,7 @@ class ListMixin(metaclass=_GenericMixinMeta):
         query = self.get_query()
         schema = self.get_body_schema(many=True)
 
-        if self.paginator_class is not None:
+        if self.pagination_class is not None:
             return await self._get_paginated_response(query, schema)
 
         result = schema.dump(list(query))
@@ -51,7 +51,7 @@ class ListMixin(metaclass=_GenericMixinMeta):
         return web.json_response(result)
 
     async def _get_paginated_response(self, query, schema):
-        paginator = self.paginator_class(query, self.request)
+        paginator = self.pagination_class(query, self.request)
         paginated_query = paginator.paginate_query()
         result = schema.dump(list(paginated_query))
         paginated_result = paginator.get_enveloped_data(result)

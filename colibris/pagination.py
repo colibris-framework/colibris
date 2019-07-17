@@ -9,7 +9,7 @@ from colibris.schemas import fields, Schema, ValidationError
 page_validator = Range(min=1, error='Value must be greater than 0.')
 
 
-class PageNumberPaginator:
+class PageNumberPagination:
     PAGE_SIZE = 25
     PAGE_SIZE_QUERY_PARAM = 'page_size'
     PAGE_QUERY_PARAM = 'page'
