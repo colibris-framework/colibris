@@ -100,9 +100,9 @@ def _init_routes(web_app):
 # APISpec/Swagger support
 
 def _init_swagger(web_app):
-    from colibris.docs.setup import setup_swagger
+    from colibris.docs.openapi.setup import setup_openapi_ui
 
-    setup_swagger(app=web_app)
+    setup_openapi_ui(app=web_app)
     setup_aiohttp_apispec(app=web_app, title='API Documentation')
 
 

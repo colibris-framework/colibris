@@ -2,10 +2,10 @@ from os.path import join
 
 from aiohttp.web_response import Response, json_response
 
-from colibris.docs import STATIC_PATH, APISPEC_URL, STATIC_URL
+from colibris.docs.openapi import STATIC_PATH, APISPEC_URL, STATIC_URL
 
 
-async def swagger_view(request):
+async def ui_view(request):
     with open(join(STATIC_PATH, "index.html")) as f:
         content = f.read()
 
