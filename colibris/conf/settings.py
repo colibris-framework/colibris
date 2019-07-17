@@ -31,7 +31,9 @@ TEMPLATE = {}
 TASK_QUEUE = {}
 EMAIL = {}
 
-API_DOCS_PATH = '/api/docs'
+API_DOCS_URL = '/api/docs'
+APISPEC_URL = '{}/apispec'.format(API_DOCS_URL)
+DOCS_STATIC_URL = '{}/static'.format(API_DOCS_URL)
 
 LOGGING = {
     'version': 1,
