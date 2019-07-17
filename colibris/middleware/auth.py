@@ -37,14 +37,16 @@ async def handle_auth(request, handler):
             else:
                 required_permissions = required_permissions or method_func_required_permissions
 
-    # Only go through authentication if permissions are specified; otherwise view is considered public.
-    if required_permissions is not None:
-        try:
-            account = authentication.authenticate(request)
+    try:
+        account = authentication.authenticate(request)
 
-        except authentication.AuthenticationException:
+    except authentication.AuthenticationException:
+        if required_permissions is not None:
             raise api.UnauthenticatedException()
 
+        account = None
+
+    if required_permissions is not None:
         try:
             authorization.authorize(account, method, path, original_handler, required_permissions)
 

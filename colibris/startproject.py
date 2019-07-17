@@ -20,22 +20,22 @@ def cleanup():
         tmp_dir.cleanup()
 
 
-def get_template_dir(template):
+def get_skeleton_dir(skeleton):
     global tmp_dir
 
-    if template is None:  # Use default template skeleton
+    if skeleton is None:  # Use default template skeleton
         return os.path.join(os.path.dirname(__file__), 'skeleton')
 
-    elif template.startswith('git@') or template.startswith('http:') or template.startswith('https:'):
+    elif skeleton.startswith('git@') or skeleton.startswith('http:') or skeleton.startswith('https:'):
         tmp_dir = tempfile.TemporaryDirectory()
-        cmd = ['git', 'clone', template, tmp_dir.name]
+        cmd = ['git', 'clone', skeleton, tmp_dir.name]
 
         subprocess.check_call(cmd)
 
         return tmp_dir.name
 
     else:  # Assuming local directory
-        return template
+        return skeleton
 
 
 def start_project():
@@ -43,7 +43,7 @@ def start_project():
 
     parser = argparse.ArgumentParser()
     parser.add_argument('name', help='The project name (e.g. my-project)', type=str)
-    parser.add_argument('--template', help='An optional template (can be a local dir or a git repo)',
+    parser.add_argument('--skeleton', help='An optional template skeleton (can be a local dir or a git repo)',
                         type=str, required=False)
 
     args = parser.parse_args()
@@ -51,9 +51,9 @@ def start_project():
     project_name = args.name
     package_name = re.sub('[^a-z0-9_]', '', project_name).lower()
 
-    template_dir = get_template_dir(args.template)
+    skeleton_dir = get_skeleton_dir(args.skeleton)
 
-    shutil.copytree(template_dir, project_name, ignore=shutil.ignore_patterns(*IGNORE_PATTERNS))
+    shutil.copytree(skeleton_dir, project_name, ignore=shutil.ignore_patterns(*IGNORE_PATTERNS))
 
     old_package_name = '{}/{}'.format(project_name, PACKAGE_NAME_PLACEHOLDER)
     new_package_name = '{}/{}'.format(project_name, package_name)
