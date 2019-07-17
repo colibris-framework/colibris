@@ -1,4 +1,3 @@
-
 import asyncio
 import inspect
 import logging
@@ -9,7 +8,6 @@ from aiohttp_apispec import setup_aiohttp_apispec
 
 from colibris import utils
 from colibris.conf import settings
-from colibris.docs.setup import setup_swagger
 
 logger = logging.getLogger(__name__)
 middleware = []
@@ -102,6 +100,8 @@ def _init_routes(web_app):
 # APISpec/Swagger support
 
 def _init_swagger(web_app):
+    from colibris.docs.setup import setup_swagger
+
     setup_swagger(app=web_app)
     setup_aiohttp_apispec(app=web_app, title='API Documentation')
 
