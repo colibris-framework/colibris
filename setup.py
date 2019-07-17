@@ -29,9 +29,6 @@ setup(
     install_requires=[
         'aiohttp>=3.5.0,<=3.5.4',
         'aiohttp-apispec>=1.0,<=1.3',
-        # aiohttp-swagger is currently in a bad, unmaintained state, so we need to use a specific
-        # commit of eLvErDe's aiohttp-swagger github repo.
-        'aiohttp-swagger @ git+https://github.com/eLvErDe/aiohttp-swagger.git@39687734',
         'async-timeout',
         'marshmallow>=3.0.0b19,<=3.0.0rc7',
         'marshmallow_peewee==2.3.0',

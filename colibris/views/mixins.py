@@ -1,7 +1,7 @@
 import abc
 
 from aiohttp import hdrs, web
-from aiohttp_apispec import response_schema, request_schema
+from aiohttp_apispec import response_schema, request_schema, docs
 
 from colibris.persist import Model
 
@@ -23,6 +23,9 @@ class _GenericMixinMeta(abc.ABCMeta):
 
             if hasattr(cls, 'patch'):
                 cls.patch = request_schema(cls.body_schema_class)(response_schema(cls.body_schema_class)(cls.patch))
+
+            if hasattr(cls, 'delete'):
+                cls.delete = docs()(cls.delete)
 
         if getattr(cls, 'query_schema_class', None) is not None:
             for http_method in hdrs.METH_ALL:

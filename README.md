@@ -29,9 +29,9 @@ Prepare the project:
 
     colibris-start-project ${PROJECT_NAME}
 
-You can use a different template repository for your project's skeleton:
+You can use a different skeleton template repository for your project:
 
-    colibris-start-project ${PROJECT_NAME} --template git@github.com:myorganization/microservice-template.git 
+    colibris-start-project ${PROJECT_NAME} --skeleton git@github.com:myorganization/microservice-skeleton.git 
 
 Your project folder will contain a package derived from your project name as well as various other stuff. You'll find
 a `manage.py` module in the project package, which is in fact the main script of your project.
@@ -734,7 +734,7 @@ should be added to git.
 
 #### Available Settings
 
-###### `API_DOCS_PATH`
+###### `API_DOCS_URL`
 
 Controls the path where the API documentation is served. Defaults to `/api/docs`.
 
