@@ -18,7 +18,7 @@ from __packagename__ import schemas
 class HomeView(views.View):
     # Show the API docs when visiting the index of the service
     async def get(self):
-        raise web.HTTPFound(settings.API_DOCS_PATH)
+        raise web.HTTPFound(settings.API_DOCS_URL)
 
 
 class HealthView(views.View):
