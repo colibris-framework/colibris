@@ -19,8 +19,7 @@ def test_start_project_default_skeleton(colibris_env):
 
 def test_start_project_custom_skeleton(colibris_env):
     colibris_env.chdir_projects()
-    colibris_env.run_cmd('colibris-start-project --template {}/tests/functional/dummy-skeleton test-custom-project '
-                         .format(colibris_env.colibris_dir))
+    colibris_env.run_cmd('colibris-start-project test-custom-project'.format(colibris_env.colibris_dir))
 
     assert 'test-custom-project' in os.listdir('.')
     assert 'testcustomproject' in os.listdir('test-custom-project')
