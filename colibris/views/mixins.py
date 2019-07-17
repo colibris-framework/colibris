@@ -40,17 +40,29 @@ class _GenericMixinMeta(abc.ABCMeta):
 
 class ListMixin(metaclass=_GenericMixinMeta):
     async def get(self):
-        items = self.get_query()
-        schema = self.get_body_schema_class(many=True)
-        result = schema.dump(list(items))
+        query = self.get_query()
+        schema = self.get_body_schema(many=True)
+
+        if self.pagination_class is not None:
+            return await self._get_paginated_response(query, schema)
+
+        result = schema.dump(list(query))
 
         return web.json_response(result)
+
+    async def _get_paginated_response(self, query, schema):
+        paginator = self.pagination_class(query, self.request)
+        paginated_query = paginator.paginate_query()
+        result = schema.dump(list(paginated_query))
+        paginated_result = paginator.get_enveloped_data(result)
+
+        return web.json_response(paginated_result)
 
 
 class CreateMixin(metaclass=_GenericMixinMeta):
     async def post(self):
         query = self.get_query()
-        schema = self.get_body_schema_class()
+        schema = self.get_body_schema()
         data = await self.get_validated_body(schema)
 
         instance = query.model.create(**data)
@@ -70,7 +82,7 @@ class UpdateMixin(metaclass=_GenericMixinMeta):
     async def _update(self, partial):
         instance = self.get_object()
 
-        schema = self.get_body_schema_class(partial=partial, instance=instance)
+        schema = self.get_body_schema(partial=partial, instance=instance)
         data = await self.get_validated_body(schema)
 
         instance.update_fields(data)
@@ -91,7 +103,7 @@ class DestroyMixin:
 
 class RetrieveMixin(metaclass=_GenericMixinMeta):
     async def get(self):
-        schema = self.get_body_schema_class()
+        schema = self.get_body_schema()
         instance = self.get_object()
 
         result = schema.dump(instance)

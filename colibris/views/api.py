@@ -9,7 +9,7 @@ class APIView(View):
     body_schema_class = None
     query_schema_class = None
 
-    def get_body_schema_class(self, *args, **kwargs):
+    def get_body_schema(self, *args, **kwargs):
         assert self.body_schema_class is not None, 'The attribute "body_schema_class" is required for {}'.format(self)
 
         kwargs.update({
@@ -20,7 +20,7 @@ class APIView(View):
 
         return schema
 
-    def get_query_schema_class(self, *args, **kwargs):
+    def get_query_schema(self, *args, **kwargs):
         assert self.query_schema_class is not None, 'The attribute "query_schema_class" is required for {}'.format(self)
 
         kwargs.update({
@@ -33,7 +33,7 @@ class APIView(View):
 
     async def get_validated_body(self, schema=None):
         if schema is None:
-            schema = self.get_body_schema_class()
+            schema = self.get_body_schema()
 
         json_payload = await self.get_request_payload()
 
@@ -57,7 +57,7 @@ class APIView(View):
 
     async def get_validated_query(self, schema=None):
         if schema is None:
-            schema = self.get_query_schema_class()
+            schema = self.get_query_schema()
 
         query = await self.get_request_query()
 
