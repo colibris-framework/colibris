@@ -1,0 +1,20 @@
+# Build with:
+#    docker build -t colibris/tox -f Dockerfile.tox .
+
+FROM ubuntu:18.04
+
+# Install gnupg2 first as we need it for apt-key
+RUN apt-get update && apt-get install -y gnupg2
+
+# Make sure we have an up-to-date OS + various python versions
+RUN echo "deb http://ppa.launchpad.net/deadsnakes/ppa/ubuntu bionic main" >> /etc/apt/sources.list.d/python.list && \
+    apt-key adv --keyserver keyserver.ubuntu.com --recv-keys F23C5A6CF475977595C89F51BA6932366A755776 && \
+    apt-get update && apt-get -y upgrade && \
+    apt-get -y install build-essential git python3.5-dev python3.6-dev python3.7-dev tox sqlite
+
+# Cleanup
+RUN apt-get clean autoclean && \
+    apt-get autoremove --yes && \
+    rm -rf /var/lib/{apt,dpkg,cache,log}/
+
+WORKDIR /colibris
