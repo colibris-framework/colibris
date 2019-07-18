@@ -43,7 +43,12 @@ class TestCommand(BaseCommand):
     def execute(self, options):
         import pytest
 
-        has_file_or_dir = any(True for arg in self.args if not arg.startswith('-'))
+        args = list(self.args)
+        has_file_or_dir = any(True for arg in args if not arg.startswith('-'))
+
+        # Running tests with "-v" feels like a natural choice
+        if '-v' not in args:
+            args.append('-v')
 
         # Run tests from the project's tests subpackage unless a file or directory is given as argument
         if not has_file_or_dir:
@@ -54,4 +59,4 @@ class TestCommand(BaseCommand):
         # Use project's fixtures as a plugin so that project-specific fixtures are loaded
         plugins.append('{}.tests.fixtures'.format(settings.PROJECT_PACKAGE_NAME))
 
-        return pytest.main(self.args, plugins=plugins)
+        return pytest.main(args, plugins=plugins)
