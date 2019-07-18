@@ -34,7 +34,7 @@ SECRET_KEY = 'replace-me-with-random-ascii-string-or-supply-via-environment'
 
 DATABASE = {
     'backend': 'colibris.persist.SQLiteBackend',
-    'name': 'db.sql'
+    'name': '__packagename__.db'
 }
 
 AUTHENTICATION = {

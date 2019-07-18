@@ -73,8 +73,7 @@ def test_project(colibris_env):
     colibris_env.ensure_req('pyjwt')
     colibris_env.ensure_req('pytest')
 
-    colibris_env.run_cmd('colibris-start-project --template {}/tests/functional/dummy-skeleton test-project '
-                         .format(colibris_env.colibris_dir))
+    colibris_env.run_cmd('colibris-start-project test-project'.format(colibris_env.colibris_dir))
     os.chdir('test-project')
 
     yield colibris_env

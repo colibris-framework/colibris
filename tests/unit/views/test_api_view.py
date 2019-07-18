@@ -1,9 +1,9 @@
 import pytest
+
 from aiohttp import web, hdrs
 from marshmallow import Schema, fields
 
 from colibris.middleware.errors import handle_errors_json
-
 from colibris.views import APIView
 
 
@@ -53,7 +53,7 @@ async def test_get(http_client):
         'count': 222
     }
 
-    response = await http_client.request(hdrs.METH_GET, "/items", params=sent_args)
+    response = await http_client.request(hdrs.METH_GET, '/items', params=sent_args)
 
     assert response.status == 200
 
@@ -75,7 +75,7 @@ async def test_post_body(http_client):
         'count': 22,
     }
 
-    response = await http_client.request(hdrs.METH_POST, "/items", json=sent_data)
+    response = await http_client.request(hdrs.METH_POST, '/items', json=sent_data)
 
     assert response.status == 200
 
@@ -93,7 +93,7 @@ async def test_post_query(http_client):
         'count': 22,
     }
 
-    response = await http_client.request(hdrs.METH_POST, "/items", params=sent_data)
+    response = await http_client.request(hdrs.METH_POST, '/items', params=sent_data)
 
     assert response.status == 200
 
