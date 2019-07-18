@@ -1,4 +1,3 @@
-
 import asyncio
 import inspect
 import logging
@@ -6,11 +5,9 @@ import time
 
 from aiohttp import web, hdrs
 from aiohttp_apispec import setup_aiohttp_apispec
-from aiohttp_swagger import setup_swagger
 
 from colibris import utils
 from colibris.conf import settings
-
 
 logger = logging.getLogger(__name__)
 middleware = []
@@ -100,14 +97,13 @@ def _init_routes(web_app):
         _add_static_route_tuple(web_app, route)
 
 
-# APISpec/Swagger support
+# API Docs support
 
-def _init_swagger(web_app):
-    async def init_wrapper(app):
-        setup_swagger(app=app, swagger_url=settings.API_DOCS_PATH, swagger_info=app['swagger_dict'])
+def _init_docs(web_app):
+    from colibris.docs.openapi.setup import setup_openapi_ui
 
+    setup_openapi_ui(app=web_app)
     setup_aiohttp_apispec(app=web_app, title='API Documentation')
-    web_app.on_startup.append(init_wrapper)
 
 
 def get_web_app(force_create=False):
@@ -117,7 +113,7 @@ def get_web_app(force_create=False):
         _web_app = _make_web_app()
 
         _init_routes(_web_app)
-        _init_swagger(_web_app)
+        _init_docs(_web_app)
 
         _web_app.on_startup.append(_init_app)
         _web_app.on_startup.append(_initial_health_check)

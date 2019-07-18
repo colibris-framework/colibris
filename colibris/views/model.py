@@ -4,7 +4,7 @@ from colibris.views.api import APIView
 
 class ModelView(APIView):
     model = None
-    body_schema_class = None
+    pagination_class = None
     url_identifier = 'id'
     lookup_field = 'id'
 

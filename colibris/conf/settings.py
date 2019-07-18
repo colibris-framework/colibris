@@ -31,7 +31,7 @@ TEMPLATE = {}
 TASK_QUEUE = {}
 EMAIL = {}
 
-API_DOCS_PATH = '/api/docs'
+API_DOCS_URL = '/api/docs'
 
 LOGGING = {
     'version': 1,
