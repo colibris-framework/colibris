@@ -32,5 +32,6 @@ def test_start_project_custom_skeleton(colibris_env):
 
     assert 'test-custom-project' in os.listdir('.')
     assert 'testcustomproject' in os.listdir('test-custom-project')
+    assert 'custom-file.txt' in os.listdir('test-custom-project')
 
     os.chdir('test-custom-project')
