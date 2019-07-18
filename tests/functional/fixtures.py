@@ -30,7 +30,8 @@ class ColibrisEnv:
         self.projects_tmp_dir.cleanup()
 
     def make_virtual_env(self):
-        subprocess.check_call('virtualenv {}'.format(self.venv_dir), shell=True)
+        subprocess.check_call('pip install virtualenv', shell=True)
+        subprocess.check_call('python -m virtualenv {}'.format(self.venv_dir), shell=True)
 
     def make_dist(self):
         prev_dir = os.getcwd()
