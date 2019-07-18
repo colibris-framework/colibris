@@ -27,42 +27,54 @@ class CreateMixin:
         schema = self.get_body_schema()
         data = await self.get_validated_body(schema)
 
-        instance = query.model.create(**data)
+        instance = self.perform_create(data)
 
         result = schema.dump(instance)
 
         return web.json_response(result, status=201)
 
+    def perform_create(self, data):
+        query = self.get_query()
+        instance = query.model.create(**data)
+
+        return instance
 
 
 class UpdateMixin:
     async def patch(self):
-        return await self._update(partial=True)
+        return await self.update(partial=True)
 
     async def put(self):
-        return await self._update(partial=False)
+        return await self.update(partial=False)
 
-    async def _update(self, partial):
+    async def update(self, partial):
         instance = self.get_object()
 
         schema = self.get_body_schema(partial=partial, instance=instance)
         data = await self.get_validated_body(schema)
 
-        instance.update_fields(data)
-        instance.save(only=data.keys())
+        self.perform_update(data, instance)
 
         result = schema.dump(instance)
 
         return web.json_response(result)
 
+    def perform_update(self, data, instance):
+        instance.update_fields(data)
+        instance.save(only=data.keys())
+
+        return instance
+
 
 class DestroyMixin:
     async def delete(self):
         instance = self.get_object()
-        instance.delete_instance()
+        self.perform_destroy(instance)
 
         return web.json_response(status=204)
 
+    def perform_destroy(self, instance):
+        instance.delete_instance()
 
 
 class RetrieveMixin:
