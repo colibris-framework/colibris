@@ -45,7 +45,8 @@ setup(
     author='The Colibris Team',
     packages=find_packages(include='colibris/*'),
     package_data={
-        'colibris': package_data_rec('colibris', 'skeleton')
+        'colibris': (package_data_rec('colibris', 'skeleton') +
+                     package_data_rec('colibris', 'docs'))
     },
     entry_points={
         'console_scripts': [
