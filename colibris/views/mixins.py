@@ -29,7 +29,7 @@ class CreateMixin:
         schema = self.get_body_schema()
         data = await self.get_validated_body(schema)
 
-        if inspect.iscoroutine(self.perform_create):
+        if inspect.iscoroutinefunction(self.perform_create):
             instance = await self.perform_create(data)
         else:
             instance = self.perform_create(data)
@@ -58,7 +58,7 @@ class UpdateMixin:
         schema = self.get_body_schema(partial=partial, instance=instance)
         data = await self.get_validated_body(schema)
 
-        if inspect.iscoroutine(self.perform_update):
+        if inspect.iscoroutinefunction(self.perform_update):
             instance = await self.perform_update(data, instance)
         else:
             instance = self.perform_update(data, instance)
@@ -78,7 +78,7 @@ class DestroyMixin:
     async def delete(self):
         instance = self.get_object()
 
-        if inspect.iscoroutine(self.perform_destroy):
+        if inspect.iscoroutinefunction(self.perform_destroy):
             await self.perform_destroy(instance)
         else:
             self.perform_destroy(instance)
