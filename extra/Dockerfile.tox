@@ -10,7 +10,7 @@ RUN apt-get update && apt-get install -y gnupg2
 RUN echo "deb http://ppa.launchpad.net/deadsnakes/ppa/ubuntu bionic main" >> /etc/apt/sources.list.d/python.list && \
     apt-key adv --keyserver keyserver.ubuntu.com --recv-keys F23C5A6CF475977595C89F51BA6932366A755776 && \
     apt-get update && apt-get -y upgrade && \
-    apt-get -y install build-essential git python3.5-dev python3.6-dev python3.7-dev tox sqlite
+    apt-get -y install build-essential git python3.5-dev python3.6-dev python3.7-dev tox pycodestyle sqlite
 
 # Cleanup
 RUN apt-get clean autoclean && \

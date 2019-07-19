@@ -1,6 +1,13 @@
 version: 2
 jobs:
-  automated-tests:
+  check-code-style:
+    docker:
+      - image: colibris/tox
+    steps:
+      - checkout
+      - run: pycodestyle
+
+  run-automated-tests:
     docker:
       - image: colibris/tox
     steps:
@@ -23,7 +30,8 @@ workflows:
   version: 2
   tests:
     jobs:
-      - automated-tests
+      - check-code-style
+      - run-automated-tests
 
   release:
     jobs:
