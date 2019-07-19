@@ -51,7 +51,7 @@ def _setup_project_package():
 
             else:
                 # pkg_resources kind wrapper
-                m = re.search(r"load_entry_point\('(\w+)==", main_content)
+                m = re.search(r"load_entry_point\('(\w+)=*", main_content)
                 if m:
                     project_package_name = m.group(1)
 
