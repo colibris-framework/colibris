@@ -1,4 +1,4 @@
-
+[![CircleCI](https://circleci.com/gh/colibris-framework/colibris/tree/master.svg?style=svg)](https://circleci.com/gh/colibris-framework/colibris/tree/master)
 ## Starting Your Project
 
 The following variables are assumed:
