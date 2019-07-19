@@ -7,34 +7,31 @@ from colibris.persist import Model
 
 
 class ViewMeta(abc.ABCMeta):
+    METHODS_WITH_OUTPUT = (hdrs.METH_GET, hdrs.METH_POST, hdrs.METH_PATCH, hdrs.METH_PUT)
+    METHODS_WITH_INPUT = (hdrs.METH_POST, hdrs.METH_PATCH, hdrs.METH_PUT)
+
     def __init__(cls, name, bases, attrs):
         for http_method in hdrs.METH_ALL:
-            method_name = http_method.lower()
+            handler_name = http_method.lower()
 
-            if not hasattr(cls, method_name):
+            if not hasattr(cls, handler_name):
                 continue
 
-            handler = getattr(cls, method_name)
-            setattr(cls, method_name, docs()(handler))
+            handler = getattr(cls, handler_name)
+            setattr(cls, handler_name, docs()(handler))
 
             if getattr(cls, 'query_schema_class', None) is not None:
-                setattr(cls, method_name, request_schema(cls.query_schema_class, location='query')(handler))
+                setattr(cls, handler_name, request_schema(cls.query_schema_class, location='query')(handler))
+
+            if getattr(cls, 'body_schema_class', None) is not None:
+                if http_method in cls.METHODS_WITH_INPUT:
+                    setattr(cls, handler_name, request_schema(cls.body_schema_class)(handler))
+
+                if http_method in cls.METHODS_WITH_OUTPUT:
+                    setattr(cls, handler_name, response_schema(cls.body_schema_class)(handler))
 
         if getattr(cls, 'model', None) is not None:
             assert issubclass(cls.model, Model) is True, 'The "model" should be a subclass of {}.'.format(Model)
-
-        if getattr(cls, 'body_schema_class', None) is not None:
-            if hasattr(cls, 'get'):
-                cls.get = response_schema(cls.body_schema_class)(cls.get)
-
-            if hasattr(cls, 'post'):
-                cls.post = request_schema(cls.body_schema_class)(response_schema(cls.body_schema_class)(cls.post))
-
-            if hasattr(cls, 'put'):
-                cls.put = request_schema(cls.body_schema_class)(response_schema(cls.body_schema_class)(cls.put))
-
-            if hasattr(cls, 'patch'):
-                cls.patch = request_schema(cls.body_schema_class)(response_schema(cls.body_schema_class)(cls.patch))
 
         super().__init__(name, bases, attrs)
 
