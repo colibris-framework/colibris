@@ -27,13 +27,13 @@ class CreateMixin:
         schema = self.get_body_schema()
         data = await self.get_validated_body(schema)
 
-        instance = self.perform_create(data)
+        instance = await self.perform_create(data)
 
         result = schema.dump(instance)
 
         return web.json_response(result, status=201)
 
-    def perform_create(self, data):
+    async def perform_create(self, data):
         query = self.get_query()
         instance = query.model.create(**data)
 
@@ -53,13 +53,13 @@ class UpdateMixin:
         schema = self.get_body_schema(partial=partial, instance=instance)
         data = await self.get_validated_body(schema)
 
-        self.perform_update(data, instance)
+        instance = await self.perform_update(data, instance)
 
         result = schema.dump(instance)
 
         return web.json_response(result)
 
-    def perform_update(self, data, instance):
+    async def perform_update(self, data, instance):
         instance.update_fields(data)
         instance.save(only=data.keys())
 
@@ -69,11 +69,11 @@ class UpdateMixin:
 class DestroyMixin:
     async def delete(self):
         instance = self.get_object()
-        self.perform_destroy(instance)
+        await self.perform_destroy(instance)
 
         return web.json_response(status=204)
 
-    def perform_destroy(self, instance):
+    async def perform_destroy(self, instance):
         instance.delete_instance()
 
 
