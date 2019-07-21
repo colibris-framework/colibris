@@ -6,3 +6,4 @@
 playground*
 dist
 Pipfile.lock
+docs/build
