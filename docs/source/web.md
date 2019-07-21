@@ -7,4 +7,3 @@ Start the web server by running:
 Then you can test it by pointing your browser to:
 
     http://localhost:8888
- 

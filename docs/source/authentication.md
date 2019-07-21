@@ -36,4 +36,3 @@ In `${PACKAGE}/settings.py`, set:
         'model': 'yourproject.models.User',
         'key_field': 'secret',
     }
-
