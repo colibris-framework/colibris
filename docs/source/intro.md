@@ -1,4 +1,4 @@
-# Starting Your Project
+# Getting Started
 
 The following variables are assumed:
 
