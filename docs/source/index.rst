@@ -9,3 +9,23 @@ Welcome to Colibris's documentation!
 .. toctree::
    :maxdepth: 1
    :caption: Contents:
+
+   intro.md
+   database.md
+   models.md
+   schemas.md
+   views.md
+   routes.md
+   authentication.md
+   authorization.md
+   migrations.md
+   web.md
+   initialization.md
+   cache.md
+   templates.md
+   email.md
+   offloading.md
+   health.md
+   testing.md
+   deployment.md
+   settings.md
