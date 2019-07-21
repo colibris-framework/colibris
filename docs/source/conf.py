@@ -10,17 +10,19 @@
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
-# import os
+import os
 # import sys
+import re
+
 # sys.path.insert(0, os.path.abspath('.'))
 
+ROOT_PROJECT_PATH = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 # -- Project information -----------------------------------------------------
 
 project = 'Colibris Framework'
 copyright = '2019, The Colibris Team'
 author = 'The Colibris Team'
-
 
 # -- General configuration ---------------------------------------------------
 
@@ -37,7 +39,6 @@ templates_path = ['_templates']
 # This pattern also affects html_static_path and html_extra_path.
 exclude_patterns = []
 
-
 # -- Options for HTML output -------------------------------------------------
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
@@ -51,3 +52,16 @@ html_theme = 'sphinx_rtd_theme'
 html_static_path = ['_static']
 
 master_doc = 'index'
+
+
+def find_version():
+    # FIXME: This function is duplicated from setup.py.
+    with open(os.path.join(ROOT_PROJECT_PATH, 'colibris', '__init__.py')) as f:
+        m = re.search(r"VERSION\s*=\s*'(.*?)'", f.read())
+        if m:
+            return m.group(1)
+
+    return 'unknown'
+
+
+version = find_version()
