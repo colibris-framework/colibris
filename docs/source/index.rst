@@ -19,7 +19,7 @@ Welcome to Colibris's documentation!
    authentication.md
    authorization.md
    migrations.md
-   web.md
+   http.md
    initialization.md
    cache.md
    templates.md

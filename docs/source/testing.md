@@ -1,4 +1,4 @@
-# Tests
+# Testing
 
 ## The `pytest` Framework
 

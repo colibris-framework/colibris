@@ -1,6 +1,6 @@
-# Web Server
+# HTTP
 
-Start the web server by running:
+Start the HTTP server by running:
 
     ./${PACKAGE}/manage.py runserver
 

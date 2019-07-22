@@ -1,4 +1,4 @@
-# Background Tasks
+# Offloading
 
 Running time-consuming, blocking tasks can be done by using the `taskqueue` functionality in separate workers. The
 `TASK_QUEUE` variable in `${PACKAGE}/settings.py` configures the background running task mechanism. Background tasks
