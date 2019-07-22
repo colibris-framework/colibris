@@ -1,4 +1,4 @@
-# Email Sending
+# Email
 
 The email sending mechanism is controlled by the `EMAIL` variable in `${PACKAGE}/settings.py`. Emails are disabled by
 default.

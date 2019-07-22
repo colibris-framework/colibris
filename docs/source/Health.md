@@ -1,4 +1,4 @@
-# Health Status
+# Health
 
 You can (and should) implement your project-specific health check function by exposing the `get_health` function in
 `app.py`:
