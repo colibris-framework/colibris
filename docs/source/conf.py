@@ -15,6 +15,7 @@ import os
 import re
 
 # sys.path.insert(0, os.path.abspath('.'))
+from recommonmark.transform import AutoStructify
 
 ROOT_PROJECT_PATH = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
@@ -65,3 +66,12 @@ def find_version():
 
 
 version = find_version()
+
+
+def setup(app):
+    app.add_config_value('recommonmark_config', {
+        # 'url_resolver': lambda url: github_doc_root + url,
+        'auto_toc_tree_section': 'Contents',
+        'enable_eval_rst': True,
+    }, True)
+    app.add_transform(AutoStructify)
