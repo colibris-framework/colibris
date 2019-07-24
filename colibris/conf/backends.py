@@ -20,13 +20,18 @@ class BackendMixin:
         cls._instance = None
 
         try:
-            backend_path = settings.pop('backend')
+            backend = settings.pop('backend')
 
         except KeyError:
             return  # Backend class not specified
 
-        cls._class = utils.import_member(backend_path)
-        logger.debug('%s: using class %s', cls.__name__, backend_path)
+        if isinstance(backend, str):
+            cls._class = utils.import_member(backend)
+            logger.debug('%s: using class %s', cls.__name__, backend)
+
+        else:
+            cls._class = backend
+            logger.debug('%s: using class %s', cls.__name__, backend.__name__)
 
     @classmethod
     def get_instance(cls):
