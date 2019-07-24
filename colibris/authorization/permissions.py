@@ -53,8 +53,8 @@ def _require_permissions(and_set=None, or_set=None):
 
     def decorator(handler):
         # Combine any existing permissions with the new ones
-        required_permissions = get_required_permissions(handler) or Permissions()
-        handler.required_permissions = required_permissions.combine(new_permissions)
+        permissions = get_required_permissions(handler) or Permissions()
+        handler.permissions = permissions.combine(new_permissions)
 
         return handler
 
@@ -74,7 +74,7 @@ def require_all_permissions(permissions):
 
 
 def get_required_permissions(handler):
-    permissions = getattr(handler, 'required_permissions', None)
+    permissions = getattr(handler, 'permissions', None)
     if permissions is None:
         return
 

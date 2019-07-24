@@ -24,29 +24,29 @@ async def handle_auth(request, handler):
 
     # First look for auth info in the view handler itself (class or function)
     authentication_required = authentication.get_authentication_required(original_handler)
-    required_permissions = authorization.get_required_permissions(original_handler)
+    permissions = authorization.get_required_permissions(original_handler)
 
     # Then, if we've got a class-based view, look for required permissions in method function
     if inspect.isclass(original_handler) and issubclass(original_handler, views.View):
         method_func = getattr(original_handler, method.lower(), None)
         if method_func:
             method_func_authentication_required = authentication.get_authentication_required(method_func)
-            method_func_required_permissions = authorization.get_required_permissions(method_func)
+            method_func_permissions = authorization.get_required_permissions(method_func)
 
-            if method_func_required_permissions and required_permissions:
-                required_permissions = required_permissions.combine(method_func_required_permissions)
+            if method_func_permissions and permissions:
+                permissions = permissions.combine(method_func_permissions)
 
             else:
-                required_permissions = required_permissions or method_func_required_permissions
+                permissions = permissions or method_func_permissions
 
             if method_func_authentication_required is not None:
                 authentication_required = method_func_authentication_required
 
     # A value of None for authentication_required indicates decision based on permissions
     if authentication_required is None:
-        authentication_required = bool(required_permissions)
+        authentication_required = bool(permissions)
 
-    if not authentication_required and required_permissions:
+    if not authentication_required and permissions:
         raise authorization.AuthorizationException('view requires permissions but does not require authentication')
 
     if authentication_required:
@@ -56,9 +56,9 @@ async def handle_auth(request, handler):
         except authentication.AuthenticationException:
             raise api.UnauthenticatedException()
 
-        if required_permissions is not None:
+        if permissions is not None:
             try:
-                authorization.authorize(account, method, path, original_handler, required_permissions)
+                authorization.authorize(account, method, path, original_handler, permissions)
 
             except authorization.AuthorizationException:
                 raise api.ForbiddenException()
