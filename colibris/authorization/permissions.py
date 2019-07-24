@@ -24,7 +24,7 @@ class Permissions:
 
         permissions = self.or_set & actual_permissions
         if len(permissions) == 0:
-            raise PermissionNotMet(permissions.pop())
+            raise PermissionNotMet(list(self.or_set)[0])
 
     def __str__(self):
         s = ''
