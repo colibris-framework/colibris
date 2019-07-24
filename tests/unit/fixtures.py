@@ -8,6 +8,8 @@ from colibris import authorization
 from colibris.middleware.errors import handle_errors_json
 from colibris.middleware.auth import handle_auth
 
+from .permissions.fixtures import *
+
 
 @pytest.fixture
 def http_client_maker(aiohttp_client):
