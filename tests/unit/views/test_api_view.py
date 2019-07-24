@@ -1,10 +1,10 @@
 import pytest
 
-from aiohttp import web, hdrs
+from aiohttp import web
 from marshmallow import Schema, fields
 
-from colibris.middleware.errors import handle_errors_json
 from colibris.views import APIView
+from colibris.middleware.errors import handle_errors_json
 
 
 class ItemSchema(Schema):
@@ -34,18 +34,12 @@ class ItemsView(APIView):
 
 
 @pytest.fixture
-def http_client(loop, aiohttp_client):
-    middlewares = [
-        handle_errors_json
-    ]
-
-    app = web.Application(middlewares=middlewares)
-    app.router.add_route('*', '/items', ItemsView)
-
-    return loop.run_until_complete(aiohttp_client(app))
+async def api_views_http_client(http_client_maker):
+    return await http_client_maker(middlewares=[handle_errors_json],
+                                   routes=[('/items', ItemsView)])
 
 
-async def test_get(http_client):
+async def test_get(api_views_http_client):
     sent_args = {
         'count': '222'
     }
@@ -53,7 +47,7 @@ async def test_get(http_client):
         'count': 222
     }
 
-    response = await http_client.request(hdrs.METH_GET, '/items', params=sent_args)
+    response = await api_views_http_client.get('/items', params=sent_args)
 
     assert response.status == 200
 
@@ -63,7 +57,7 @@ async def test_get(http_client):
     assert expected_args == query
 
 
-async def test_post_body(http_client):
+async def test_post_body(api_views_http_client):
     sent_data = {
         'name': 'Risus Fusce',
         'info': 'Egestas Lorem Sit Fringilla',
@@ -75,7 +69,7 @@ async def test_post_body(http_client):
         'count': 22,
     }
 
-    response = await http_client.request(hdrs.METH_POST, '/items', json=sent_data)
+    response = await api_views_http_client.post('/items', json=sent_data)
 
     assert response.status == 200
 
@@ -85,7 +79,7 @@ async def test_post_body(http_client):
     assert expected_data == body
 
 
-async def test_post_query(http_client):
+async def test_post_query(api_views_http_client):
     sent_data = {
         'count': '22',
     }
@@ -93,7 +87,7 @@ async def test_post_query(http_client):
         'count': 22,
     }
 
-    response = await http_client.request(hdrs.METH_POST, '/items', params=sent_data)
+    response = await api_views_http_client.post('/items', params=sent_data)
 
     assert response.status == 200
 
