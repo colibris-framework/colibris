@@ -10,3 +10,6 @@ class NullBackend(AuthorizationBackend):
         # Consider any authenticated request authorized
 
         return True
+
+    def get_actual_permissions(self, account, method, path):
+        return ()
