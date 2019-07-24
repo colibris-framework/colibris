@@ -15,15 +15,15 @@ logger = logging.getLogger(__name__)
 
 def require_authentication(required=True):
     def decorator(handler):
-        handler.required_authentication = required
+        handler.authentication_required = required
 
         return handler
 
     return decorator
 
 
-def get_required_authentication(handler):
-    return getattr(handler, 'required_authentication', None)
+def get_authentication_required(handler):
+    return getattr(handler, 'authentication_required', None)
 
 
 def authenticate(request):

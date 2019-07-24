@@ -23,14 +23,14 @@ async def handle_auth(request, handler):
     original_handler = request.match_info.handler
 
     # First look for auth info in the view handler itself (class or function)
-    required_authentication = authentication.get_required_authentication(original_handler)
+    authentication_required = authentication.get_authentication_required(original_handler)
     required_permissions = authorization.get_required_permissions(original_handler)
 
     # Then, if we've got a class-based view, look for required permissions in method function
     if inspect.isclass(original_handler) and issubclass(original_handler, views.View):
         method_func = getattr(original_handler, method.lower(), None)
         if method_func:
-            method_func_required_authentication = authentication.get_required_authentication(method_func)
+            method_func_authentication_required = authentication.get_authentication_required(method_func)
             method_func_required_permissions = authorization.get_required_permissions(method_func)
 
             if method_func_required_permissions and required_permissions:
@@ -39,17 +39,17 @@ async def handle_auth(request, handler):
             else:
                 required_permissions = required_permissions or method_func_required_permissions
 
-            if method_func_required_authentication is not None:
-                required_authentication = method_func_required_authentication
+            if method_func_authentication_required is not None:
+                authentication_required = method_func_authentication_required
 
-    # A value of None for required_authentication indicates decision based on permissions
-    if required_authentication is None:
-        required_authentication = bool(required_permissions)
+    # A value of None for authentication_required indicates decision based on permissions
+    if authentication_required is None:
+        authentication_required = bool(required_permissions)
 
-    if not required_authentication and required_permissions:
+    if not authentication_required and required_permissions:
         raise authorization.AuthorizationException('view requires permissions but does not require authentication')
 
-    if required_authentication:
+    if authentication_required:
         try:
             account = authentication.authenticate(request)
 

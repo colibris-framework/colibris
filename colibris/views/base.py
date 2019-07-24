@@ -37,5 +37,5 @@ class ViewMeta(abc.ABCMeta):
 
 
 class View(web.View, metaclass=ViewMeta):
-    required_authentication = None
+    authentication_required = None
     required_permissions = None
