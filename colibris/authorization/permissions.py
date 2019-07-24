@@ -41,6 +41,9 @@ class Permissions:
 
         return s or '*'
 
+    def __bool__(self):
+        return bool(self.and_set) or bool(self.or_set)
+
 
 def _require_permissions(and_set=None, or_set=None):
     and_set = and_set or set()

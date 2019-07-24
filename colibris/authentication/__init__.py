@@ -13,6 +13,19 @@ _REQUEST_ACCOUNT_ITEM_NAME = 'account'
 logger = logging.getLogger(__name__)
 
 
+def require_authentication(required=True):
+    def decorator(handler):
+        handler.required_authentication = required
+
+        return handler
+
+    return decorator
+
+
+def get_required_authentication(handler):
+    return getattr(handler, 'required_authentication', None)
+
+
 def authenticate(request):
     account = AuthenticationBackend.get_instance().authenticate(request)
     request[_REQUEST_ACCOUNT_ITEM_NAME] = account

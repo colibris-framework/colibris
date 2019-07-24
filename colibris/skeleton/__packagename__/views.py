@@ -39,7 +39,7 @@ class MeView(views.View):
 
 
 class UsersView(ListCreateModelView):
-    required_permissions = constants.ROLE_ADMIN
+    required_permissions = {constants.ROLE_ADMIN}
     body_schema_class = schemas.UserSchema
     model = models.User
 
@@ -53,7 +53,7 @@ class UsersView(ListCreateModelView):
 
 
 class UserView(RetrieveUpdateDestroyModelView):
-    required_permissions = constants.ROLE_ADMIN
+    required_permissions = {constants.ROLE_ADMIN}
     body_schema_class = schemas.UserSchema
     model = models.User
 
