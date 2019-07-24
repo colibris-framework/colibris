@@ -76,15 +76,11 @@ def get_required_permissions(handler):
         return
 
     # Permissions can be stored as:
-    #  * one single permission
     #  * a set of permissions
     #  * a Permissions instance
 
-    # Normalize any possible way of storing permissions
+    # Normalize possible ways of storing permissions
     if not isinstance(permissions, Permissions):
-        if not isinstance(permissions, (set, list, tuple)):
-            permissions = {permissions}
-
         permissions = Permissions(and_set=permissions)
 
     return permissions
