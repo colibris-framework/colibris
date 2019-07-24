@@ -2,9 +2,6 @@
 from .exceptions import PermissionNotMet
 
 
-ANY_PERMISSION = ()
-
-
 class Permissions:
     def __init__(self, and_set=None, or_set=None):
         self.and_set = set(and_set or ())
@@ -63,10 +60,6 @@ def _require_permissions(and_set=None, or_set=None):
 
 def require_permission(permission):
     return _require_permissions(and_set=[permission])
-
-
-def require_any_permission():
-    return _require_permissions()
 
 
 def require_one_permission(permissions):
