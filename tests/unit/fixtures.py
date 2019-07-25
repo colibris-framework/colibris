@@ -8,7 +8,7 @@ from colibris import authorization
 from colibris.middleware.errors import handle_errors_json
 from colibris.middleware.auth import handle_auth
 
-from .permissions.fixtures import *
+from .authorization.fixtures import *
 
 
 @pytest.fixture
