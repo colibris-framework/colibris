@@ -27,4 +27,4 @@ class RightsBackend(ModelBackend):
         # Gather all rights from all entries for the given account
         rights = self.model.select().where(self.get_account_field() == account)
 
-        return ['{}:{}'.format(self.get_resource(r), self.get_operation(r)) for r in rights]
+        return {'{}:{}'.format(self.get_resource(r), self.get_operation(r)) for r in rights}

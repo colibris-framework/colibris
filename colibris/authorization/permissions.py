@@ -11,8 +11,6 @@ class Permissions:
         return Permissions(self.and_set | permissions.and_set, self.or_set | permissions.or_set)
 
     def verify(self, actual_permissions):
-        actual_permissions = set(actual_permissions)
-
         # Verify permissions in and set
         for p in self.and_set:
             if p not in actual_permissions:
