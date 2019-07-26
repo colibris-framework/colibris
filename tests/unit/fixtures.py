@@ -5,6 +5,7 @@ from aiohttp import web
 
 from colibris import authentication
 from colibris import authorization
+from colibris import persist
 from colibris.middleware.errors import handle_errors_json
 from colibris.middleware.auth import handle_auth
 
@@ -47,3 +48,23 @@ def http_client_maker(aiohttp_client):
         return aiohttp_client(app)
 
     return client
+
+
+@pytest.fixture
+def database_maker():
+
+    def database(models, **settings):
+        # Use in-memory SQLite db by default
+        settings.setdefault('backend', 'colibris.persist.backends.SQLiteBackend')
+        if settings['backend'] == 'colibris.persist.backends.SQLiteBackend':
+            settings.setdefault('database', ':memory:')
+
+        persist.DatabaseBackend.configure(settings)
+        db = persist.get_database()
+        db.connect()
+        persist.models.set_database(db)
+        db.create_tables(models)
+
+        return db
+
+    return database

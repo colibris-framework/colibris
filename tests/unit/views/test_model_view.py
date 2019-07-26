@@ -41,11 +41,8 @@ MODELS = [Item]
 
 
 @pytest.fixture
-def database():
-    db = SqliteDatabase(':memory:')
-    db.bind(MODELS)
-    db.connect()
-    db.create_tables(MODELS)
+def database(database_maker):
+    return database_maker(models=MODELS)
 
 
 @pytest.fixture
