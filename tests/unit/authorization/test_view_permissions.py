@@ -13,7 +13,7 @@ class DummyView(views.View):
 
 
 class DummyViewWithClassPermission(DummyView):
-    required_permissions = {DUMMY_PERMISSION}
+    permissions = {DUMMY_PERMISSION}
 
 
 class DummyViewWithMethodPermission(DummyView):
@@ -29,7 +29,7 @@ class PermissionAuthorizationBackend(authorization.AuthorizationBackend):
 
 class NoPermissionAuthorizationBackend(authorization.AuthorizationBackend):
     def get_actual_permissions(self, account, method, path):
-        return ()
+        return set()
 
 
 class WrongPermissionAuthorizationBackend(authorization.AuthorizationBackend):

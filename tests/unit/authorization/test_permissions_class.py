@@ -10,7 +10,7 @@ def test_conjunction():
     p = permissions.Permissions(and_set={DUMMY_PERMISSION, ANOTHER_PERMISSION})
 
     with pytest.raises(permissions.PermissionNotMet):
-        p.verify({})
+        p.verify(set())
 
     with pytest.raises(permissions.PermissionNotMet):
         p.verify({DUMMY_PERMISSION})
@@ -25,7 +25,7 @@ def test_disjunction():
     p = permissions.Permissions(or_set={DUMMY_PERMISSION, ANOTHER_PERMISSION})
 
     with pytest.raises(permissions.PermissionNotMet):
-        p.verify({})
+        p.verify(set())
 
     p.verify({DUMMY_PERMISSION})
     p.verify({ANOTHER_PERMISSION})
@@ -37,7 +37,7 @@ def test_conjunction_disjunction():
                                 or_set={DUMMY_PERMISSION, YET_ANOTHER_PERMISSION})
 
     with pytest.raises(permissions.PermissionNotMet):
-        p.verify({})
+        p.verify(set())
 
     with pytest.raises(permissions.PermissionNotMet):
         p.verify({DUMMY_PERMISSION})
