@@ -2,9 +2,6 @@
 from .exceptions import PermissionNotMet
 
 
-ANY_PERMISSION = ()
-
-
 class Permissions:
     def __init__(self, and_set=None, or_set=None):
         self.and_set = set(and_set or ())
@@ -44,6 +41,9 @@ class Permissions:
 
         return s or '*'
 
+    def __bool__(self):
+        return bool(self.and_set) or bool(self.or_set)
+
 
 def _require_permissions(and_set=None, or_set=None):
     and_set = and_set or set()
@@ -53,8 +53,8 @@ def _require_permissions(and_set=None, or_set=None):
 
     def decorator(handler):
         # Combine any existing permissions with the new ones
-        required_permissions = get_required_permissions(handler) or Permissions()
-        handler.required_permissions = required_permissions.combine(new_permissions)
+        permissions = get_required_permissions(handler) or Permissions()
+        handler.permissions = permissions.combine(new_permissions)
 
         return handler
 
@@ -63,10 +63,6 @@ def _require_permissions(and_set=None, or_set=None):
 
 def require_permission(permission):
     return _require_permissions(and_set=[permission])
-
-
-def require_any_permission():
-    return _require_permissions()
 
 
 def require_one_permission(permissions):
@@ -78,20 +74,16 @@ def require_all_permissions(permissions):
 
 
 def get_required_permissions(handler):
-    permissions = getattr(handler, 'required_permissions', None)
+    permissions = getattr(handler, 'permissions', None)
     if permissions is None:
         return
 
     # Permissions can be stored as:
-    #  * one single permission
     #  * a set of permissions
     #  * a Permissions instance
 
-    # Normalize any possible way of storing permissions
+    # Normalize possible ways of storing permissions
     if not isinstance(permissions, Permissions):
-        if not isinstance(permissions, (set, list, tuple)):
-            permissions = {permissions}
-
         permissions = Permissions(and_set=permissions)
 
     return permissions

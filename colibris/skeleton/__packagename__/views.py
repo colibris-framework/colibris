@@ -5,7 +5,6 @@ from colibris import app
 from colibris import views
 from colibris.conf import settings
 from colibris.authentication import get_account
-from colibris.authorization import ANY_PERMISSION
 from colibris.views.generic import RetrieveUpdateDestroyModelView, ListCreateModelView
 
 from __packagename__ import constants
@@ -30,8 +29,6 @@ class HealthView(views.View):
 
 
 class MeView(views.View):
-    required_permissions = ANY_PERMISSION
-
     @docs(tags=['Users'], summary='Reveal details about the current user')
     @response_schema(schemas.UserSchema())
     async def get(self):
@@ -42,7 +39,7 @@ class MeView(views.View):
 
 
 class UsersView(ListCreateModelView):
-    required_permissions = constants.ROLE_ADMIN
+    permissions = {constants.ROLE_ADMIN}
     body_schema_class = schemas.UserSchema
     model = models.User
 
@@ -56,7 +53,7 @@ class UsersView(ListCreateModelView):
 
 
 class UserView(RetrieveUpdateDestroyModelView):
-    required_permissions = constants.ROLE_ADMIN
+    permissions = {constants.ROLE_ADMIN}
     body_schema_class = schemas.UserSchema
     model = models.User
 
