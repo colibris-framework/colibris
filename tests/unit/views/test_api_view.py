@@ -34,7 +34,7 @@ class ItemsView(APIView):
 
 
 @pytest.fixture
-async def api_views_http_client(http_client_maker):
+async def http_client(http_client_maker):
     return await http_client_maker(middlewares=[handle_errors_json],
                                    routes=[('/items', ItemsView)])
 

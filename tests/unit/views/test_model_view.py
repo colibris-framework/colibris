@@ -1,13 +1,13 @@
 import pytest
 
-from peewee import SqliteDatabase
-
 from colibris.middleware.errors import handle_errors_json
 from colibris.pagination import PageNumberPagination
 from colibris.schemas import ModelSchema
 
 from colibris import persist
 from colibris.views.generic import ListCreateModelView, RetrieveUpdateDestroyModelView
+
+from ..fixtures import database_maker, http_client_maker
 
 
 class Item(persist.Model):
@@ -46,7 +46,7 @@ def database(database_maker):
 
 
 @pytest.fixture
-async def model_view_http_client(http_client_maker):
+async def http_client(http_client_maker):
     return await http_client_maker(middlewares=[handle_errors_json],
                                    routes=[('/paginated-items', ItemsPaginatedView),
                                            ('/items', ItemsView),
