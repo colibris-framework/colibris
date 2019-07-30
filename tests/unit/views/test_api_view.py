@@ -39,7 +39,7 @@ async def http_client(http_client_maker):
                                    routes=[('/items', ItemsView)])
 
 
-async def test_get(api_views_http_client):
+async def test_get(http_client):
     sent_args = {
         'count': '222'
     }
@@ -47,7 +47,7 @@ async def test_get(api_views_http_client):
         'count': 222
     }
 
-    response = await api_views_http_client.get('/items', params=sent_args)
+    response = await http_client.get('/items', params=sent_args)
 
     assert response.status == 200
 
@@ -57,7 +57,7 @@ async def test_get(api_views_http_client):
     assert expected_args == query
 
 
-async def test_post_body(api_views_http_client):
+async def test_post_body(http_client):
     sent_data = {
         'name': 'Risus Fusce',
         'info': 'Egestas Lorem Sit Fringilla',
@@ -69,7 +69,7 @@ async def test_post_body(api_views_http_client):
         'count': 22,
     }
 
-    response = await api_views_http_client.post('/items', json=sent_data)
+    response = await http_client.post('/items', json=sent_data)
 
     assert response.status == 200
 
@@ -79,7 +79,7 @@ async def test_post_body(api_views_http_client):
     assert expected_data == body
 
 
-async def test_post_query(api_views_http_client):
+async def test_post_query(http_client):
     sent_data = {
         'count': '22',
     }
@@ -87,7 +87,7 @@ async def test_post_query(api_views_http_client):
         'count': 22,
     }
 
-    response = await api_views_http_client.post('/items', params=sent_data)
+    response = await http_client.post('/items', params=sent_data)
 
     assert response.status == 200
 
