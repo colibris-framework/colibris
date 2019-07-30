@@ -12,4 +12,4 @@ class NullBackend(AuthorizationBackend):
         return True
 
     def get_actual_permissions(self, account, method, path):
-        return ()
+        return set()

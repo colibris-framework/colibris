@@ -6,7 +6,10 @@ from .base import AuthenticationBackend
 
 class ModelBackend(AuthenticationBackend):
     def __init__(self, model, active_field=None, inactive_field=None, **kwargs):
-        self.model = utils.import_member(model)
+        self.model = model
+        if isinstance(model, str):
+            self.model = utils.import_member(self.model)
+
         self.active_field = active_field
         self.inactive_field = inactive_field
 
