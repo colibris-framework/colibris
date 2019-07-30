@@ -3,6 +3,7 @@ import logging
 import os
 
 from colibris.conf import settings
+from colibris.utils import import_module_or_none
 
 from .base import BaseCommand
 
@@ -56,7 +57,10 @@ class TestCommand(BaseCommand):
             os.chdir(tests_dir)
 
         plugins = list(_PLUGINS)
+
         # Use project's fixtures as a plugin so that project-specific fixtures are loaded
-        plugins.append('{}.tests.fixtures'.format(settings.PROJECT_PACKAGE_NAME))
+        fixtures_path = '{}.tests.fixtures'.format(settings.PROJECT_PACKAGE_NAME)
+        if import_module_or_none(fixtures_path):
+            plugins.append(fixtures_path)
 
         return pytest.main(args, plugins=plugins)
