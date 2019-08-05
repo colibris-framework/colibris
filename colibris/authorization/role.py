@@ -19,7 +19,7 @@ class RoleBackend(AuthorizationBackend):
 
     def get_actual_permissions(self, account, method, path):
         role = self.get_role(account)
-        actual_permissions = [role]
+        actual_permissions = {role}
 
         try:
             index = self.order.index(role)
@@ -27,6 +27,6 @@ class RoleBackend(AuthorizationBackend):
         except ValueError:
             index = 0
 
-        actual_permissions += self.order[:index]
+        actual_permissions.update(self.order[:index])
 
         return actual_permissions

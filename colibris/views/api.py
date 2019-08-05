@@ -35,7 +35,7 @@ class APIView(View):
         if schema is None:
             schema = self.get_body_schema()
 
-        json_payload = await self.get_request_payload()
+        json_payload = await self.get_request_body()
 
         try:
             data = schema.load(json_payload)
@@ -44,8 +44,8 @@ class APIView(View):
 
         return data
 
-    async def get_request_payload(self):
-        if not self.request.can_read_body:
+    async def get_request_body(self):
+        if not self.request.body_exists:
             return {}
 
         try:

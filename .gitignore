@@ -5,4 +5,4 @@
 *.egg-info
 playground*
 dist
-Pipfile.lock
+docs/build

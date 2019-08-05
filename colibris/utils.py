@@ -25,6 +25,7 @@ def import_member(path):
 
 
 def import_module_or_none(path):
+    # TODO py36 remove this workaround
     # In Python < 3.6 we don't have ModuleNotFoundError
     ModuleNotFoundError = getattr(builtins, 'ModuleNotFoundError', ImportError)
 

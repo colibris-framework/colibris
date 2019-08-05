@@ -4,7 +4,7 @@ services:
 #    image: postgres:latest
 #    restart: always
 #    volumes:
-#      - /var/lib/docker/volumes/__projectname__/pgdata:/var/lib/postgresql/data
+#      - /var/lib/docker/volumes/__projectname__/postgresql/data:/var/lib/postgresql/data
 #    environment:
 #      - POSTGRES_DB=__packagename__
 #      - POSTGRES_PASSWORD=postgres
