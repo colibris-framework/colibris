@@ -1,4 +1,6 @@
+import json
 import operator
+import re
 from functools import reduce
 
 from marshmallow import Schema, ValidationError
@@ -17,23 +19,31 @@ class ModelView(APIView):
     def get_query(self):
         assert self.model is not None, 'The attribute "model" is required for {}'.format(self)
 
-        conditions = []
         query = self.model.select().order_by(self.model.id.desc())
         if self.filter_class is not None:
-            filter_schema: Schema = self.filter_class()
+            query = self.filter_query(query)
 
-            try:
-                filter_items = filter_schema.load(self.request.query)
-            except ValidationError as err:
-                raise api.SchemaError(details=err.messages)
+        return query
 
-            for field, value in filter_items.items():
-                model_field = getattr(self.model, field)
-                conditions.append(model_field == value)
+    def filter_query(self, query):
+        conditions = []
+        filter_schema: Schema = self.filter_class()
 
-            if conditions:
-                where = reduce(operator.and_, conditions)
-                query = query.where(where)
+        try:
+            filter_items = filter_schema.load(self.request.query)
+        except ValidationError as err:
+            raise api.SchemaError(details=err.messages)
+
+        for filter_field, value in filter_items.items():
+            op = filter_schema.fields[filter_field].operation
+            field = filter_schema.fields[filter_field].field
+
+            model_field = getattr(self.model, field)
+            conditions.append(op(model_field, value))
+
+        if conditions:
+            where = reduce(operator.and_, conditions)
+            query = query.where(where)
 
         return query
 
