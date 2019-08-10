@@ -3,6 +3,7 @@ import pytest
 from aiohttp import web
 from marshmallow import Schema, fields
 
+from colibris.middleware.body import handle_request_body
 from colibris.views import APIView
 from colibris.middleware.errors import handle_errors_json
 
@@ -22,20 +23,20 @@ class ItemsView(APIView):
     query_schema_class = QuerySchema
 
     async def get(self):
-        query = await self.get_validated_query()
+        query = self.get_validated_query()
 
         return web.json_response({'query': query})
 
     async def post(self):
-        query = await self.get_validated_query()
-        body = await self.get_validated_body()
+        query = self.get_validated_query()
+        body = self.get_validated_body()
 
         return web.json_response({'query': query, 'body': body})
 
 
 @pytest.fixture
 async def http_client(http_client_maker):
-    return await http_client_maker(middlewares=[handle_errors_json],
+    return await http_client_maker(middlewares=[handle_request_body, handle_errors_json],
                                    routes=[('/items', ItemsView)])
 
 

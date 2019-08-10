@@ -1,3 +1,4 @@
+import json
 from json import JSONDecodeError
 from marshmallow import ValidationError
 
@@ -31,11 +32,11 @@ class APIView(View):
 
         return schema
 
-    async def get_validated_body(self, schema=None):
+    def get_validated_body(self, schema=None):
         if schema is None:
             schema = self.get_body_schema()
 
-        json_payload = await self.get_request_body()
+        json_payload = self.get_request_body()
 
         try:
             data = schema.load(json_payload)
@@ -44,22 +45,22 @@ class APIView(View):
 
         return data
 
-    async def get_request_body(self):
+    def get_request_body(self):
         if not self.request.body_exists:
             return {}
 
         try:
-            json_payload = await self.request.json()
+            json_payload = json.loads(self.request.body)
         except JSONDecodeError:
             raise api.JSONParseError()
 
         return json_payload
 
-    async def get_validated_query(self, schema=None):
+    def get_validated_query(self, schema=None):
         if schema is None:
             schema = self.get_query_schema()
 
-        query = await self.get_request_query()
+        query = self.get_request_query()
 
         try:
             data = schema.load(query)
@@ -68,5 +69,5 @@ class APIView(View):
 
         return data
 
-    async def get_request_query(self):
+    def get_request_query(self):
         return self.request.query

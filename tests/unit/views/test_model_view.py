@@ -1,5 +1,6 @@
 import pytest
 
+from colibris.middleware.body import handle_request_body
 from colibris.middleware.errors import handle_errors_json
 from colibris.pagination import PageNumberPagination
 from colibris.schemas import ModelSchema
@@ -45,7 +46,7 @@ def database(database_maker):
 
 @pytest.fixture
 async def http_client(http_client_maker):
-    return await http_client_maker(middlewares=[handle_errors_json],
+    return await http_client_maker(middlewares=[handle_request_body, handle_errors_json],
                                    routes=[('/paginated-items', ItemsPaginatedView),
                                            ('/items', ItemsView),
                                            ('/items/{id}', ItemView)])

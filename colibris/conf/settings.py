@@ -12,6 +12,7 @@ MAX_REQUEST_BODY_SIZE = 10 * 1024 * 1024
 SECRET_KEY = None
 
 MIDDLEWARE = [
+    'colibris.middleware.data.handle_request_body',
     'colibris.middleware.errors.handle_errors_json',
     'colibris.middleware.auth.handle_auth'
 ]
