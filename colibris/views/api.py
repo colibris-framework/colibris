@@ -1,5 +1,6 @@
 import json
 from json import JSONDecodeError
+
 from marshmallow import ValidationError
 
 from colibris import api
@@ -9,6 +10,14 @@ from colibris.views.base import View
 class APIView(View):
     body_schema_class = None
     query_schema_class = None
+
+    async def _iter(self):
+        await self.prepare()
+
+        return await super()._iter()
+
+    async def prepare(self):
+        self.request.body_text = await self.request.text()
 
     def get_body_schema(self, *args, **kwargs):
         assert self.body_schema_class is not None, 'The attribute "body_schema_class" is required for {}'.format(self)
@@ -50,7 +59,7 @@ class APIView(View):
             return {}
 
         try:
-            json_payload = json.loads(self.request.body)
+            json_payload = json.loads(self.request.body_text)
         except JSONDecodeError:
             raise api.JSONParseError()
 
