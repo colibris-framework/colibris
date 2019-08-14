@@ -17,7 +17,7 @@ class APIView(View):
         return await super()._iter()
 
     async def prepare(self):
-        self.request.body_text = await self.request.text()
+        self.request['body_text'] = await self.request.text()
 
     def get_body_schema(self, *args, **kwargs):
         assert self.body_schema_class is not None, 'The attribute "body_schema_class" is required for {}'.format(self)
