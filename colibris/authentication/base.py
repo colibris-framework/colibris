@@ -8,7 +8,7 @@ _ACCOUNT_ACTION_LOGIN = 'login'
 _ACCOUNT_ACTION_LOGIN_PERSISTENT = 'login_persistent'
 _ACCOUNT_ACTION_LOGOUT = 'logout'
 
-_REQUEST_ACCOUNT_ACTION_ITEM_NAME = 'account_action'
+REQUEST_ACCOUNT_ACTION_KEY = 'account_action'
 
 
 class AuthenticationBackend(BackendMixin):
@@ -34,13 +34,13 @@ class AuthenticationBackend(BackendMixin):
 
     def login(self, request, persistent):
         if persistent:
-            request[_REQUEST_ACCOUNT_ACTION_ITEM_NAME] = _ACCOUNT_ACTION_LOGIN_PERSISTENT
+            request[REQUEST_ACCOUNT_ACTION_KEY] = _ACCOUNT_ACTION_LOGIN_PERSISTENT
 
         else:
-            request[_REQUEST_ACCOUNT_ACTION_ITEM_NAME] = _ACCOUNT_ACTION_LOGIN
+            request[REQUEST_ACCOUNT_ACTION_KEY] = _ACCOUNT_ACTION_LOGIN
 
     def logout(self, request):
-        request[_REQUEST_ACCOUNT_ACTION_ITEM_NAME] = _ACCOUNT_ACTION_LOGOUT
+        request[REQUEST_ACCOUNT_ACTION_KEY] = _ACCOUNT_ACTION_LOGOUT
 
     def prepare_login_response(self, response, account, persistent):
         return response
@@ -55,7 +55,7 @@ class AuthenticationBackend(BackendMixin):
         from . import get_account
 
         # Handle logins and logouts
-        account_action = request.get(_REQUEST_ACCOUNT_ACTION_ITEM_NAME)
+        account_action = request.get(REQUEST_ACCOUNT_ACTION_KEY)
         if account_action:
             account = get_account(request)
             if account_action == _ACCOUNT_ACTION_LOGIN:

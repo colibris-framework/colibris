@@ -1,13 +1,25 @@
+import json
 from json import JSONDecodeError
+
 from marshmallow import ValidationError
 
 from colibris import api
 from colibris.views.base import View
 
+REQUEST_BODY_KEY = 'body_text'
+
 
 class APIView(View):
     body_schema_class = None
     query_schema_class = None
+
+    async def _iter(self):
+        await self.prepare()
+
+        return await super()._iter()
+
+    async def prepare(self):
+        self.request[REQUEST_BODY_KEY] = await self.request.text()
 
     def get_body_schema(self, *args, **kwargs):
         assert self.body_schema_class is not None, 'The attribute "body_schema_class" is required for {}'.format(self)
@@ -31,11 +43,11 @@ class APIView(View):
 
         return schema
 
-    async def get_validated_body(self, schema=None):
+    def get_validated_body(self, schema=None):
         if schema is None:
             schema = self.get_body_schema()
 
-        json_payload = await self.get_request_body()
+        json_payload = self.get_request_body()
 
         try:
             data = schema.load(json_payload)
@@ -44,22 +56,22 @@ class APIView(View):
 
         return data
 
-    async def get_request_body(self):
+    def get_request_body(self):
         if not self.request.body_exists:
             return {}
 
         try:
-            json_payload = await self.request.json()
+            json_payload = json.loads(self.request[REQUEST_BODY_KEY])
         except JSONDecodeError:
             raise api.JSONParseError()
 
         return json_payload
 
-    async def get_validated_query(self, schema=None):
+    def get_validated_query(self, schema=None):
         if schema is None:
             schema = self.get_query_schema()
 
-        query = await self.get_request_query()
+        query = self.get_request_query()
 
         try:
             data = schema.load(query)
@@ -68,5 +80,5 @@ class APIView(View):
 
         return data
 
-    async def get_request_query(self):
+    def get_request_query(self):
         return self.request.query

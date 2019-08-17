@@ -27,7 +27,7 @@ class ListMixin:
 class CreateMixin:
     async def post(self):
         schema = self.get_body_schema()
-        data = await self.get_validated_body(schema)
+        data = self.get_validated_body(schema)
 
         result = self.perform_create(data)
         if inspect.isawaitable(result):
@@ -40,8 +40,8 @@ class CreateMixin:
         return web.json_response(data, status=201)
 
     def perform_create(self, data):
-        query = self.get_query()
-        instance = query.model.create(**data)
+        model = self.get_model()
+        instance = model.create(**data)
 
         return instance
 
@@ -49,7 +49,7 @@ class CreateMixin:
 class RetrieveMixin:
     async def get(self):
         schema = self.get_body_schema()
-        instance = self.get_object()
+        instance = await self.get_object()
 
         data = schema.dump(instance)
 
@@ -64,10 +64,10 @@ class UpdateMixin:
         return await self.update(partial=False)
 
     async def update(self, partial):
-        instance = self.get_object()
+        instance = await self.get_object()
 
         schema = self.get_body_schema(partial=partial, instance=instance)
-        data = await self.get_validated_body(schema)
+        data = self.get_validated_body(schema)
 
         result = self.perform_update(data, instance)
         if inspect.isawaitable(result):
@@ -88,7 +88,7 @@ class UpdateMixin:
 
 class DestroyMixin:
     async def delete(self):
-        instance = self.get_object()
+        instance = await self.get_object()
 
         result = self.perform_destroy(instance)
         if inspect.isawaitable(result):
