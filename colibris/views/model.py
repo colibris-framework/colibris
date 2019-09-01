@@ -47,7 +47,7 @@ class ModelView(APIView):
 
         return query
 
-    def get_object(self):
+    async def get_object(self):
         identifier_value = self.request.match_info[self.url_identifier]
         query = self.get_query()
         model = query.model
@@ -58,3 +58,8 @@ class ModelView(APIView):
             raise api.ModelNotFoundException(model)
 
         return instance
+
+    def get_model(self):
+        assert self.model is not None, 'The attribute "model" is required for {}'.format(self)
+
+        return self.model

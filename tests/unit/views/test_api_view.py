@@ -22,13 +22,13 @@ class ItemsView(APIView):
     query_schema_class = QuerySchema
 
     async def get(self):
-        query = await self.get_validated_query()
+        query = self.get_validated_query()
 
         return web.json_response({'query': query})
 
     async def post(self):
-        query = await self.get_validated_query()
-        body = await self.get_validated_body()
+        query = self.get_validated_query()
+        body = self.get_validated_body()
 
         return web.json_response({'query': query, 'body': body})
 

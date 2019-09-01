@@ -7,7 +7,7 @@ from .base import AuthenticationBackend
 from .exceptions import *
 
 
-_REQUEST_ACCOUNT_ITEM_NAME = 'account'
+REQUEST_ACCOUNT_KEY = 'account'
 
 
 logger = logging.getLogger(__name__)
@@ -28,24 +28,24 @@ def get_authentication_required(handler):
 
 def authenticate(request):
     account = AuthenticationBackend.get_instance().authenticate(request)
-    request[_REQUEST_ACCOUNT_ITEM_NAME] = account
+    request[REQUEST_ACCOUNT_KEY] = account
 
     return account
 
 
 def get_account(request):
-    return request.get(_REQUEST_ACCOUNT_ITEM_NAME)
+    return request.get(REQUEST_ACCOUNT_KEY)
 
 
 def login(request, account, persistent):
     logger.debug('logging in account "%s" (persistent=%s)', account, persistent)
 
-    request[_REQUEST_ACCOUNT_ITEM_NAME] = account
+    request[REQUEST_ACCOUNT_KEY] = account
     AuthenticationBackend.get_instance().login(request, persistent)
 
 
 def logout(request):
-    account = request.pop(_REQUEST_ACCOUNT_ITEM_NAME, None)
+    account = request.pop(REQUEST_ACCOUNT_KEY, None)
     if account:
         logger.debug('logging out account "%s"', account)
         AuthenticationBackend.get_instance().logout(request)

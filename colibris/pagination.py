@@ -4,7 +4,7 @@ from colibris.api.envelope import wrap_many
 from marshmallow.validate import Range
 
 from colibris import api
-from colibris.schemas import fields, Schema, ValidationError
+from colibris.schemas import fields, Schema, ValidationError, EXCLUDE
 
 page_validator = Range(min=1, error='Value must be greater than 0.')
 
@@ -17,7 +17,7 @@ class PageNumberPagination:
     _query_schema = type('PaginationQuerySchema', (Schema,), {
         PAGE_SIZE_QUERY_PARAM: fields.Integer(missing=PAGE_SIZE, validate=page_validator),
         PAGE_QUERY_PARAM: fields.Integer(missing=1, validate=page_validator)
-    })()
+    })(unknown=EXCLUDE)
 
     def __init__(self, query, request):
         self.query = query

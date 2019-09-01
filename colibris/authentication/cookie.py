@@ -14,7 +14,7 @@ from .exceptions import AuthenticationException
 DEFAULT_VALIDITY_SECONDS = 3600 * 24 * 30
 SAFE_METHODS = {'GET', 'HEAD', 'OPTIONS', 'TRACE'}
 
-_REQUEST_CSRF_TOKEN_ITEM_NAME = 'csrf_token'
+REQUEST_CSRF_TOKEN_KEY = 'csrf_token'
 _SECRET_KEY = settings.SECRET_KEY.encode() if settings.SECRET_KEY else b''
 
 
@@ -109,7 +109,7 @@ class CookieBackendMixin:
 
     @staticmethod
     def get_csrf_token(request, account=None):
-        token = request.get(_REQUEST_CSRF_TOKEN_ITEM_NAME)
+        token = request.get(REQUEST_CSRF_TOKEN_KEY)
         if token:
             return token
 
@@ -120,6 +120,6 @@ class CookieBackendMixin:
         account_id = str(account).encode()
         token = hmac.new(_SECRET_KEY, account_id, hashlib.sha256).hexdigest()
 
-        request[_REQUEST_CSRF_TOKEN_ITEM_NAME] = token
+        request[REQUEST_CSRF_TOKEN_KEY] = token
 
         return token
