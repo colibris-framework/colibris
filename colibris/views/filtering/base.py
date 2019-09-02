@@ -25,11 +25,11 @@ TYPE_MAPPING = {
     peewee.FixedCharField: fields.String
 }
 
-NAMING_MAPPING = {
+NAME_MAPPING = {
     operators.EQ: '',
     operators.GT: '__gt',
     operators.GE: '__ge',
-    operators.LT: '__LT',
+    operators.LT: '__lt',
     operators.LE: '__le',
     operators.NOT: '__not',
     operators.LIKE: '__like',
@@ -51,7 +51,7 @@ class ModelFilterMeta(SchemaMeta):
                     model_field_class = model_fields[model_field].__class__
                     field_class = TYPE_MAPPING[model_field_class]
                     field = field_class(field=model_field, operation=operation)
-                    field_name = model_field + NAMING_MAPPING[operation]
+                    field_name = model_field + NAME_MAPPING[operation]
 
                     fields_from_model.append(
                         (field_name, field)
