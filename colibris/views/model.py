@@ -7,6 +7,7 @@ from marshmallow import Schema, ValidationError
 
 from colibris import api
 from colibris.views.api import APIView
+from colibris.views.filtering.base import ModelFilter
 
 
 class ModelView(APIView):
@@ -33,29 +34,8 @@ class ModelView(APIView):
 
         query = model.select().order_by(self.model.id.desc())
         if self.filter_class is not None:
-            query = self.filter_query(query)
-
-        return query
-
-    def filter_query(self, query):
-        conditions = []
-        filter_schema: Schema = self.filter_class()
-
-        try:
-            filter_items = filter_schema.load(self.request.query)
-        except ValidationError as err:
-            raise api.SchemaError(details=err.messages)
-
-        for filter_field, value in filter_items.items():
-            op = filter_schema.fields[filter_field].operation
-            field = filter_schema.fields[filter_field].field
-
-            model_field = getattr(self.model, field)
-            conditions.append(op(model_field, value))
-
-        if conditions:
-            where = reduce(operator.and_, conditions)
-            query = query.where(where)
+            filter_schema: ModelFilter = self.filter_class(self.request.query)
+            query = filter_schema.filter_query(query)
 
         return query
 

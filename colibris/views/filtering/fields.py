@@ -2,7 +2,7 @@ from marshmallow import fields
 
 
 class FilterMixin:
-    def __init__(self, operation, field=None, *args, **kwargs):
+    def __init__(self, operation, field, *args, **kwargs):
         self.operation = operation
         self.field = field
 
@@ -18,4 +18,28 @@ class Integer(FilterMixin, fields.Integer):
 
 
 class List(FilterMixin, fields.List):
+    pass
+
+
+class Boolean(FilterMixin, fields.Boolean):
+    pass
+
+
+class DateTime(FilterMixin, fields.DateTime):
+    pass
+
+
+class Date(FilterMixin, fields.Date):
+    pass
+
+
+class Time(FilterMixin, fields.Time):
+    pass
+
+
+class Float(FilterMixin, fields.Float):
+    pass
+
+
+class Decimal(FilterMixin, fields.Decimal):
     pass
