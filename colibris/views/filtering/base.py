@@ -42,20 +42,23 @@ class ModelFilterMeta(SchemaMeta):
     @classmethod
     def get_declared_fields(mcs, klass, cls_fields, inherited_fields, dict_cls):
         fields_from_model = []
+        model = klass.opts.model
 
-        if klass.opts.model:
-            model_fields = {field.name: field for field in klass.opts.model._meta.sorted_fields}
+        if model is None:
+            return dict_cls(inherited_fields + cls_fields)
 
-            for model_field, operations in klass.opts.filter_fields.items():
-                for operation in operations:
-                    model_field_class = model_fields[model_field].__class__
-                    field_class = TYPE_MAPPING[model_field_class]
-                    field = field_class(field=model_field, operation=operation)
-                    field_name = model_field + NAME_MAPPING[operation]
+        model_fields = {field.name: field for field in model._meta.sorted_fields}
 
-                    fields_from_model.append(
-                        (field_name, field)
-                    )
+        for model_field, operations in klass.opts.filter_fields.items():
+            for operation in operations:
+                model_field_class = model_fields[model_field].__class__
+                field_class = TYPE_MAPPING[model_field_class]
+                field = field_class(field=model_field, operation=operation)
+                field_name = model_field + NAME_MAPPING[operation]
+
+                fields_from_model.append(
+                    (field_name, field)
+                )
 
         return dict_cls(inherited_fields + cls_fields + fields_from_model)
 
