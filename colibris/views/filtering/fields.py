@@ -2,9 +2,9 @@ from marshmallow import fields
 
 
 class FilterMixin:
-    def __init__(self, operation, field, *args, **kwargs):
-        self.operation = operation
+    def __init__(self, field, operation, *args, **kwargs):
         self.field = field
+        self.operation = operation
 
         super().__init__(*args, **kwargs)
 
