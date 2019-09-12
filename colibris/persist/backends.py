@@ -1,7 +1,12 @@
 
 import os
 
-from peewee import PostgresqlDatabase, MySQLDatabase, SqliteDatabase, DatabaseError, mysql
+from peewee import PostgresqlDatabase, MySQLDatabase, DatabaseError, mysql
+
+try:
+    from playhouse.sqlite_ext import SqliteExtDatabase as SqliteDatabase
+except ImportError:
+    from peewee import SqliteDatabase
 
 import colibris
 

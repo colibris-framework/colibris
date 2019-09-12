@@ -22,6 +22,8 @@ class ItemSchema(ModelSchema):
 
 class ExplicitFieldsFilter(ModelFilter):
     name = fields.String(field='name', operation=operators.EQ)
+    name__regexp = fields.String(field='name', operation=operators.REGEXP)
+    name__not = fields.String(field='name', operation=operators.NOT)
     count__gt = fields.String(field='count', operation=operators.GT)
     count__ge = fields.String(field='count', operation=operators.GE)
 
@@ -33,7 +35,7 @@ class GeneratedFieldsFilter(ModelFilter):
     class Meta:
         model = Item
         fields = {
-            'name': (operators.EQ,),
+            'name': (operators.EQ, operators.REGEXP, operators.NOT),
             'count': (operators.GT, operators.GE)
         }
 
@@ -56,7 +58,8 @@ MODELS = [Item]
 def setup_db(models):
     settings = {
         'backend': 'colibris.persist.backends.SQLiteBackend',
-        'database': ':memory:'
+        'database': ':memory:',
+        'regexp_function': True
     }
 
     persist.DatabaseBackend.configure(settings)
@@ -82,8 +85,8 @@ async def http_client(http_client_maker):
     return await http_client_maker(middlewares=[handle_errors_json],
                                    routes=[
                                        ('/some-items', ExplicitFieldsFilterItemsView),
-                                       ('/same-items', GeneratedFieldsFilterItemsView),
-                                   ])
+                                       ('/same-items', GeneratedFieldsFilterItemsView), ]
+                                   )
 
 
 class TestFilterExplicitFields:
@@ -100,6 +103,24 @@ class TestFilterExplicitFields:
         assert len(data) == 2
         assert data[0]['name'] == 'Justo'
         assert data[1]['name'] == 'Justo'
+
+    async def test_single_filter_regexp(self, http_client):
+        response = await http_client.get(self.url, params={'name__regexp': '.*J.*u.*s.*t.*o.*'})
+        assert response.status == 200
+
+        data = await response.json()
+        assert isinstance(data, list)
+        assert len(data) == 2
+        assert data[0]['name'] == 'Justo'
+        assert data[1]['name'] == 'Justo'
+
+    async def test_single_filter_not(self, http_client):
+        response = await http_client.get(self.url, params={'name__not': 'Justo'})
+        assert response.status == 200
+
+        data = await response.json()
+        assert isinstance(data, list)
+        assert len(data) == 4
 
     async def test_single_filter_gt(self, http_client):
         response = await http_client.get(self.url, params={'count__gt': 3})
