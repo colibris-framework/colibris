@@ -5,7 +5,7 @@ import peewee
 from marshmallow import Schema, ValidationError, EXCLUDE
 from marshmallow.schema import SchemaMeta, SchemaOpts
 
-from colibris import api
+from colibris import api, persist
 from colibris.views.filtering import fields, operators
 
 TYPE_MAPPING = {
@@ -70,8 +70,8 @@ class ModelFilterSchemaOpts(SchemaOpts):
         meta.fields = ()
         super().__init__(meta, **kwargs)
 
-        if self.model and not issubclass(self.model, peewee.Model):
-            raise ValueError("`model` must be a subclass of peewee.Model")
+        if self.model and not issubclass(self.model, persist.Model):
+            raise ValueError("`model` must be a subclass of persist.Model")
 
 
 class ModelFilter(Schema, metaclass=ModelFilterMeta):
