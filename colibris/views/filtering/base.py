@@ -60,7 +60,7 @@ class ModelFilterMeta(SchemaMeta):
                     (field_name, field)
                 )
 
-        return dict_cls(inherited_fields + cls_fields + fields_from_model)
+        return dict_cls(fields_from_model + inherited_fields + cls_fields)
 
 
 class ModelFilterSchemaOpts(SchemaOpts):
