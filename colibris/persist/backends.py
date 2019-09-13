@@ -1,7 +1,8 @@
 
 import os
 
-from peewee import PostgresqlDatabase, MySQLDatabase, SqliteDatabase, DatabaseError, mysql
+from peewee import PostgresqlDatabase, MySQLDatabase, DatabaseError, mysql
+from playhouse.sqlite_ext import SqliteExtDatabase
 
 import colibris
 
@@ -81,7 +82,7 @@ class MySQLBackend(MySQLDatabase, DatabaseBackend):
         self._one_shot_sql('DROP DATABASE {name}'.format(name=name))
 
 
-class SQLiteBackend(SqliteDatabase, DatabaseBackend):
+class SQLiteBackend(SqliteExtDatabase, DatabaseBackend):
     def _create(self, name):
         pass  # SQLite automatically creates the DB file when opened
 

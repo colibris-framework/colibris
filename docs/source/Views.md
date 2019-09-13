@@ -46,3 +46,23 @@ For a basic RESTful resource there are predefined base views that can be used li
     class ItemsDetailView(RetrieveUpdateDestroyModelView):
         model = Model 
         body_schema_class = ItemSchema
+
+### Filtering
+
+Filtering is also supported. A filter class will be created like this:
+
+    class ItemsFilter(ModelFilter):
+        name = fields.String(field='name', operation=operators.EQ)
+    
+        class Meta:
+            model = Item
+            fields = {
+                'name': (operators.EQ, operators.REGEXP, operators.NOT, operators.ILIKE),
+                'count': (operators.GT, operators.GE, operators.LT, operators.LE)
+            }
+
+
+    class ItemsView(ListCreateModelView):
+        model = Model 
+        body_schema_class = ItemSchema
+        filter_class = ItemsFilter  
