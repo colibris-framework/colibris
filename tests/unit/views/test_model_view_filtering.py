@@ -24,8 +24,11 @@ class ExplicitFieldsFilter(ModelFilter):
     name = fields.String(field='name', operation=operators.EQ)
     name__regexp = fields.String(field='name', operation=operators.REGEXP)
     name__not = fields.String(field='name', operation=operators.NOT)
+    name__ilike = fields.String(field='name', operation=operators.ILIKE)
     count__gt = fields.String(field='count', operation=operators.GT)
     count__ge = fields.String(field='count', operation=operators.GE)
+    count__lt = fields.String(field='count', operation=operators.LT)
+    count__le = fields.String(field='count', operation=operators.LE)
 
     class Meta:
         model = Item
@@ -35,8 +38,8 @@ class GeneratedFieldsFilter(ModelFilter):
     class Meta:
         model = Item
         fields = {
-            'name': (operators.EQ, operators.REGEXP, operators.NOT),
-            'count': (operators.GT, operators.GE)
+            'name': (operators.EQ, operators.REGEXP, operators.NOT, operators.ILIKE),
+            'count': (operators.GT, operators.GE, operators.LT, operators.LE)
         }
 
 
@@ -122,6 +125,16 @@ class TestFilterExplicitFields:
         assert isinstance(data, list)
         assert len(data) == 4
 
+    async def test_single_filter_like(self, http_client):
+        response = await http_client.get(self.url, params={'name__ilike': '%%sto%'})
+        assert response.status == 200
+
+        data = await response.json()
+        assert isinstance(data, list)
+        assert len(data) == 2
+        assert data[0]['name'] == 'Justo'
+        assert data[1]['name'] == 'Justo'
+
     async def test_single_filter_gt(self, http_client):
         response = await http_client.get(self.url, params={'count__gt': 3})
         assert response.status == 200
@@ -137,6 +150,22 @@ class TestFilterExplicitFields:
         data = await response.json()
         assert isinstance(data, list)
         assert len(data) == 4
+
+    async def test_single_filter_lt(self, http_client):
+        response = await http_client.get(self.url, params={'count__lt': 6})
+        assert response.status == 200
+
+        data = await response.json()
+        assert isinstance(data, list)
+        assert len(data) == 5
+
+    async def test_single_filter_le(self, http_client):
+        response = await http_client.get(self.url, params={'count__le': 6})
+        assert response.status == 200
+
+        data = await response.json()
+        assert isinstance(data, list)
+        assert len(data) == 6
 
 
 class TestFilterGeneratedFields(TestFilterExplicitFields):
