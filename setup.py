@@ -28,7 +28,8 @@ setup(
     version=find_version(),
     install_requires=[
         'aiohttp>=3.5.0,<=3.5.4',
-        'aiohttp-apispec>=1.0,<=1.3',
+        'aiohttp-apispec>=1.5',
+        'apispec>=3.0.0',
         'async-timeout',
         'marshmallow>=3.0.0b19,<=3.0.0rc7',
         'marshmallow_peewee==2.3.0',
