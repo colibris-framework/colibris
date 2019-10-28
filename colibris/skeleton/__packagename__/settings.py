@@ -38,11 +38,9 @@ DATABASE = {
 }
 
 AUTHENTICATION = {
-    'backend': 'colibris.authentication.jwt.JWTBackend',
+    'backend': 'colibris.authentication.apikey.APIKeyBackend',
     'model': '__packagename__.models.User',
-    'identity_claim': 'sub',
-    'identity_field': 'username',
-    'secret_field': 'password'
+    'key_field': 'password',
 }
 
 AUTHORIZATION = {
