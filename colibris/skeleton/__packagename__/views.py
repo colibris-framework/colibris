@@ -1,5 +1,6 @@
 from aiohttp import web
-from aiohttp_apispec import docs, response_schema
+from aiohttp_apispec import docs
+from colibris.views import ModelView
 
 from colibris import app
 from colibris import views
@@ -13,6 +14,8 @@ from __packagename__ import schemas
 
 
 # Here are some examples of views. Just remove what you don't need.
+from colibris.views.mixins import UpdateMixin, RetrieveMixin
+
 
 class HomeView(views.View):
     # Show the API docs when visiting the index of the service
@@ -28,14 +31,12 @@ class HealthView(views.View):
         return web.json_response(h)
 
 
-class MeView(views.View):
-    @docs(tags=['Users'], summary='Reveal details about the current user')
-    @response_schema(schemas.UserSchema())
-    async def get(self):
-        user = get_account(self.request)
-        result = schemas.UserSchema().dump(user)
+class MeView(ModelView, RetrieveMixin, UpdateMixin):
+    authentication_required = True
 
-        return web.json_response(result)
+    async def get_object(self):
+        user = get_account(self.request)
+        return user
 
 
 class UsersView(ListCreateModelView):
