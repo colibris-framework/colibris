@@ -33,6 +33,8 @@ class HealthView(views.View):
 
 class MeView(ModelView, RetrieveMixin, UpdateMixin):
     authentication_required = True
+    body_schema_class = schemas.UserSchema
+    model = models.User
 
     async def get_object(self):
         user = get_account(self.request)

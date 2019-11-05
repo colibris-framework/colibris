@@ -28,7 +28,7 @@ DATABASE = {
 AUTHENTICATION = {
     'backend': 'colibris.authentication.apikey.APIKeyBackend',
     'model': '__packagename__.models.User',
-    'key_field': 'password',
+    'key_field': 'key',
 }
 
 AUTHORIZATION = {
