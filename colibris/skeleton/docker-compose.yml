@@ -1,59 +1,10 @@
 version: "3.7"
 services:
-#  db:
-#    image: postgres:latest
-#    restart: always
-#    volumes:
-#      - /var/lib/docker/volumes/__projectname__/postgresql/data:/var/lib/postgresql/data
-#    environment:
-#      - POSTGRES_DB=__packagename__
-#      - POSTGRES_PASSWORD=postgres
-#    ports:
-#      - "5432:5432"
-#  cache:
-#    image: redis:last
-#    restart: always
-#    ports:
-#      - "6379:6379"
-
   server:
     image: __projectname__:latest
     build:
       context: .
       target: server
-#    environment:
-#      - DATABASE_NAME=__packagename__
-#      - DATABASE_HOST=db
-#      - DATABASE_USERNAME=postgres
-#      - DATABASE_PASSWORD=postgres
-#      - CACHE_HOST=cache
-#    command: >
-#      bash -c "wait-for-it db:5432 -t 10 -s &&
-#               wait-for-it cache:6379 -t 10 -s &&
-#               __projectname__ runserver"
+    command: __projectname__ runserver
     ports:
       - "8888:8888"
-#    depends_on:
-#      - db
-#      - cache
-
-#  worker:
-#    image: __projectname__:worker-latest
-#    build:
-#      context: .
-#      target: worker
-#    environment:
-#      - DATABASE_NAME=__packagename__
-#      - DATABASE_HOST=db
-#      - DATABASE_USERNAME=postgres
-#      - DATABASE_PASSWORD=postgres
-#      - CACHE_HOST=cache
-#    command: >
-#      bash -c "wait-for-it db:5432 -t 10 -s &&
-#               wait-for-it cache:6379 -t 10 -s &&
-#               __projectname__ runworker"
-#    ports:
-#      - "8888:8888"
-#    depends_on:
-#      - db
-#      - cache

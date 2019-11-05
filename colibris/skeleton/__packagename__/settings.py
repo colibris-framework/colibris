@@ -13,18 +13,6 @@ class GeneralSettingsSchema(SettingsSchema):
         sensible_fields = ['SECRET_KEY']
 
 
-class DatabaseSettingsSchema(SettingsSchema):
-    NAME = fields.String()
-    HOST = fields.String()
-    PORT = fields.Integer()
-    USERNAME = fields.String()
-    PASSWORD = fields.String()
-
-    class Meta:
-        prefix = 'DATABASE_'
-        sensible_field = ['PASSWORD']
-
-
 DEBUG = True
 
 LISTEN = '0.0.0.0'
@@ -40,7 +28,7 @@ DATABASE = {
 AUTHENTICATION = {
     'backend': 'colibris.authentication.apikey.APIKeyBackend',
     'model': '__packagename__.models.User',
-    'key_field': 'password',
+    'key_field': 'key',
 }
 
 AUTHORIZATION = {
@@ -50,4 +38,3 @@ AUTHORIZATION = {
 }
 
 GeneralSettingsSchema().load_from_env(target_settings=globals())
-DatabaseSettingsSchema().load_from_env(target_settings=globals())
