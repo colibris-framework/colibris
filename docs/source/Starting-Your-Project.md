@@ -16,9 +16,6 @@ Install `colibris`:
 
     pip install colibris
     
-(For mac users) Install gnu sed:
-
-    brew install gnu-sed --with-default-names
 
 Go to your projects folder:
 
