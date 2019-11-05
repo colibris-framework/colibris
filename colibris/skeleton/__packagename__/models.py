@@ -12,4 +12,4 @@ class User(persist.Model):
     first_name = persist.CharField(max_length=64)
     last_name = persist.CharField(max_length=64)
     email = persist.CharField(max_length=128, null=True)
-    role = persist.CharField(max_length=10, choices=constants.ROLES)
+    role = persist.CharField(max_length=10, choices=[(r, r) for r in constants.ROLES])
