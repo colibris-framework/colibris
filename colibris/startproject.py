@@ -5,12 +5,13 @@ import os
 import re
 import shutil
 import subprocess
+import sys
 import tempfile
 
 
 PACKAGE_NAME_PLACEHOLDER = '__packagename__'
 PROJECT_NAME_PLACEHOLDER = '__projectname__'
-IGNORE_PATTERNS = ['.git']
+IGNORE_PATTERNS = ['.git', '__pycache__']
 
 tmp_dir = None
 
@@ -60,7 +61,11 @@ def start_project():
 
     shutil.move(old_package_name, new_package_name)
 
-    rename_command = 'find {} -type f | xargs sed -i "s/{}/{}/g"'
+    if sys.platform == 'darwin':  # macOS uses BSD sed which expects extra argument to '-i'
+        rename_command = 'find {} -type f | xargs sed -i "" "s/{}/{}/g"'
+
+    else:
+        rename_command = 'find {} -type f | xargs sed -i "s/{}/{}/g"'
 
     os.system(rename_command.format(project_name, PACKAGE_NAME_PLACEHOLDER, package_name))
     os.system(rename_command.format(project_name, PROJECT_NAME_PLACEHOLDER, project_name))
