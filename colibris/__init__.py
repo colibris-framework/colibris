@@ -14,7 +14,7 @@ from colibris import taskqueue
 from colibris import template
 
 
-VERSION = '0.9.1'
+VERSION = '0.9.2'
 
 
 def setup():
