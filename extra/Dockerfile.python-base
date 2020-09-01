@@ -1,16 +1,16 @@
 # Build with:
 #    docker build -t colibris/python-base -f Dockerfile.python-base .
 
-FROM python:3.7-slim-stretch
+FROM python:3.8-slim-buster as builder
 
 # Make sure we have an up-to-date OS + python installation
-RUN apt-get update && apt-get -y upgrade && \
-    apt-get -y install build-essential git python-dev wait-for-it
+RUN apt update && apt -y upgrade && \
+    apt -y install build-essential python-dev wait-for-it
 
 # Install pipenv and lock down the version for the sake of reproducibility
-RUN pip install pipenv==2018.11.26
+RUN pip install pipenv==2020.8.13
 
 # Cleanup
-RUN apt-get clean autoclean && \
-    apt-get autoremove --yes && \
+RUN apt clean autoclean && \
+    apt autoremove --yes && \
     rm -rf /var/lib/{apt,dpkg,cache,log}/
