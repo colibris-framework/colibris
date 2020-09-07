@@ -7,8 +7,7 @@ from colibris.conf import settings
 
 from .base import BaseCommand
 
-from . import makemigrations
-from . import migrate
+from . import db
 from . import runserver
 from . import runworker
 from . import shell
