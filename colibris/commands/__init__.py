@@ -13,6 +13,7 @@ from . import runserver
 from . import runworker
 from . import shell
 from . import test
+from . import db
 
 
 _command = None  # Currently running command
