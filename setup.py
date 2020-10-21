@@ -34,7 +34,7 @@ setup(
         'marshmallow>=3.0.0b19,<3.8',
         'marshmallow_peewee>=2.3.0,<3.1',
         'peewee>=3.9',
-        'peewee-moves>=2.0.3,<3.0',
+        'peewee-moves>=2.1.0,<3.0',
         'python-dotenv',
         'webargs>=5.2.0,<6.0'
     ],
