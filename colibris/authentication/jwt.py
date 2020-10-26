@@ -92,7 +92,7 @@ class JWTBackend(ModelBackend, CookieBackendMixin):
     def build_jwt(self, account):
         now = int(time.time())
         token_claims = {
-            'sub': str(account),
+            'sub': getattr(account, self.identity_field),
             'iat': now,
             'exp': now + self.validity_seconds
         }
