@@ -71,10 +71,13 @@ class JWTBackend(ModelBackend, CookieBackendMixin):
         secret = self.get_secret(account)
 
         try:
-            jwt.decode(auth_data['token'], key=secret, verify=True)
+            jwt.decode(auth_data['token'], key=secret, verify=True, algorithms=[JWT_ALG])
 
         except jwt.InvalidSignatureError:
             raise JWTException('invalid signature')
+
+        except jwt.InvalidAlgorithmError:
+            raise JWTException("invalid algorithm")
 
         if self.is_csrf_enabled():
             self.verify_csrf(request, account)
@@ -92,7 +95,7 @@ class JWTBackend(ModelBackend, CookieBackendMixin):
     def build_jwt(self, account):
         now = int(time.time())
         token_claims = {
-            'sub': str(account),
+            'sub': getattr(account, self.identity_field),
             'iat': now,
             'exp': now + self.validity_seconds
         }
