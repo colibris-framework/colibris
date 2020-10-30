@@ -1,5 +1,4 @@
-
-from peewee_migrate import Router
+from peewee_moves import *
 
 import colibris
 
@@ -11,8 +10,8 @@ from .fixtures import web_app_client
 def pytest_runtest_setup():
     colibris.setup()
     if persist.is_enabled():
-        router = Router(persist.get_database(), migrate_dir=persist.get_migrations_dir())
-        router.run()
+        manager = DatabaseManager(persist.get_database(), directory=persist.get_migrations_dir())
+        manager.upgrade()
 
 
 def pytest_runtest_teardown():
