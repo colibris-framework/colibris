@@ -29,7 +29,7 @@ setup(
     install_requires=[
         'aiohttp>=3.5.0,<3.7',
         'aiohttp-apispec>=1.5',
-        'apispec>=3.0.0',
+        'apispec>=3.0.0<4.0.0',
         'async-timeout',
         'marshmallow>=3.0.0b19,<3.8',
         'marshmallow_peewee>=2.3.0,<3.1',
