@@ -14,9 +14,9 @@ class DBCommand(BaseCommand):
         pass
 
     def execute(self, options):
-
         # proxy to peewee moves cli
-        cli_command(default_map={
+        cli_command(
+            default_map={
                 "directory": persist.get_migrations_dir(),
                 "database": persist.get_database,
             },

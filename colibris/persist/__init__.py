@@ -12,7 +12,7 @@ except ImportError:
 from colibris.conf import settings
 
 from .backends import DatabaseBackend, PostgreSQLBackend, MySQLBackend, SQLiteBackend
-from .models import Model
+from .models import Model, set_database
 
 
 _PEEWEE_DB_PARAMS_MAPPING = {
@@ -69,7 +69,7 @@ def setup():
         database.connect()
         logger.debug('db connection initialized')
 
-        models.set_database(get_database())
+        set_database(get_database())
 
 
 def is_enabled():

@@ -1,13 +1,13 @@
-import marshmallow_peewee.schema
-from marshmallow import post_dump, post_load
+from marshmallow import post_load
+from marshmallow_peewee import ModelSchema as MMPWModelSchema
+from marshmallow_peewee import schema as marshmallow_peewee_schema
 
-from colibris.api import envelope
 from colibris.utils import camelcase_to_underscore
 
 DEFAULT_DATETIME_FORMAT = '%Y-%m-%dT%H:%M:%S'
 
 
-class ModelSchemaOpts(marshmallow_peewee.schema.SchemaOpts):
+class ModelSchemaOpts(marshmallow_peewee_schema.SchemaOpts):
     def __init__(self, meta, **kwargs):
         super().__init__(meta, **kwargs)
 
@@ -20,7 +20,7 @@ class ModelSchemaOpts(marshmallow_peewee.schema.SchemaOpts):
         self.datetimeformat = DEFAULT_DATETIME_FORMAT
 
 
-class ModelSchema(marshmallow_peewee.ModelSchema):
+class ModelSchema(MMPWModelSchema):
     OPTIONS_CLASS = ModelSchemaOpts
 
     @post_load

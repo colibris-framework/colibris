@@ -1,0 +1,56 @@
+name: Main
+
+on: push
+
+env:
+  LC_ALL: C.UTF-8
+  LANG: C.UTF-8
+
+jobs:
+
+  lint:
+    name: Code Quality
+    runs-on: ubuntu-latest
+    container:
+      image: colibris/tox:latest
+    steps:
+      - name: Source code checkout
+        uses: actions/checkout@master
+      - name: Run flake8
+        run: flake8 colibris
+
+  test:
+    name: Test
+    needs: lint
+    runs-on: ubuntu-latest
+    container:
+      image: colibris/tox:latest
+    steps:
+      - name: Source code checkout
+        uses: actions/checkout@master
+      - name: Run tox
+        run: tox --workdir=/tmp/tox --recreate
+
+  release:
+    name: Release
+    if: startsWith(github.ref, 'refs/tags/version-')
+    needs:
+      - test
+    runs-on: ubuntu-latest
+    container:
+      image: colibris/tox:latest
+    steps:
+      - name: Source code checkout
+        uses: actions/checkout@master
+      - name: Extract version from tag
+        id: tagName
+        uses: olegtarasov/get-tag@v2
+        with:
+          tagRegex: "version-(.*)"
+      - name: Update source version
+        run: sed -i "s/unknown/${GIT_TAG_NAME}/" colibris/__init__.py
+      - name: Publish to PyPI
+        uses: pypa/gh-action-pypi-publish@master
+        with:
+          user: __token__
+          password: ${{ secrets.PYPI_TOKEN }}
