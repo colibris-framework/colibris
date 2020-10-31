@@ -80,5 +80,5 @@ def test_project(colibris_env):
     yield colibris_env
 
     colibris_env.chdir_projects()
-    colibris_env.run_cmd('rm -rf {} test-project')
+    colibris_env.run_cmd('rm -rf test-project')
     os.chdir(initial_dir)
