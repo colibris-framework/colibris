@@ -52,7 +52,7 @@ LOGGING = {
         'handlers': ['console']
     },
     'loggers': {
-        'peewee_migrate': {
+        'peewee_moves': {
             'level': 'DEBUG'  # Always show details when doing migrations
         }
     }
