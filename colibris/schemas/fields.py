@@ -1,4 +1,5 @@
 from marshmallow.fields import *
+from marshmallow.fields import Field
 
 from colibris import authentication
 

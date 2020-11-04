@@ -4,7 +4,7 @@ import re
 
 try:
     # Speeds up load time by eliminating the pkg_resources overhead.
-    import fastentrypoints
+    import fastentrypoints  # noqa: F401
 
 except ImportError:
     pass

@@ -6,6 +6,7 @@ import logging
 from colibris.conf import settings
 
 from .exceptions import *
+from .exceptions import TimeoutException
 from .base import TaskQueueBackend
 
 

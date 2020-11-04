@@ -1,4 +1,5 @@
 from peewee_moves import *
+from peewee_moves import DatabaseManager
 
 import colibris
 

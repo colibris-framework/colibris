@@ -1,16 +1,19 @@
-# Build with:
-#    docker build -t colibris/tox -f Dockerfile.tox .
+# Build from project root, with:
+#    docker build -t colibris/tox -f extra/Dockerfile.tox .
 
-FROM ubuntu:18.04
+FROM ubuntu:20.04
 
 # Install gnupg2 first as we need it for apt-key
 RUN apt-get update && apt-get install -y gnupg2
 
+ADD requirements/dev.txt /tmp/requirements.txt
+
 # Make sure we have an up-to-date OS + various python versions
-RUN echo "deb http://ppa.launchpad.net/deadsnakes/ppa/ubuntu bionic main" >> /etc/apt/sources.list.d/python.list && \
+RUN echo "deb http://ppa.launchpad.net/deadsnakes/ppa/ubuntu focal main" >> /etc/apt/sources.list.d/python.list && \
     apt-key adv --keyserver keyserver.ubuntu.com --recv-keys F23C5A6CF475977595C89F51BA6932366A755776 && \
     apt-get update && apt-get -y upgrade && \
-    apt-get -y install build-essential git python3.5-dev python3.6-dev python3.7-dev tox pycodestyle sqlite
+    apt-get -y install build-essential git python3.6-dev python3.7-dev python3.8-dev python3.9-dev python3-pip sqlite && \
+    pip3 install -r /tmp/requirements.txt
 
 # Cleanup
 RUN apt-get clean autoclean && \
