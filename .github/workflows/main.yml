@@ -49,6 +49,8 @@ jobs:
           tagRegex: "version-(.*)"
       - name: Update source version
         run: sed -i "s/unknown/${GIT_TAG_NAME}/" colibris/__init__.py
+      - name: Python package setup
+        run: python setup.py sdist
       - name: Publish to PyPI
         uses: pypa/gh-action-pypi-publish@master
         with:
