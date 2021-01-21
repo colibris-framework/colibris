@@ -36,7 +36,7 @@ setup(
         'peewee>=3.9',
         'peewee-moves>=2.1.0,<3.0',
         'python-dotenv',
-        'webargs>=5.2.0,<6.0'
+        'webargs>=5.2.0,<6.0',
     ],
     url='https://github.com/colibris-framework/colibris',
     license='BSD',
