@@ -1,10 +1,11 @@
 # Build with:
 #    docker build -t colibris/ci-builder -f Dockerfile.ci-builder .
 
-FROM docker:latest
+FROM docker:20.10.0
 
-RUN apk add --no-cache py-pip python-dev libffi-dev openssl-dev gcc libc-dev make git curl && \
-    pip install docker-compose
+RUN apk add --no-cache py3-pip python3-dev cargo libffi-dev openssl-dev gcc libc-dev make git curl
+
+RUN pip3 install docker-compose==1.27.4
 
 RUN curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
 RUN install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
