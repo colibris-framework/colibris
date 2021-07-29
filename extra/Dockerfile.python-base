@@ -5,7 +5,7 @@ FROM python:3.8-slim-buster as builder
 
 # Make sure we have an up-to-date OS + python installation
 RUN apt update && apt -y upgrade && \
-    apt -y install build-essential python-dev wait-for-it
+    apt -y install build-essential python-dev wait-for-it libpq-dev
 
 # Install pipenv and lock down the version for the sake of reproducibility
 RUN pip install pipenv==2020.8.13
