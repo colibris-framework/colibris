@@ -17,11 +17,8 @@ from .base import BaseCommand
 
 
 @click.group()
-@click.option("--directory")
-@click.option("--database")
-@click.option("--table")
 @click.pass_context
-def db_command_proxy(ctx, **kwargs):
+def peewee_moves_cli_proxy(ctx, **kwargs):
     class ScriptInfo:
         def __init__(self):
             self.data = {'manager': None}
@@ -31,13 +28,13 @@ def db_command_proxy(ctx, **kwargs):
                                               directory=persist.get_migrations_dir())
 
 
-db_command_proxy.add_command(cli_info)
-db_command_proxy.add_command(cli_status)
-db_command_proxy.add_command(cli_create)
-db_command_proxy.add_command(cli_revision)
-db_command_proxy.add_command(cli_upgrade)
-db_command_proxy.add_command(cli_downgrade)
-db_command_proxy.add_command(cli_delete)
+peewee_moves_cli_proxy.add_command(cli_info)
+peewee_moves_cli_proxy.add_command(cli_status)
+peewee_moves_cli_proxy.add_command(cli_create)
+peewee_moves_cli_proxy.add_command(cli_revision)
+peewee_moves_cli_proxy.add_command(cli_upgrade)
+peewee_moves_cli_proxy.add_command(cli_downgrade)
+peewee_moves_cli_proxy.add_command(cli_delete)
 
 
 class DBCommand(BaseCommand):
@@ -46,4 +43,4 @@ class DBCommand(BaseCommand):
         pass
 
     def execute(self, options):
-        db_command_proxy(args=sys.argv[2:])
+        peewee_moves_cli_proxy(args=sys.argv[2:])
