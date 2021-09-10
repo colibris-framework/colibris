@@ -27,7 +27,7 @@ setup(
     name='colibris',
     version=find_version(),
     install_requires=[
-        'aiohttp>=3.5.0,<3.7',
+        'aiohttp>=3.5.0,<=3.7.4',
         'aiohttp-apispec>=1.5',
         'apispec>=3.0.0,<4.0.0',
         'async-timeout<4.0',
