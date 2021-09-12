@@ -15,8 +15,12 @@ def test_manage_make_migrations(test_project):
 def test_manage_migrate(test_project):
     test_project.run_cmd('testproject/manage.py db create .models')
     test_project.run_cmd('testproject/manage.py db upgrade')
-    res = sqlite3.connect('testproject.db').cursor().execute("SELECT count(*) FROM sqlite_master WHERE type='table' AND name='user'; ").fetchall()
-    assert int(res[0][0]) == 1
+
+    conn = sqlite3.connect('testproject.db')
+    cursor = conn.cursor()
+    count_res = cursor.execute("SELECT count(*) FROM sqlite_master WHERE type='table' AND name='user'; ").fetchall()
+
+    assert int(count_res[0][0]) == 1
 
 
 def test_manage_runserver(test_project):
