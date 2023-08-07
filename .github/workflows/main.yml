@@ -28,6 +28,8 @@ jobs:
     steps:
       - name: Source code checkout
         uses: actions/checkout@master
+      - name: Update source version
+        run: sed -i "s/unknown/0.0.0/" colibris/__init__.py
       - name: Run tox
         run: tox --workdir=/tmp/tox --recreate
 
