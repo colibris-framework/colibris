@@ -32,4 +32,4 @@ logging.basicConfig(level=logging.DEBUG, handlers=[conf.get_logging_memory_handl
 
 
 def is_test_mode():
-    return isinstance(commands.get_command(), commands.test.TestCommand)
+    return isinstance(commands.get_command(), commands.test.TestCommand) or "pytest" in  sys.argv[0]
