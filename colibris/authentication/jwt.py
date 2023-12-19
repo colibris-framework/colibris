@@ -1,11 +1,16 @@
 
-import jwt
 import re
 import time
 
 from .cookie import CookieBackendMixin
 from .exceptions import AuthenticationException
 from .model import ModelBackend
+
+import jwt
+
+
+if jwt.__version__ < '2.0.0':
+    raise RuntimeError("The colibris project requires jwt > 2.0.0")
 
 
 _AUTH_HEADER = 'Authorization'
@@ -47,7 +52,7 @@ class JWTBackend(ModelBackend, CookieBackendMixin):
             raise JWTException('missing token')
 
         try:
-            jwt_decoded = jwt.decode(token, verify=False)
+            jwt_decoded = jwt.decode(token, options={"verify_signature": False})
 
         except jwt.DecodeError:
             raise JWTException('invalid token')
@@ -71,7 +76,7 @@ class JWTBackend(ModelBackend, CookieBackendMixin):
         secret = self.get_secret(account)
 
         try:
-            jwt.decode(auth_data['token'], key=secret, verify=True, algorithms=[JWT_ALG])
+            jwt.decode(auth_data['token'], key=secret, algorithms=[JWT_ALG])
 
         except jwt.InvalidSignatureError:
             raise JWTException('invalid signature')
@@ -100,7 +105,7 @@ class JWTBackend(ModelBackend, CookieBackendMixin):
             'exp': now + self.validity_seconds
         }
 
-        return jwt.encode(algorithm=JWT_ALG, payload=token_claims, key=self.get_secret(account)).decode()
+        return jwt.encode(algorithm=JWT_ALG, payload=token_claims, key=self.get_secret(account))
 
     def process_response(self, request, response):
         response = super().process_response(request, response)
