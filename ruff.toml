@@ -1,0 +1,10 @@
+
+line-length = 120
+
+ignore = ["E731", "ANN002", "ANN003", "ANN101", "ANN102"]
+
+[lint.per-file-ignores]
+"**/__init__.py" = ["F401", "E402" , "F403"]
+"colibris/conf/schemas.py" = ["F401",]
+"colibris/schemas/fields.py" = ["F401", "F403"]
+"colibris/views/filtering/operators.py" = ["E741", ]

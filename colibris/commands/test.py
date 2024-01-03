@@ -11,7 +11,7 @@ from .base import BaseCommand
 logger = logging.getLogger(__name__)
 
 _PLUGINS = [
-    'aiohttp.pytest_plugin',
+    'pytest-aiohttp',
     'colibris.test'
 ]
 
