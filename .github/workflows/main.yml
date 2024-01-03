@@ -12,12 +12,14 @@ jobs:
     name: Code Quality
     runs-on: ubuntu-latest
     container:
-      image: colibris/tox:latest
+      image: python:3-slim
     steps:
       - name: Source code checkout
         uses: actions/checkout@master
-      - name: Run flake8
-        run: flake8 colibris
+      - name: Install ruff
+        run: pip install ruff
+      - name: Run ruff
+        run: ruff colibris
 
   test:
     name: Test
