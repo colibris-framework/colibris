@@ -45,7 +45,6 @@ def connectivity_check():
 
 def setup():
     db_settings = dict(settings.DATABASE)
-    db_settings.setdefault('autorollback', True)
 
     create = db_settings.pop('create', False)
 

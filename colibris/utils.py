@@ -1,8 +1,9 @@
 
 import builtins
-import collections
 import importlib
 import re
+
+from collections.abc import Mapping
 
 
 def camelcase_to_underscore(s):
@@ -42,7 +43,7 @@ def import_module_or_none(path):
 def dict_update_rec(dest, source):
     for k, v in source.items():
         if ((k in dest) and isinstance(dest[k], dict) and
-            isinstance(source[k], collections.Mapping)):
+            isinstance(source[k], Mapping)):
 
             dict_update_rec(dest[k], source[k])
 
