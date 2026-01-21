@@ -6,6 +6,8 @@ import logging.handlers
 import os
 import re
 import sys
+from pathlib import Path
+from typing import Optional
 
 from dotenv import load_dotenv
 
@@ -55,6 +57,15 @@ def _setup_project_package():
                 if m:
                     project_package_name = m.group(1)
 
+    # if running pytest
+    if project_package_name is None:
+        setup_file = _find_upward_file('setup.py')
+        if setup_file is not None:
+            setup_file_content = setup_file.read_text()
+            m = re.search(r"PROJECT_PACKAGE_NAME = \"(\w+)\"", setup_file_content)
+            if m:
+                project_package_name = m.group(1)
+
     if project_package_name is None:
         raise ImproperlyConfigured('could not identify project package name')
 
@@ -62,6 +73,13 @@ def _setup_project_package():
 
     project_package = importlib.import_module(project_package_name)
     settings.PROJECT_PACKAGE_DIR = os.path.dirname(project_package.__file__)
+
+
+def _find_upward_file(file_name: str) -> Optional[Path]:
+    for parent in Path(file_name).resolve().parents:
+        f = parent / file_name
+        if f.exists():
+            return f
 
 
 def _setup_env():
